@@ -1,0 +1,45 @@
+{
+  "name": "model-visualizer",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "license": "MIT",
+  "author": "Daniel Pokorny",
+  "resolvePackageJsonImports": true,
+  "scripts": {
+    "dev": "vite",
+    "dev:functions": "netlify dev",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "fmt": "dprint fmt"
+  },
+  "dependencies": {
+    "@kontent-ai/custom-app-sdk": "^1.0.0",
+    "@kontent-ai/management-sdk": "^7.6.0",
+    "@kontent-ai/stylekit": "^1.0.0",
+    "@netlify/functions": "^3.0.0",
+    "@tailwindcss/vite": "^4.0.6",
+    "dagre": "^0.8.5",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "reactflow": "^11.11.4",
+    "tailwindcss": "^4.0.6"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.19.0",
+    "@types/dagre": "^0.7.52",
+    "@types/node": "^22.13.1",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "dprint": "^0.49.0",
+    "eslint": "^9.19.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.18",
+    "globals": "^15.14.0",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.22.0",
+    "vite": "^6.1.0"
+  }
+}
