@@ -11,6 +11,7 @@
     "dev:functions": "netlify dev",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
     "preview": "vite preview",
     "fmt": "dprint fmt"
   },

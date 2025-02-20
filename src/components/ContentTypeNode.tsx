@@ -1,14 +1,11 @@
 // src/components/ContentTypeNode.tsx
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 
 import { SourceHandle, TargetHandle } from "./Handles";
 import { ContentTypeElements } from "@kontent-ai/management-sdk";
 import { NodeProps } from "reactflow";
-
-type ContentTypeNodeData = {
-  label: string;
-  elements: ContentTypeElements.ContentTypeElementModel[];
-};
+import { useExpandedNodes } from "../contexts/ExpandedNodesContext";
+import { ContentTypeNodeData, getFilteredElementsData } from "../utils/layout";
 
 type ElementType = ContentTypeElements.ContentTypeElementModel["type"];
 
@@ -36,24 +33,14 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
   data,
   selected,
 }) => {
-  const [expanded, setExpanded] = useState(false);
+  const { expandedNodes, toggleNode } = useExpandedNodes();
+  const expanded = expandedNodes.has(data.id);
 
-  const { filteredElements, hasSnippet } = data.elements.reduce(
-    (acc, el) => ({
-      filteredElements: el.type !== "guidelines" && el.type !== "snippet" 
-        ? [...acc.filteredElements, el]
-        : acc.filteredElements,
-      hasSnippet: acc.hasSnippet || el.type === "snippet"
-    }), 
-    { 
-      filteredElements: [] as ContentTypeElements.ContentTypeElementModel[], 
-      hasSnippet: false 
-    }
-  );
+  const { filteredElements } = getFilteredElementsData(data);
 
   const toggleExpanded = (e: React.MouseEvent) => {
     e.stopPropagation(); // differ between dragging and clicking
-    setExpanded((prev) => !prev);
+    toggleNode(data.id);
   };
 
   const isRelationshipElement = (
@@ -114,7 +101,9 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
                     </div>
                   ),
               )}
-              {hasSnippet && <div className="text-center text-sm font-bold p-2">Snippets</div>}
+              {data.elements.some(el => el.type === "snippet") && (
+                <div className="text-center text-sm font-bold p-2">Snippets</div>
+              )}
             </div>
           </div>
         )
