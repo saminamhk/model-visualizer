@@ -6,7 +6,7 @@ import jsPDF from "jspdf";
 
 export const Toolbar: React.FC<{ environmentId: string }> = ({ environmentId }) => {
   const { expandedNodes, toggleNode } = useExpandedNodes();
-  const { getNodes, fitView } = useReactFlow();
+  const { getNodes, fitView, setNodes } = useReactFlow();
   const [isExporting, setIsExporting] = useState(false);
 
   const handleExpandCollapse = () => {
@@ -21,6 +21,21 @@ export const Toolbar: React.FC<{ environmentId: string }> = ({ environmentId }) 
   const isAllExpanded = () => {
     const nodes = getNodes();
     return nodes.every(node => expandedNodes.has(node.id));
+  };
+
+  const handleReset = () => {
+    setNodes(nodes =>
+      nodes.map(node => ({
+        ...node,
+        hidden: false,
+      }))
+    );
+    // Reset expanded nodes
+    const allNodes = getNodes();
+    allNodes.forEach(node => {
+      toggleNode(node.id, false);
+    });
+    setTimeout(() => fitView({ duration: 800 }), 50);
   };
 
   const handleExport = async () => {
@@ -75,6 +90,26 @@ export const Toolbar: React.FC<{ environmentId: string }> = ({ environmentId }) 
       >
         Fit to View
       </div>
+
+      <div
+        onClick={handleReset}
+        className="button secondary purple"
+      >
+        Reset View
+      </div>
+      {
+        /* <label className="switch mx-2">
+        <input
+          type="checkbox"
+          id="switch"
+          checked={showAllToolbars}
+          onChange={(e) => setShowAllToolbars(e.target.checked)}
+        />
+        <span className="slider purple"></span>
+        <span className="text-sm mx-2">Show all node toolbars</span>
+
+      </label> */
+      }
 
       <div className="flex-1" />
 

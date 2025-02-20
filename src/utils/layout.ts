@@ -102,3 +102,13 @@ export const isRelationshipElement = (
     || element.type === "subpages"
     || element.type === "rich_text")
   && Array.isArray(element.allowed_content_types);
+
+export const isNodeRelated = (nodeId: string, targetId: string, edges: Edge[]): boolean => {
+  if (nodeId === targetId) return true;
+
+  // Check if there's a direct connection in either direction
+  return edges.some(edge =>
+    (edge.source === nodeId && edge.target === targetId)
+    || (edge.target === nodeId && edge.source === targetId)
+  );
+};

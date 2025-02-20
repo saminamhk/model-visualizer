@@ -2,9 +2,9 @@ import React from "react";
 
 import { SourceHandle, TargetHandle } from "./Handles";
 import { ContentTypeElements } from "@kontent-ai/management-sdk";
-import { NodeProps } from "reactflow";
+import { NodeProps, useReactFlow } from "reactflow";
 import { useExpandedNodes } from "../contexts/ExpandedNodesContext";
-import { ContentTypeNodeData, getFilteredElementsData, isRelationshipElement } from "../utils/layout";
+import { ContentTypeNodeData, getFilteredElementsData, isRelationshipElement, isNodeRelated } from "../utils/layout";
 
 type ElementType = ContentTypeElements.ContentTypeElementModel["type"];
 
@@ -28,13 +28,32 @@ const elementTypeLabels: ElementTypeLabels = {
   snippet: "Content Type Snippet",
 };
 
+const ActionButton: React.FC<{
+  onClick: (e: React.MouseEvent) => void;
+  title: string;
+  icon: string;
+}> = ({ onClick, title, icon }) => (
+  <div className="relative group">
+    <button
+      onClick={onClick}
+      className="hover:bg-[#f3f3fe] rounded-full p-1 flex items-center justify-center focus:outline-none"
+    >
+      {icon}
+    </button>
+    <div className="absolute top-0 left-full transform -translate-y-1/2 -translate-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gray-800 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-[9999]">
+      {title}
+    </div>
+  </div>
+);
+
 export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
   data,
   selected,
 }) => {
   const { expandedNodes, toggleNode } = useExpandedNodes();
-  const expanded = expandedNodes.has(data.id);
+  const { setNodes, fitView, getEdges } = useReactFlow();
 
+  const expanded = expandedNodes.has(data.id);
   const { filteredElements } = getFilteredElementsData(data);
 
   const elementTypeMap: ReadonlyMap<ElementType, string> = new Map(
@@ -52,13 +71,31 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
     position: "relative",
   };
 
+  const showRelatedNodes = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const edges = getEdges();
+    setNodes(nodes =>
+      nodes.map(node => ({
+        ...node,
+        hidden: !isNodeRelated(node.id, data.id, edges),
+      }))
+    );
+    setTimeout(() => fitView({ duration: 800 }), 50);
+  };
+
   return (
     <div onClick={() => toggleNode(data.id)} style={containerStyle}>
       {expanded
         ? (
           <div>
-            <div className="font-bold p-2 text-center">{data.label}</div>
-            {/* Render a single incoming handle on the left border */}
+            <div className="flex justify-between items-center px-2 py-1">
+              <div className="font-bold">{data.label}</div>
+              <ActionButton
+                onClick={showRelatedNodes}
+                title="Isolate related nodes"
+                icon="🔍"
+              />
+            </div>
             <TargetHandle id="target" />
             <div style={{ display: "flex", flexDirection: "column" }}>
               {filteredElements.map(
@@ -81,7 +118,7 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
                         {data.selfReferences.includes(el.id ?? "") && (
                           <div className="relative group">
                             <span className="cursor-help text-purple-600">♾️</span>
-                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 whitespace-nowrap">
+                            <div className="absolute top-0 left-full transform translate-x-2 ml-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-[9999]">
                               This element can reference its own content type
                             </div>
                           </div>
@@ -94,16 +131,17 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
                     </div>
                   ),
               )}
-              {data.elements.some(el => el.type === "snippet") && (
-                <div className="text-center text-sm font-bold p-2">Snippets</div>
-              )}
             </div>
           </div>
         )
         : (
-          // Collapsed view: one incoming and one outgoing (aggregated) handle.
-          <div className="font-bold p-2 text-center">
-            <div>{data.label}</div>
+          <div className="flex justify-between items-center px-2 py-1">
+            <div className="font-bold">{data.label}</div>
+            <ActionButton
+              onClick={showRelatedNodes}
+              title="Isolate related nodes"
+              icon="🔍"
+            />
             <TargetHandle id="target" />
             <SourceHandle id="source" />
           </div>
