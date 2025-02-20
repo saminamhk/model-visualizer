@@ -2,8 +2,7 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 
 type ExpandedNodesContextType = {
   expandedNodes: Set<string>;
-  toggleNode: (nodeId: string) => void;
-  setNodeExpanded: (nodeId: string, expanded: boolean) => void;
+  toggleNode: (nodeId: string, forceState?: boolean) => void;
 };
 
 const ExpandedNodesContext = createContext<ExpandedNodesContextType | undefined>(undefined);
@@ -11,22 +10,11 @@ const ExpandedNodesContext = createContext<ExpandedNodesContextType | undefined>
 export const ExpandedNodesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
 
-  const toggleNode = (nodeId: string) => {
-    setExpandedNodes(prev => {
+  const toggleNode = (nodeId: string, forceState?: boolean) => {
+    setExpandedNodes((prev) => {
       const next = new Set(prev);
-      if (next.has(nodeId)) {
-        next.delete(nodeId);
-      } else {
-        next.add(nodeId);
-      }
-      return next;
-    });
-  };
-
-  const setNodeExpanded = (nodeId: string, expanded: boolean) => {
-    setExpandedNodes(prev => {
-      const next = new Set(prev);
-      if (expanded) {
+      const shouldExpand = forceState === undefined ? !next.has(nodeId) : forceState;
+      if (shouldExpand) {
         next.add(nodeId);
       } else {
         next.delete(nodeId);
@@ -36,7 +24,7 @@ export const ExpandedNodesProvider: React.FC<{ children: ReactNode }> = ({ child
   };
 
   return (
-    <ExpandedNodesContext.Provider value={{ expandedNodes, toggleNode, setNodeExpanded }}>
+    <ExpandedNodesContext.Provider value={{ expandedNodes, toggleNode }}>
       {children}
     </ExpandedNodesContext.Provider>
   );

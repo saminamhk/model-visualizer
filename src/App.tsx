@@ -7,6 +7,7 @@ import { useAppContext } from "./contexts/AppContext";
 import { getContentTypes } from "./utils/mapi";
 import { ContentTypeModels } from "@kontent-ai/management-sdk";
 import { Loader } from "./components/Loader";
+import { ReactFlowProvider } from "reactflow";
 
 const App: React.FC = () => {
   const customAppContext = useAppContext();
@@ -78,19 +79,21 @@ const App: React.FC = () => {
 
   return (
     <div className="flex h-screen">
-      <div className="w-64 border-r bg-[#f3f3f3] border-gray-200 relative z-10">
-        <Sidebar
-          types={contentTypes}
-          onTypeSelect={handleNodeSelect}
-        />
-      </div>
-      <div className="flex-1">
-        <Canvas
-          types={contentTypes}
-          selectedNodeId={selectedNodeId}
-          onNodeSelect={handleNodeSelect}
-        />
-      </div>
+      <ReactFlowProvider>
+        <div className="w-64 border-r bg-[#f3f3f3] border-gray-200 relative z-10">
+          <Sidebar
+            types={contentTypes}
+            onTypeSelect={handleNodeSelect}
+          />
+        </div>
+        <div className="flex-1">
+          <Canvas
+            types={contentTypes}
+            selectedNodeId={selectedNodeId}
+            onNodeSelect={handleNodeSelect}
+          />
+        </div>
+      </ReactFlowProvider>
     </div>
   );
 };

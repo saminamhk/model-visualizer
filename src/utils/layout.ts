@@ -90,3 +90,14 @@ export const getLayoutedElements = (
 
   return { nodes: layoutedNodes, edges };
 };
+
+export const isRelationshipElement = (
+  element: ContentTypeElements.ContentTypeElementModel,
+): element is
+  | ContentTypeElements.ILinkedItemsElement
+  | ContentTypeElements.ISubpagesElement
+  | ContentTypeElements.IRichTextElement =>
+  (element.type === "modular_content"
+    || element.type === "subpages"
+    || element.type === "rich_text")
+  && Array.isArray(element.allowed_content_types);

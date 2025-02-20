@@ -1,11 +1,10 @@
-// src/components/ContentTypeNode.tsx
 import React from "react";
 
 import { SourceHandle, TargetHandle } from "./Handles";
 import { ContentTypeElements } from "@kontent-ai/management-sdk";
 import { NodeProps } from "reactflow";
 import { useExpandedNodes } from "../contexts/ExpandedNodesContext";
-import { ContentTypeNodeData, getFilteredElementsData } from "../utils/layout";
+import { ContentTypeNodeData, getFilteredElementsData, isRelationshipElement } from "../utils/layout";
 
 type ElementType = ContentTypeElements.ContentTypeElementModel["type"];
 
@@ -38,18 +37,6 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
 
   const { filteredElements } = getFilteredElementsData(data);
 
-  const toggleExpanded = (e: React.MouseEvent) => {
-    e.stopPropagation(); // differ between dragging and clicking
-    toggleNode(data.id);
-  };
-
-  const isRelationshipElement = (
-    element: ContentTypeElements.ContentTypeElementModel,
-  ) =>
-    element.type === "modular_content"
-    || element.type === "subpages"
-    || element.type === "rich_text";
-
   const elementTypeMap: ReadonlyMap<ElementType, string> = new Map(
     Object.entries(elementTypeLabels) as [ElementType, string][],
   );
@@ -61,12 +48,12 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
     borderRadius: 16,
     background: selected ? "#f3f3fe" : "white",
     cursor: "pointer",
-    minWidth: 250, // fallback to 150 if measurement isn't ready
+    minWidth: 250,
     position: "relative",
   };
 
   return (
-    <div onClick={toggleExpanded} style={containerStyle}>
+    <div onClick={() => toggleNode(data.id)} style={containerStyle}>
       {expanded
         ? (
           <div>

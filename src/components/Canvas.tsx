@@ -1,97 +1,78 @@
-// src/components/Canvas.tsx
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import ReactFlow, {
-  MiniMap,
-  Controls,
-  Background,
-  Node,
-  NodeChange,
-  applyNodeChanges,
-  ReactFlowProvider,
-  useReactFlow,
-} from "reactflow";
+import ReactFlow, { MiniMap, Controls, Background, Node, NodeChange, applyNodeChanges } from "reactflow";
 import "reactflow/dist/style.css";
-import { getLayoutedElements } from "../utils/layout";
+import { getLayoutedElements, isRelationshipElement } from "../utils/layout";
 import { ContentTypeNode } from "./ContentTypeNode";
 import { ContentTypeElements, ContentTypeModels } from "@kontent-ai/management-sdk";
 import { useExpandedNodes } from "../contexts/ExpandedNodesContext";
 
 type ContentType = ContentTypeModels.ContentType;
 
+type ProcessedNode = {
+  id: string;
+  type: string;
+  data: {
+    id: string;
+    label: string;
+    elements: ContentTypeElements.ContentTypeElementModel[];
+  };
+  position: { x: number; y: number };
+};
+
+type ProcessedEdge = {
+  id: string;
+  source: string;
+  target: string;
+  label?: string;
+  sourceHandle: string;
+  targetHandle: string;
+};
+
 type ProcessedGraph = {
-  nodes: Array<{
-    id: string;
-    type: string;
-    data: {
-      id: string;
-      label: string;
-      elements: ContentTypeElements.ContentTypeElementModel[];
-    };
-    position: { x: number; y: number };
-  }>;
-  edges: Array<{
-    id: string;
-    source: string;
-    target: string;
-    label?: string;
-    sourceHandle: string;
-    targetHandle: string;
-  }>;
+  nodes: Array<ProcessedNode>;
+  edges: Array<ProcessedEdge>;
 };
 
 const processContentTypes = (contentTypes: ContentType[]): ProcessedGraph => {
-  const nodes: ProcessedGraph["nodes"] = contentTypes.map((type) => {
-    console.log("Creating node for type:", type.id); // Debug log
-    return {
+  // Build nodes: each content type becomes a node with its id, label, and elements.
+  const nodes = contentTypes.map((type) => ({
+    id: type.id,
+    type: "contentType",
+    data: {
       id: type.id,
-      type: "contentType",
-      data: {
-        id: type.id,
-        label: type.name,
-        elements: type.elements,
-      },
-      position: { x: 0, y: 0 },
-    };
-  });
+      label: type.name,
+      elements: type.elements,
+    },
+    // Initial position; layout will be computed later.
+    position: { x: 0, y: 0 },
+  }));
 
-  // process elements to create edges, each with a unique outgoing handle on the source node
-  const edges: ProcessedGraph["edges"] = [];
-  const edgeSet = new Set<string>();
-
-  contentTypes.forEach((sourceType) => {
-    sourceType.elements.forEach((element) => {
-      // Only process relationship elements (modular_content, subpages, or rich_text)
-      // that specify allowed content types.
-      if (
-        (element.type === "modular_content"
-          || element.type === "subpages"
-          || element.type === "rich_text")
-        && Array.isArray(element.allowed_content_types)
-      ) {
-        element.allowed_content_types.forEach((allowed) => {
-          const targetId = allowed.id;
-          // Create a unique key including the source element id so that
-          // if there are multiple elements creating connections to the same target,
-          // they remain distinct.
-          const edgeKey = `${sourceType.id}-${element.id}-${targetId}`;
-          if (!edgeSet.has(edgeKey)) {
-            edgeSet.add(edgeKey);
-            edges.push({
-              id: edgeKey,
-              source: sourceType.id,
-              target: targetId ?? "",
-              // Use a computed outgoing handle ID for the source node.
-              sourceHandle: `source-${element.id}`,
-              // For target nodes, always use the single incoming handle "target".
-              targetHandle: "target",
-              // You could optionally include a label if needed.
-              // label: element.codename,
-            });
-          }
-        });
-      }
-    });
-  });
+  const { edges } = contentTypes.reduce(
+    (acc, sourceType) => {
+      sourceType.elements.forEach((element) => {
+        if (isRelationshipElement(element)) {
+          element.allowed_content_types?.forEach((allowed) => {
+            const targetId = allowed.id;
+            const edgeKey = `${sourceType.id}-${element.id}-${targetId}`;
+            if (!acc.edgeSet.has(edgeKey)) {
+              acc.edgeSet.add(edgeKey);
+              acc.edges.push({
+                id: edgeKey,
+                source: sourceType.id,
+                target: targetId ?? "",
+                // Assign a computed outgoing handle for the source node.
+                sourceHandle: `source-${element.id}`,
+                // Use a single incoming handle for the target node.
+                targetHandle: "target",
+              });
+            }
+          });
+        }
+      });
+      return acc;
+    },
+    { edges: [] as ProcessedEdge[], edgeSet: new Set<string>() },
+  );
 
   return { nodes, edges };
 };
@@ -106,92 +87,60 @@ type CanvasProps = {
   onNodeSelect: (nodeId: string) => void;
 };
 
-// Separate flow component to use hooks
-const Flow: React.FC<CanvasProps> = ({ types, selectedNodeId, onNodeSelect }) => {
-  // Memoize the processed entities
-  const entities = useMemo(() => processContentTypes(types), [types]);
+export const Canvas: React.FC<CanvasProps> = ({
+  types,
+  selectedNodeId,
+  onNodeSelect,
+}) => {
+  const processedGraph = useMemo(() => processContentTypes(types), [types]);
   const { expandedNodes } = useExpandedNodes();
-  const reactFlowInstance = useReactFlow();
-  const [shouldCenter, setShouldCenter] = useState(false);
 
-  // Create a memoized function to get current nodes state
-  const getUpdatedNodes = useCallback((baseNodes: Node[]) => {
-    return baseNodes.map(node => ({
-      ...node,
-      selected: node.id === selectedNodeId,
-      data: {
-        ...node.data,
-        isExpanded: expandedNodes.has(node.id),
-      },
-    }));
-  }, [selectedNodeId, expandedNodes]);
+  const updateNodeState = useCallback(
+    (nodes: Node[]): Node[] =>
+      nodes.map((node) => ({
+        ...node,
+        selected: node.id === selectedNodeId,
+        data: {
+          ...node.data,
+          isExpanded: expandedNodes.has(node.id),
+        },
+      })),
+    [selectedNodeId, expandedNodes],
+  );
 
-  // Initialize nodes
+  // Initialize nodes with layout applied.
   const [nodes, setNodes] = useState<Node[]>(() => {
-    const initialNodes = getUpdatedNodes(entities.nodes);
-    const { nodes: layoutedNodes } = getLayoutedElements(initialNodes, entities.edges);
-    return layoutedNodes;
+    const initialNodes = updateNodeState(processedGraph.nodes);
+    return getLayoutedElements(initialNodes, processedGraph.edges).nodes;
   });
 
-  // Handle expansion/collapse and selection changes
+  // Recalculate layout whenever expansion or selection changes.
   useEffect(() => {
-    const updatedNodes = getUpdatedNodes(nodes);
-    const { nodes: layoutedNodes } = getLayoutedElements(updatedNodes, entities.edges);
-    setNodes(layoutedNodes);
-  }, [expandedNodes, selectedNodeId, getUpdatedNodes]);
+    setNodes((prevNodes) => {
+      const updatedNodes = updateNodeState(prevNodes);
+      return getLayoutedElements(updatedNodes, processedGraph.edges).nodes;
+    });
+  }, [expandedNodes, selectedNodeId, updateNodeState, processedGraph.edges]);
 
-  // Handle centering
-  useEffect(() => {
-    if (selectedNodeId && shouldCenter) {
-      const node = nodes.find(n => n.id === selectedNodeId);
-      if (node) {
-        reactFlowInstance.setCenter(
-          node.position.x + 125,
-          node.position.y,
-          { duration: 800, zoom: 1.5 },
-        );
-        setShouldCenter(false);
-      }
-    }
-  }, [selectedNodeId, shouldCenter, nodes, reactFlowInstance]);
-
-  // Update shouldCenter when selection changes
-  useEffect(() => {
-    if (selectedNodeId) {
-      setShouldCenter(true);
-    }
-  }, [selectedNodeId]);
-
+  // Handle drag/other node changes.
   const onNodesChange = useCallback((changes: NodeChange[]) => {
     setNodes((nds) => applyNodeChanges(changes, nds));
   }, []);
 
   return (
-    <ReactFlow
-      nodes={nodes}
-      edges={entities.edges}
-      onNodesChange={onNodesChange}
-      nodeTypes={nodeTypes}
-      onNodeClick={(_, node) => {
-        setShouldCenter(false);
-        onNodeSelect(node.id);
-      }}
-      fitView
-    >
-      <MiniMap />
-      <Controls />
-      <Background color="grey" gap={20} />
-    </ReactFlow>
-  );
-};
-
-// Wrapper component to provide ReactFlow context
-export const Canvas: React.FC<CanvasProps> = (props) => {
-  return (
     <div className="w-full h-full">
-      <ReactFlowProvider>
-        <Flow {...props} />
-      </ReactFlowProvider>
+      <ReactFlow
+        nodes={nodes}
+        edges={processedGraph.edges}
+        onNodesChange={onNodesChange}
+        nodeTypes={nodeTypes}
+        onNodeClick={(_, node) => onNodeSelect(node.id)}
+        fitView
+      >
+        <MiniMap />
+        <Controls />
+        <Background color="grey" gap={20} />
+      </ReactFlow>
     </div>
   );
 };
