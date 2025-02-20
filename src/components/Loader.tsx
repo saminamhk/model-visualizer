@@ -7,7 +7,7 @@ type LoaderProps = {
 
 export const Loader: React.FC<LoaderProps> = (props) => {
   return (
-    <div className="text-center">
+    <div className="text-center bg-white">
       <h2 className="text-2xl font-bold p-5">{props.title}</h2>
       <p className="pb-12">{props.message}</p>
       <div className="loader"></div>

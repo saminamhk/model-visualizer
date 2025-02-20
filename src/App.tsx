@@ -1,6 +1,6 @@
 import "@kontent-ai/stylekit/styles/styles.css";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { Canvas } from "./components/Canvas";
 import { useAppContext } from "./contexts/AppContext";
@@ -8,6 +8,7 @@ import { getContentTypes } from "./utils/mapi";
 import { ContentTypeModels } from "@kontent-ai/management-sdk";
 import { Loader } from "./components/Loader";
 import { ReactFlowProvider } from "reactflow";
+import { Toolbar } from "./components/Toolbar";
 
 const App: React.FC = () => {
   const customAppContext = useAppContext();
@@ -15,15 +16,14 @@ const App: React.FC = () => {
   const [error, setError] = useState<{ description: string; code: string } | null>(null);
   const [contentTypes, setContentTypes] = useState<ContentTypeModels.ContentType[]>([]);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [environmentId, setEnvironmentId] = useState<string>("");
 
-  const handleNodeSelect = (nodeId: string) => {
+  const handleNodeSelect = useCallback((nodeId: string) => {
     setSelectedNodeId(nodeId);
-  };
+  }, []);
 
   useEffect(() => {
-    if (!customAppContext) {
-      return;
-    }
+    if (!customAppContext) return;
 
     if (customAppContext.isError) {
       setError({
@@ -34,15 +34,15 @@ const App: React.FC = () => {
       return;
     }
 
+    setEnvironmentId(customAppContext.context.environmentId);
+
     const fetchData = async () => {
       try {
         setLoading(true);
         const result = await getContentTypes(customAppContext.context.environmentId);
-
         if (result.error) {
           throw result.error;
         }
-
         setContentTypes(result.data || []);
       } catch (err) {
         console.error(err);
@@ -78,15 +78,15 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-white" style={{ boxShadow: "inset 50px 0 10px -50px #bfbfbf" }}>
       <ReactFlowProvider>
-        <div className="w-64 border-r bg-[#f3f3f3] border-gray-200 relative z-10">
-          <Sidebar
-            types={contentTypes}
-            onTypeSelect={handleNodeSelect}
-          />
+        <div className="w-64 border-r border-gray-200 relative z-10 shadow-lg shadow-neutral-300">
+          <Sidebar types={contentTypes} onTypeSelect={handleNodeSelect} />
         </div>
-        <div className="flex-1">
+        <div className="z-1">
+          <Toolbar environmentId={environmentId} />
+        </div>
+        <div className="flex-1 pt-12">
           <Canvas
             types={contentTypes}
             selectedNodeId={selectedNodeId}

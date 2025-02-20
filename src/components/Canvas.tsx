@@ -137,9 +137,9 @@ export const Canvas: React.FC<CanvasProps> = ({
         onNodeClick={(_, node) => onNodeSelect(node.id)}
         fitView
       >
-        <MiniMap />
+        <MiniMap pannable />
         <Controls />
-        <Background color="grey" gap={20} />
+        <Background id="background-1" color="grey" gap={20} />
       </ReactFlow>
     </div>
   );
