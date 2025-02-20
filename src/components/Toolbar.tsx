@@ -76,7 +76,7 @@ export const Toolbar: React.FC<{ environmentId: string }> = ({ environmentId }) 
   };
 
   return (
-    <div className="fixed left-64 right-0 top-0 h-12 bg-white border-b border-gray-200 flex items-center align px-8 gap-2">
+    <div className="fixed left-64 right-0 top-0 h-[50px] bg-white border-b border-gray-200 flex items-center align px-8 gap-2">
       <div
         onClick={handleExpandCollapse}
         className="button secondary purple min-w-[150px] text-center"

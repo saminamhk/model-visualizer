@@ -29,14 +29,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ types, onTypeSelect }) => {
   };
 
   return (
-    <div className="p-4">
-      <h2 className="font-semibold mb-4 p-2">Content Types</h2>
+    <div>
+      <h2 className="pt-6 text-sm pb-1 font-semibold border-b-2 border-[#5b4ff5]/30 mx-4 px-2">Content Types</h2>
       <ul>
         {types.map(({ id, name }) => (
           <li
             key={id}
             onClick={() => handleTypeClick(id)}
-            className="py-2 px-2 text-sm rounded cursor-pointer hover:bg-gray-200"
+            className="py-2 pl-6 w-full text-sm cursor-pointer hover:bg-gradient-to-r hover:from-[#5b4ff5]/2 hover:via-[#5b4ff5]/4 hover:to-[#5b4ff5]/6"
           >
             {name}
           </li>
