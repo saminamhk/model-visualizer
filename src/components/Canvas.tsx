@@ -34,7 +34,6 @@ type ProcessedGraph = {
 };
 
 const processContentTypes = (contentTypes: ContentType[]): ProcessedGraph => {
-  // Build nodes: each content type becomes a node with its id, label, and elements.
   const nodes = contentTypes.map((type) => ({
     id: type.id,
     type: "contentType",
@@ -42,8 +41,13 @@ const processContentTypes = (contentTypes: ContentType[]): ProcessedGraph => {
       id: type.id,
       label: type.name,
       elements: type.elements,
+      selfReferences: type.elements
+        .filter(element =>
+          isRelationshipElement(element)
+          && element.allowed_content_types?.some(allowed => allowed.id === type.id)
+        )
+        .map(element => element.id),
     },
-    // Initial position; layout will be computed later.
     position: { x: 0, y: 0 },
   }));
 
@@ -53,18 +57,18 @@ const processContentTypes = (contentTypes: ContentType[]): ProcessedGraph => {
         if (isRelationshipElement(element)) {
           element.allowed_content_types?.forEach((allowed) => {
             const targetId = allowed.id;
-            const edgeKey = `${sourceType.id}-${element.id}-${targetId}`;
-            if (!acc.edgeSet.has(edgeKey)) {
-              acc.edgeSet.add(edgeKey);
-              acc.edges.push({
-                id: edgeKey,
-                source: sourceType.id,
-                target: targetId ?? "",
-                // Assign a computed outgoing handle for the source node.
-                sourceHandle: `source-${element.id}`,
-                // Use a single incoming handle for the target node.
-                targetHandle: "target",
-              });
+            if (sourceType.id !== targetId) {
+              const edgeKey = `${sourceType.id}-${element.id}-${targetId}`;
+              if (!acc.edgeSet.has(edgeKey)) {
+                acc.edgeSet.add(edgeKey);
+                acc.edges.push({
+                  id: edgeKey,
+                  source: sourceType.id,
+                  target: targetId ?? "",
+                  sourceHandle: `source-${element.id}`,
+                  targetHandle: "target",
+                });
+              }
             }
           });
         }

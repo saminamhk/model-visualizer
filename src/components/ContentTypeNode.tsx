@@ -76,11 +76,17 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
                         borderBottom: i < filteredElements.length - 1 ? "1px solid #ddd" : "none",
                       }}
                     >
-                      {/* Left column: element name */}
-                      <div className="font-bold text-xs px-2.5">
+                      <div className="font-bold text-xs px-2.5 flex items-center gap-1">
                         {el.name}
+                        {data.selfReferences.includes(el.id ?? "") && (
+                          <div className="relative group">
+                            <span className="cursor-help text-purple-600">♾️</span>
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 whitespace-nowrap">
+                              This element can reference its own content type
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      {/* Right column: element type */}
                       <div className="text-xs px-2.5">
                         {elementTypeMap.get(el.type) || el.type}
                       </div>

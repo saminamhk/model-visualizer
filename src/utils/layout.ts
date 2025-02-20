@@ -16,6 +16,7 @@ export type ContentTypeNodeData = {
   label: string;
   elements: Element[];
   isExpanded?: boolean;
+  selfReferences: string[]; // Array of element IDs that self-reference
 };
 
 // Helper to calculate node height and filter elements
