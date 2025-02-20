@@ -1,4 +1,4 @@
-import { Handler, HandlerEvent, HandlerContext } from "@netlify/functions";
+import { Handler, HandlerEvent } from "@netlify/functions";
 import { ManagementClient } from "@kontent-ai/management-sdk";
 
 type Action = "getContentTypes" | "getContentTypeSnippets";
@@ -6,74 +6,42 @@ type Action = "getContentTypes" | "getContentTypeSnippets";
 type ProxyRequest = {
   environmentId: string;
   action: Action;
-  payload?: Record<string, unknown>;
 };
 
-export const handler: Handler = async (
-  event: HandlerEvent,
-  _context: HandlerContext,
-) => {
-  // Ensure this function only accepts POST requests.
+export const handler: Handler = async (event: HandlerEvent) => {
   if (event.httpMethod !== "POST") {
-    return {
-      statusCode: 405,
-      body: "Method Not Allowed",
-    };
+    return { statusCode: 405, body: "Method Not Allowed" };
   }
 
   try {
-    // Parse the incoming request.
-    const { environmentId, action, payload }: ProxyRequest = JSON.parse(event.body || "{}");
-
+    const { environmentId, action }: ProxyRequest = JSON.parse(event.body || "{}");
     if (!environmentId || !action) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: "Missing environmentId or action" }),
-      };
+      return { statusCode: 400, body: JSON.stringify({ error: "Missing environmentId or action" }) };
     }
 
     const apiKey = process.env.MAPI_KEY;
     if (!apiKey) {
       console.error("API key is missing from environment variables.");
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: "Server misconfiguration" }),
-      };
+      return { statusCode: 500, body: JSON.stringify({ error: "Server misconfiguration" }) };
     }
 
-    // Instantiate the ManagementClient with the secret API key.
-    const client = new ManagementClient({
-      environmentId,
-      apiKey,
-    });
-
-    // Route different actions (e.g., fetch content types).
-    if (action === "getContentTypes") {
-      const response = await client.listContentTypes().toAllPromise();
-      return {
-        statusCode: 200,
-        body: JSON.stringify(response.data.items),
-      };
-    }
-
-    if (action === "getContentTypeSnippets") {
-      const response = await client.listContentTypeSnippets().toAllPromise();
-      return {
-        statusCode: 200,
-        body: JSON.stringify(response.data.items),
-      };
-    }
-
-    // Additional actions can be handled here.
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: "Unsupported action" }),
+    const client = new ManagementClient({ environmentId, apiKey });
+    const actions = {
+      getContentTypes: () => client.listContentTypes(),
+      getContentTypeSnippets: () => client.listContentTypeSnippets(),
+      // more actions here
     };
-  } catch (error: any) {
-    console.error("Error:", error.message);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
-    };
+
+    const actionFn = actions[action];
+    if (!actionFn) {
+      return { statusCode: 400, body: JSON.stringify({ error: "Unsupported action" }) };
+    }
+
+    const response = await actionFn().toAllPromise();
+    return { statusCode: 200, body: JSON.stringify(response.data.items) };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    console.error("Error:", errorMessage);
+    return { statusCode: 500, body: JSON.stringify({ error: errorMessage }) };
   }
 };
