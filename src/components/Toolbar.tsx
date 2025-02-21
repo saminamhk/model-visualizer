@@ -3,10 +3,12 @@ import { useExpandedNodes } from "../contexts/ExpandedNodesContext";
 import { useReactFlow } from "reactflow";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
+import { useSnippets } from "../contexts/SnippetsContext";
 
 export const Toolbar: React.FC<{ environmentId: string }> = ({ environmentId }) => {
   const { expandedNodes, toggleNode } = useExpandedNodes();
   const { getNodes, fitView, setNodes } = useReactFlow();
+  const { showSnippets, toggleSnippets } = useSnippets();
   const [isExporting, setIsExporting] = useState(false);
 
   const handleExpandCollapse = () => {
@@ -28,8 +30,9 @@ export const Toolbar: React.FC<{ environmentId: string }> = ({ environmentId }) 
       }))
     );
 
-    expandedNodes.forEach(node => {
-      toggleNode(node, false);
+    const allNodes = getNodes();
+    allNodes.forEach(node => {
+      toggleNode(node.id, false);
     });
     setTimeout(() => fitView({ duration: 800 }), 50);
   };
@@ -90,19 +93,19 @@ export const Toolbar: React.FC<{ environmentId: string }> = ({ environmentId }) 
       >
         Reset View
       </div>
-      {
-        /* <label className="switch mx-2">
+
+      <label className="switch ml-5 mr-2">
         <input
           type="checkbox"
-          id="switch"
-          checked={showAllToolbars}
-          onChange={(e) => setShowAllToolbars(e.target.checked)}
+          checked={showSnippets}
+          onChange={() => {
+            toggleSnippets();
+            setTimeout(() => fitView({ duration: 800 }), 50);
+          }}
         />
         <span className="slider purple"></span>
-        <span className="text-sm mx-2">Show all node toolbars</span>
-
-      </label> */
-      }
+        <span className="text-sm ml-2">Show snippets</span>
+      </label>
 
       <div className="flex-1" />
 

@@ -3,32 +3,16 @@ import React from "react";
 import { SourceHandle, TargetHandle } from "./Handles";
 import { NodeProps, useReactFlow } from "reactflow";
 import { useExpandedNodes } from "../contexts/ExpandedNodesContext";
-import { ContentTypeNodeData, getFilteredElementsData, isRelationshipElement, isNodeRelated } from "../utils/layout";
+import {
+  ContentTypeNodeData,
+  getFilteredElementsData,
+  isRelationshipElement,
+  isNodeRelated,
+  elementTypeMap,
+} from "../utils/layout";
 import { ActionButton } from "./ActionButton";
 import { ContentTypeElements } from "@kontent-ai/management-sdk";
 import { useSnippets } from "../contexts/SnippetsContext";
-
-type ElementType = ContentTypeElements.ContentTypeElementModel["type"];
-
-type ElementTypeLabels = {
-  [K in ElementType]: string;
-};
-
-const elementTypeLabels: ElementTypeLabels = {
-  text: "Text",
-  rich_text: "Rich Text",
-  number: "Number",
-  multiple_choice: "Multiple Choice",
-  date_time: "Date & Time",
-  asset: "Asset",
-  modular_content: "Linked Items",
-  subpages: "Subpages",
-  url_slug: "URL Slug",
-  guidelines: "Guidelines",
-  taxonomy: "Taxonomy",
-  custom: "Custom",
-  snippet: "Content Type Snippet",
-};
 
 export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
   data,
@@ -41,10 +25,6 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
   const expanded = expandedNodes.has(data.id);
   const { filteredElements } = getFilteredElementsData(data);
 
-  const elementTypeMap: ReadonlyMap<ElementType, string> = new Map(
-    Object.entries(elementTypeLabels) as [ElementType, string][],
-  );
-
   const containerStyle: React.CSSProperties = {
     paddingTop: 5,
     paddingBottom: 5,
@@ -54,9 +34,10 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
     cursor: "pointer",
     minWidth: 250,
     position: "relative",
+    boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
   };
 
-  const showRelatedNodes = (e: React.MouseEvent) => {
+  const isolateRelatedNodes = (e: React.MouseEvent) => {
     e.stopPropagation();
     const edges = getEdges();
     setNodes(nodes =>
@@ -126,35 +107,22 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
 
   return (
     <div onClick={() => toggleNode(data.id)} style={containerStyle}>
+      <div className="flex justify-between items-center px-2 py-1">
+        <div className="font-bold">{data.label}</div>
+        <ActionButton
+          onClick={isolateRelatedNodes}
+          title="Isolate related nodes"
+          icon="🔍"
+        />
+      </div>
+      <TargetHandle id="target" />
       {expanded
         ? (
-          <div>
-            <div className="flex justify-between items-center px-2 py-1">
-              <div className="font-bold">{data.label}</div>
-              <ActionButton
-                onClick={showRelatedNodes}
-                title="Isolate related nodes"
-                icon="🔍"
-              />
-            </div>
-            <TargetHandle id="target" />
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              {renderElements()}
-            </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {renderElements()}
           </div>
         )
-        : (
-          <div className="flex justify-between items-center px-2 py-1">
-            <div className="font-bold">{data.label}</div>
-            <ActionButton
-              onClick={showRelatedNodes}
-              title="Isolate related nodes"
-              icon="🔍"
-            />
-            <TargetHandle id="target" />
-            <SourceHandle id="source" />
-          </div>
-        )}
+        : <SourceHandle id="source" />}
     </div>
   );
 };

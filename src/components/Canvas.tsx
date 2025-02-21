@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import ReactFlow, { MiniMap, Controls, Background, Node, NodeChange, applyNodeChanges } from "reactflow";
+import ReactFlow, { MiniMap, Controls, Background, Node, NodeChange, applyNodeChanges, Edge } from "reactflow";
 import "reactflow/dist/style.css";
 import { getLayoutedElements, isRelationshipElement } from "../utils/layout";
 import { ContentTypeNode } from "./ContentTypeNode";
 import { ContentTypeElements, ContentTypeModels, ContentTypeSnippetModels } from "@kontent-ai/management-sdk";
 import { useExpandedNodes } from "../contexts/ExpandedNodesContext";
 import { SnippetNode } from "./SnippetNode";
+import { useSnippets } from "../contexts/SnippetsContext";
 
 type ContentType = ContentTypeModels.ContentType;
 
@@ -34,11 +35,11 @@ type ProcessedGraph = {
 };
 
 const processSnippets = (snippets: ContentTypeSnippetModels.ContentTypeSnippet[]): Array<ProcessedNode> => {
-  return snippets.map((snippet, index) => ({
+  return snippets.map((snippet) => ({
     id: snippet.id,
     type: "snippet",
     data: { id: snippet.id, label: snippet.name, elements: snippet.elements },
-    position: { x: 0, y: index * 100 }, // Position snippets vertically
+    position: { x: 0, y: 0 }, // layouting is done separately
   }));
 };
 
@@ -111,7 +112,29 @@ export const Canvas: React.FC<CanvasProps> = ({
   const processedSnippets = useMemo(() => processSnippets(snippets), [snippets]);
   const processedGraph = useMemo(() => processContentTypes(types), [types]);
 
+  // Create edges for snippet relationships
+  const snippetEdges = useMemo(() => {
+    const edges: Edge[] = [];
+    processedSnippets.forEach(snippet => {
+      snippet.data.elements.forEach(element => {
+        if (isRelationshipElement(element)) {
+          element.allowed_content_types?.forEach(allowed => {
+            edges.push({
+              id: `${snippet.id}-${element.id}-${allowed.id}`,
+              source: snippet.id,
+              sourceHandle: `source-${element.id}`,
+              target: allowed.id ?? "",
+              targetHandle: "target",
+            });
+          });
+        }
+      });
+    });
+    return edges;
+  }, [processedSnippets]);
+
   const { expandedNodes } = useExpandedNodes();
+  const { showSnippets } = useSnippets();
 
   const updateNodeState = useCallback(
     (nodes: Node[]): Node[] =>
@@ -128,16 +151,32 @@ export const Canvas: React.FC<CanvasProps> = ({
 
   // Initialize nodes with layout applied.
   const [nodes, setNodes] = useState<Node[]>(() => {
-    const initialNodes = updateNodeState([...processedSnippets, ...processedGraph.nodes]);
+    const initialNodes = updateNodeState(processedGraph.nodes);
     return getLayoutedElements(initialNodes, processedGraph.edges).nodes;
   });
 
   useEffect(() => {
     setNodes((prevNodes) => {
-      const updatedNodes = updateNodeState(prevNodes);
-      return getLayoutedElements(updatedNodes, processedGraph.edges).nodes;
+      const baseNodes = prevNodes.filter(node => node.type !== "snippet");
+      const updatedNodes = updateNodeState(baseNodes);
+      const layoutedNodes = getLayoutedElements(updatedNodes, processedGraph.edges).nodes;
+
+      if (showSnippets) {
+        const snippetNodes = updateNodeState(processedSnippets);
+        const layoutedSnippets = getLayoutedElements(snippetNodes, [], "LR").nodes
+          .map(node => ({
+            ...node,
+            position: {
+              x: node.position.x - 500,
+              y: node.position.y,
+            },
+          }));
+        return [...layoutedNodes, ...layoutedSnippets];
+      }
+
+      return layoutedNodes;
     });
-  }, [expandedNodes, selectedNodeId, updateNodeState, processedGraph.edges]);
+  }, [expandedNodes, selectedNodeId, updateNodeState, processedGraph.edges, showSnippets, processedSnippets]);
 
   const onNodesChange = useCallback((changes: NodeChange[]) => {
     setNodes((nds) => applyNodeChanges(changes, nds));
@@ -146,8 +185,8 @@ export const Canvas: React.FC<CanvasProps> = ({
   return (
     <div className="w-full h-full">
       <ReactFlow
-        nodes={nodes}
-        edges={processedGraph.edges}
+        nodes={showSnippets ? [...processedSnippets, ...nodes] : nodes}
+        edges={showSnippets ? [...processedGraph.edges, ...snippetEdges] : processedGraph.edges}
         onNodesChange={onNodesChange}
         nodeTypes={nodeTypes}
         onNodeClick={(_, node) => onNodeSelect(node.id)}

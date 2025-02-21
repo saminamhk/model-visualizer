@@ -20,6 +20,7 @@ const App: React.FC = () => {
 
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [environmentId, setEnvironmentId] = useState<string>("");
+  const [showSnippets, setShowSnippets] = useState(false);
 
   const handleNodeSelect = useCallback((nodeId: string) => {
     setSelectedNodeId(nodeId);
@@ -89,13 +90,11 @@ const App: React.FC = () => {
       <ReactFlowProvider>
         <SnippetsProvider
           snippets={snippets}
-          showSnippets={true}
-          toggleSnippets={function(): void {
-            throw new Error("Function not implemented.");
-          }}
+          showSnippets={showSnippets}
+          toggleSnippets={() => setShowSnippets(!showSnippets)}
         >
           <div className="w-64 border-r border-gray-200 relative z-10 shadow-lg shadow-neutral-300">
-            <Sidebar types={contentTypes} snippets={snippets} onTypeSelect={handleNodeSelect} />
+            <Sidebar types={contentTypes} snippets={snippets} onMenuSelect={handleNodeSelect} />
           </div>
           <div className="z-1">
             <Toolbar environmentId={environmentId} />

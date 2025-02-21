@@ -4,6 +4,32 @@ import { Node, Edge } from "reactflow";
 
 const nodeWidth = 172;
 
+type ElementType = ContentTypeElements.ContentTypeElementModel["type"];
+
+type ElementTypeLabels = {
+  [K in ElementType]: string;
+};
+
+export const elementTypeLabels: ElementTypeLabels = {
+  text: "Text",
+  rich_text: "Rich Text",
+  number: "Number",
+  multiple_choice: "Multiple Choice",
+  date_time: "Date & Time",
+  asset: "Asset",
+  modular_content: "Linked Items",
+  subpages: "Subpages",
+  url_slug: "URL Slug",
+  guidelines: "Guidelines",
+  taxonomy: "Taxonomy",
+  custom: "Custom",
+  snippet: "Content Type Snippet",
+};
+
+export const elementTypeMap: ReadonlyMap<ElementType, string> = new Map(
+  Object.entries(elementTypeLabels) as [ElementType, string][],
+);
+
 type Element = ContentTypeElements.ContentTypeElementModel;
 
 type NodeCalculation = {
@@ -57,19 +83,22 @@ export const getLayoutedElements = (
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
+  const isSnippet = (node: Node) => node.type === "snippet";
+
   dagreGraph.setGraph({
     rankdir: direction,
-    nodesep: 50, // vertical spacing
-    ranksep: 200, // horizontal spacing
-    // ranker: 'longest-path' // Use tight-tree for more compact layout
+    nodesep: 50,
+    ranksep: 200,
+    align: "UL",
   });
 
-  // Set each node with its actual dimensions
+  // Add nodes to graph with type-specific handling
   nodes.forEach((node) => {
     const { height } = getFilteredElementsData(node.data);
     dagreGraph.setNode(node.id, {
       width: nodeWidth,
       height: height,
+      rank: isSnippet(node) ? 0 : 1, // Place snippets in first rank
     });
   });
 
@@ -79,21 +108,21 @@ export const getLayoutedElements = (
 
   dagre.layout(dagreGraph);
 
-  // Update positions while maintaining horizontal alignment
-  const layoutedNodes = nodes.map((node) => {
-    const nodeWithPosition = dagreGraph.node(node.id);
-    const { height } = getFilteredElementsData(node.data);
+  return {
+    nodes: nodes.map((node) => {
+      const nodeWithPosition = dagreGraph.node(node.id);
+      const { height } = getFilteredElementsData(node.data);
 
-    return {
-      ...node,
-      position: {
-        x: nodeWithPosition.x - nodeWidth / 2,
-        y: nodeWithPosition.y - height / 2,
-      },
-    };
-  });
-
-  return { nodes: layoutedNodes, edges };
+      return {
+        ...node,
+        position: {
+          x: nodeWithPosition.x - nodeWidth / 2,
+          y: nodeWithPosition.y - height / 2,
+        },
+      };
+    }),
+    edges,
+  };
 };
 
 export const isRelationshipElement = (

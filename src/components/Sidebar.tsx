@@ -9,15 +9,15 @@ type Snippet = ContentTypeSnippetModels.ContentTypeSnippet;
 interface SidebarProps {
   types: ContentType[];
   snippets: Snippet[];
-  onTypeSelect: (typeId: string) => void;
+  onMenuSelect: (typeId: string) => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ types, snippets, onTypeSelect }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ types, snippets, onMenuSelect }) => {
   const { toggleNode } = useExpandedNodes();
   const { getNodes, setCenter } = useReactFlow();
 
-  const handleTypeClick = (typeId: string) => {
-    onTypeSelect(typeId);
+  const handleSidebarSelection = (typeId: string) => {
+    onMenuSelect(typeId);
     toggleNode(typeId, true);
 
     const node = getNodes().find(n => n.id === typeId);
@@ -37,7 +37,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ types, snippets, onTypeSelect 
         {types.map(({ id, name }) => (
           <li
             key={id}
-            onClick={() => handleTypeClick(id)}
+            onClick={() => handleSidebarSelection(id)}
             className="py-2 pl-6 w-full text-sm cursor-pointer  hover:bg-gradient-to-r hover:from-[#5b4ff5]/2 hover:via-[#5b4ff5]/4 hover:to-[#5b4ff5]/6"
           >
             {name}
@@ -49,6 +49,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ types, snippets, onTypeSelect 
         {snippets.map(({ id, name }) => (
           <li
             key={id}
+            onClick={() => handleSidebarSelection(id)}
             className="py-2 pl-6 w-full text-sm cursor-pointer hover:bg-gradient-to-r hover:from-[#5b4ff5]/2 hover:via-[#5b4ff5]/4 hover:to-[#5b4ff5]/6"
           >
             {name}
