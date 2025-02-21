@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useExpandedNodes } from "../contexts/ExpandedNodesContext";
 import { useReactFlow } from "reactflow";
-import html2canvas from "html2canvas";
+import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
 
 export const Toolbar: React.FC<{ environmentId: string }> = ({ environmentId }) => {
@@ -16,11 +16,8 @@ export const Toolbar: React.FC<{ environmentId: string }> = ({ environmentId }) 
     nodes.forEach(node => {
       toggleNode(node.id, !allExpanded);
     });
-  };
 
-  const isAllExpanded = () => {
-    const nodes = getNodes();
-    return nodes.every(node => expandedNodes.has(node.id));
+    setTimeout(() => fitView({ duration: 800 }), 50);
   };
 
   const handleReset = () => {
@@ -30,10 +27,9 @@ export const Toolbar: React.FC<{ environmentId: string }> = ({ environmentId }) 
         hidden: false,
       }))
     );
-    // Reset expanded nodes
-    const allNodes = getNodes();
-    allNodes.forEach(node => {
-      toggleNode(node.id, false);
+
+    expandedNodes.forEach(node => {
+      toggleNode(node, false);
     });
     setTimeout(() => fitView({ duration: 800 }), 50);
   };
@@ -43,8 +39,7 @@ export const Toolbar: React.FC<{ environmentId: string }> = ({ environmentId }) 
     setIsExporting(true);
 
     const flowElement = document.querySelector(".react-flow") as HTMLElement;
-    const viewportElement = document.querySelector(".react-flow__viewport") as HTMLElement;
-    if (!flowElement || !viewportElement) return;
+    if (!flowElement) return;
 
     try {
       // Capture the canvas
@@ -52,27 +47,25 @@ export const Toolbar: React.FC<{ environmentId: string }> = ({ environmentId }) 
         backgroundColor: "#ffffff",
         scale: 3,
         useCORS: true,
-        allowTaint: true,
       });
 
-      // Create PDF
-      const pdf = new jsPDF({
+      // Create PDF and add the image
+      new jsPDF({
         orientation: "landscape",
         unit: "px",
         format: [canvas.width, canvas.height],
-      });
-
-      // Add the image to the PDF
-      const imgData = canvas.toDataURL("image/png");
-      pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
-
-      // Download the PDF
-      pdf.save(`content-model-${environmentId}.pdf`);
+      }).addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, canvas.width, canvas.height, "", "FAST")
+        .save(`content-model-${environmentId}.pdf`);
     } catch (error) {
       console.error("Export failed:", error);
     } finally {
       setIsExporting(false);
     }
+  };
+
+  const isAllExpanded = () => {
+    const nodes = getNodes();
+    return expandedNodes.size === nodes.length;
   };
 
   return (
