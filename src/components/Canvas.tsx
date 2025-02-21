@@ -3,8 +3,9 @@ import ReactFlow, { MiniMap, Controls, Background, Node, NodeChange, applyNodeCh
 import "reactflow/dist/style.css";
 import { getLayoutedElements, isRelationshipElement } from "../utils/layout";
 import { ContentTypeNode } from "./ContentTypeNode";
-import { ContentTypeElements, ContentTypeModels } from "@kontent-ai/management-sdk";
+import { ContentTypeElements, ContentTypeModels, ContentTypeSnippetModels } from "@kontent-ai/management-sdk";
 import { useExpandedNodes } from "../contexts/ExpandedNodesContext";
+import { SnippetNode } from "./SnippetNode";
 
 type ContentType = ContentTypeModels.ContentType;
 
@@ -23,7 +24,6 @@ type ProcessedEdge = {
   id: string;
   source: string;
   target: string;
-  label?: string;
   sourceHandle: string;
   targetHandle: string;
 };
@@ -31,6 +31,15 @@ type ProcessedEdge = {
 type ProcessedGraph = {
   nodes: Array<ProcessedNode>;
   edges: Array<ProcessedEdge>;
+};
+
+const processSnippets = (snippets: ContentTypeSnippetModels.ContentTypeSnippet[]): Array<ProcessedNode> => {
+  return snippets.map((snippet, index) => ({
+    id: snippet.id,
+    type: "snippet",
+    data: { id: snippet.id, label: snippet.name, elements: snippet.elements },
+    position: { x: 0, y: index * 100 }, // Position snippets vertically
+  }));
 };
 
 const processContentTypes = (contentTypes: ContentType[]): ProcessedGraph => {
@@ -83,10 +92,12 @@ const processContentTypes = (contentTypes: ContentType[]): ProcessedGraph => {
 
 const nodeTypes = {
   contentType: ContentTypeNode,
+  snippet: SnippetNode,
 };
 
 type CanvasProps = {
   types: Array<ContentTypeModels.ContentType>;
+  snippets: Array<ContentTypeSnippetModels.ContentTypeSnippet>;
   selectedNodeId: string | null;
   onNodeSelect: (nodeId: string) => void;
 };
@@ -94,9 +105,12 @@ type CanvasProps = {
 export const Canvas: React.FC<CanvasProps> = ({
   types,
   selectedNodeId,
+  snippets,
   onNodeSelect,
 }) => {
+  const processedSnippets = useMemo(() => processSnippets(snippets), [snippets]);
   const processedGraph = useMemo(() => processContentTypes(types), [types]);
+
   const { expandedNodes } = useExpandedNodes();
 
   const updateNodeState = useCallback(
@@ -114,11 +128,10 @@ export const Canvas: React.FC<CanvasProps> = ({
 
   // Initialize nodes with layout applied.
   const [nodes, setNodes] = useState<Node[]>(() => {
-    const initialNodes = updateNodeState(processedGraph.nodes);
+    const initialNodes = updateNodeState([...processedSnippets, ...processedGraph.nodes]);
     return getLayoutedElements(initialNodes, processedGraph.edges).nodes;
   });
 
-  // Recalculate layout whenever expansion or selection changes.
   useEffect(() => {
     setNodes((prevNodes) => {
       const updatedNodes = updateNodeState(prevNodes);
@@ -126,7 +139,6 @@ export const Canvas: React.FC<CanvasProps> = ({
     });
   }, [expandedNodes, selectedNodeId, updateNodeState, processedGraph.edges]);
 
-  // Handle drag/other node changes.
   const onNodesChange = useCallback((changes: NodeChange[]) => {
     setNodes((nds) => applyNodeChanges(changes, nds));
   }, []);

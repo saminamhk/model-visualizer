@@ -19,12 +19,16 @@ export type ContentTypeNodeData = {
   selfReferences: string[]; // Array of element IDs that self-reference
 };
 
+export type SnippetNodeData = {
+  id: string;
+  label: string;
+  elements: Element[];
+  isExpanded?: boolean;
+};
+
 // Helper to calculate node height and filter elements
 export const getFilteredElementsData = (data: ContentTypeNodeData): NodeCalculation => {
-  const filteredElements = data.elements.filter(element =>
-    element.type !== "guidelines"
-    && element.type !== "snippet"
-  );
+  const filteredElements = data.elements.filter(element => element.type !== "guidelines");
 
   if (!data.isExpanded) {
     return {
