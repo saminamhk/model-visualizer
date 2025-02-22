@@ -54,8 +54,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     return (
       <div className="centered">
         <Loader
-          title="Just a moment"
-          message="Initializing the application..."
+          title="Just a moment..."
+          message="Initializing the application"
         />
       </div>
     );

@@ -19,7 +19,7 @@ const App: React.FC = () => {
     return (
       <div className="centered">
         <Loader
-          title="Just a moment"
+          title="Just a moment..."
           message="Your content model is being loaded and layouted. This may take a while depending on your model complexity."
         />
       </div>
