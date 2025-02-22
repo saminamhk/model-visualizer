@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { getCustomAppContext, CustomAppContext } from "@kontent-ai/custom-app-sdk";
 import { Loader } from "../components/Loader";
-
+import { ErrorDisplay } from "../components/ErrorDisplay";
 // Only valid contexts (no error) will be passed down.
 export type ValidCustomAppContext = Extract<CustomAppContext, { isError: false }>;
 
@@ -62,11 +62,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }
 
   if (state.error) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        Error: {state.error.description}, error code: {state.error.code}
-      </div>
-    );
+    return <ErrorDisplay description={state.error.description} code={state.error.code} />;
   }
 
   return (
