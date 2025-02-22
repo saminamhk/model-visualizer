@@ -2,8 +2,8 @@ import { ContentTypeElements } from "@kontent-ai/management-sdk";
 import dagre from "dagre";
 import { Node, Edge } from "reactflow";
 import { Element } from "./mapi";
-import { ContentTypeNode } from "../components/ContentTypeNode";
-import { SnippetNode } from "../components/SnippetNode";
+import { ContentTypeNode } from "../components/nodes/ContentTypeNode";
+import { SnippetNode } from "../components/nodes/SnippetNode";
 
 const nodeWidth = 172;
 

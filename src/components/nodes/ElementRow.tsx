@@ -1,7 +1,7 @@
 import React from "react";
 import { SourceHandle } from "./Handles";
-import { elementTypeMap } from "../utils/mapi";
-import { isRelationshipElement } from "../utils/layout";
+import { elementTypeMap } from "../../utils/mapi";
+import { isRelationshipElement } from "../../utils/layout";
 import { ContentTypeElements } from "@kontent-ai/management-sdk";
 
 type NamedElement =

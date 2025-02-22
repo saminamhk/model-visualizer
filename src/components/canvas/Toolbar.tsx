@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useReactFlow } from "reactflow";
-import { useEntities } from "../contexts/EntityContext";
-import { useNodeState } from "../contexts/NodeStateContext";
+import { useEntities } from "../../contexts/EntityContext";
+import { useNodeState } from "../../contexts/NodeStateContext";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
-import { useAppContext } from "../contexts/AppContext";
+import { useAppContext } from "../../contexts/AppContext";
 export const Toolbar: React.FC = () => {
   const { expandedNodes, toggleNode, resetIsolation } = useNodeState();
   const { getNodes, fitView } = useReactFlow();

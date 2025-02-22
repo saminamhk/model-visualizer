@@ -1,10 +1,10 @@
 import "@kontent-ai/stylekit/styles/styles.css";
 
 import React, { useState, useCallback } from "react";
-import { Canvas } from "./components/Canvas";
+import { Canvas } from "./components/canvas/Canvas";
 import { EntityProvider } from "./contexts/EntityContext";
-import { Loader } from "./components/Loader";
-import { ErrorDisplay } from "./components/ErrorDisplay";
+import { Loader } from "./components/utils/Loader";
+import { ErrorDisplay } from "./components/utils/ErrorDisplay";
 import { useContentModel } from "./hooks/useContentModel";
 
 const App: React.FC = () => {

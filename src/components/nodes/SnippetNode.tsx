@@ -1,11 +1,11 @@
 import React from "react";
 import { NodeProps, useReactFlow } from "reactflow";
-import { SnippetNodeData } from "../utils/layout";
+import { SnippetNodeData } from "../../utils/layout";
 import { ActionButton } from "./ActionButton";
 import { SourceHandle } from "./Handles";
 import { ElementRow } from "./ElementRow";
-import { useNodeState } from "../contexts/NodeStateContext";
-import { nodeBaseStyle } from "../utils/layout";
+import { useNodeState } from "../../contexts/NodeStateContext";
+import { nodeBaseStyle } from "../../utils/layout";
 
 export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
   data,

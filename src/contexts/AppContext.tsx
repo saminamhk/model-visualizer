@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { getCustomAppContext, CustomAppContext } from "@kontent-ai/custom-app-sdk";
-import { Loader } from "../components/Loader";
-import { ErrorDisplay } from "../components/ErrorDisplay";
+import { Loader } from "../components/utils/Loader";
+import { ErrorDisplay } from "../components/utils/ErrorDisplay";
 // Only valid contexts (no error) will be passed down.
 export type ValidCustomAppContext = Extract<CustomAppContext, { isError: false }>;
 

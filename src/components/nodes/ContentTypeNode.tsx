@@ -1,11 +1,11 @@
 import React from "react";
 import { NodeProps, useReactFlow } from "reactflow";
 import { SourceHandle, TargetHandle } from "./Handles";
-import { useEntities } from "../contexts/EntityContext";
-import { ContentTypeNodeData, getFilteredElementsData, nodeBaseStyle } from "../utils/layout";
+import { useEntities } from "../../contexts/EntityContext";
+import { ContentTypeNodeData, getFilteredElementsData, nodeBaseStyle } from "../../utils/layout";
 import { ActionButton } from "./ActionButton";
 import { ElementRow } from "./ElementRow";
-import { useNodeState } from "../contexts/NodeStateContext";
+import { useNodeState } from "../../contexts/NodeStateContext";
 
 export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
   data,

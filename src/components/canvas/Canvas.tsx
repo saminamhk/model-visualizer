@@ -1,13 +1,13 @@
 import React from "react";
 import ReactFlow, { MiniMap, Controls, Background, applyNodeChanges, useReactFlow } from "reactflow";
 import "reactflow/dist/style.css";
-import { useEntities } from "../contexts/EntityContext";
-import { useGraphData } from "../hooks/useGraphData";
+import { useEntities } from "../../contexts/EntityContext";
+import { useGraphData } from "../../hooks/useGraphData";
 import { Toolbar } from "./Toolbar";
 import { Sidebar } from "./Sidebar";
-import { nodeTypes } from "../utils/layout";
-import { useNodeState } from "../contexts/NodeStateContext";
-import { useNodeLayout } from "../hooks/useNodeLayout";
+import { nodeTypes } from "../../utils/layout";
+import { useNodeState } from "../../contexts/NodeStateContext";
+import { useNodeLayout } from "../../hooks/useNodeLayout";
 
 type CanvasProps = {
   selectedNodeId: string | null;

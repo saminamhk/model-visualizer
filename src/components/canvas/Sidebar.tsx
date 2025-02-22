@@ -1,6 +1,6 @@
 import { ContentTypeModels, ContentTypeSnippetModels } from "@kontent-ai/management-sdk";
 import React, { useState } from "react";
-import { useNodeState } from "../contexts/NodeStateContext";
+import { useNodeState } from "../../contexts/NodeStateContext";
 import { useReactFlow } from "reactflow";
 
 type ContentType = ContentTypeModels.ContentType;
