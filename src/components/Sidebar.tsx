@@ -23,61 +23,55 @@ export const Sidebar: React.FC<SidebarProps> = ({ types, snippets, onMenuSelect 
 
     const node = getNodes().find(n => n.id === typeId);
     if (node) {
-      setCenter(
-        node.position.x + 125,
-        node.position.y + 80,
-        { duration: 800, zoom: 1.2 },
-      );
+      setCenter(node.position.x + 125, node.position.y + 80, { duration: 800, zoom: 1.2 });
     }
   };
+
+  const renderList = (title: string, items: { id: string; name: string }[]) => (
+    <>
+      <h2 className="py-6 text-sm pb-1 font-semibold border-b-2 border-[#5b4ff5]/30 mx-4 px-2">
+        {title}
+      </h2>
+      <ul>
+        {items.map(({ id, name }) => (
+          <li
+            key={id}
+            onClick={() => handleSidebarSelection(id)}
+            className="py-2 pl-4 mx-4 text-sm cursor-pointer hover:bg-[#b7babe27] rounded-md m-1"
+          >
+            {name}
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+
+  const toggleButton = (
+    <button
+      onClick={() => setIsCollapsed(!isCollapsed)}
+      className="absolute -right-12 top-1/2 -translate-y-1/2 bg-white border-1 border-[#5b4ff5] rounded-full w-9 h-9 hover:bg-[#e7e6ff] transition-all duration-300 z-40 flex items-center justify-center"
+    >
+      <span className="font-bold text-lg">
+        {isCollapsed ? "≫" : "≪"}
+      </span>
+    </button>
+  );
 
   return (
     <div className="relative flex">
       <div
         className={`transition-all duration-300 ${
-          isCollapsed ? "w-0 overflow-hidden" : "w-64"
-        } border-r border-gray-200 relative z-10 shadow-lg shadow-neutral-300`}
+          isCollapsed ? "w-0" : "w-64"
+        } border-r border-gray-200 relative z-10 top-0 shadow-lg shadow-neutral-300 overflow-hidden`}
       >
-        <div>
-          <div className="w-64">
-            {/* Fixed width container to prevent content shrinking */}
-            <h2 className="pt-6 text-sm pb-1 font-semibold border-b-2 border-[#5b4ff5]/30 mx-4 px-2">
-              Content Types
-            </h2>
-            <ul>
-              {types.map(({ id, name }) => (
-                <li
-                  key={id}
-                  onClick={() => handleSidebarSelection(id)}
-                  className="py-2 pl-6 w-full text-sm cursor-pointer  hover:bg-gradient-to-r hover:from-[#5b4ff5]/2 hover:via-[#5b4ff5]/4 hover:to-[#5b4ff5]/6"
-                >
-                  {name}
-                </li>
-              ))}
-            </ul>
-            <h2 className="pt-6 text-sm pb-1 font-semibold border-b-2 border-[#5b4ff5]/30 mx-4 px-2">Snippets</h2>
-            <ul>
-              {snippets.map(({ id, name }) => (
-                <li
-                  key={id}
-                  onClick={() => handleSidebarSelection(id)}
-                  className="py-2 pl-6 w-full text-sm cursor-pointer hover:bg-gradient-to-r hover:from-[#5b4ff5]/2 hover:via-[#5b4ff5]/4 hover:to-[#5b4ff5]/6"
-                >
-                  {name}
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div
+          className={`w-64 transition-transform duration-300 ${isCollapsed ? "-translate-x-full" : "translate-x-0"}`}
+        >
+          {renderList("Content Types", types)}
+          {renderList("Snippets", snippets)}
         </div>
       </div>
-      <button
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-[2vw] top-1/2 -translate-y-1/2 bg-white border-2 border-[#5b4ff5] rounded-full w-[1.5vw] h-[1.5vw] hover:bg-[#e7e6ff] transition-all duration-300 z-40 flex items-center justify-center"
-      >
-        <span className="font-bold text-lg">
-          {isCollapsed ? "≫" : "≪"}
-        </span>
-      </button>
+      {toggleButton}
     </div>
   );
 };
