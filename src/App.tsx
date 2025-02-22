@@ -1,14 +1,12 @@
 import "@kontent-ai/stylekit/styles/styles.css";
 
 import React, { useEffect, useState, useCallback } from "react";
-import { Sidebar } from "./components/Sidebar";
 import { Canvas } from "./components/Canvas";
 import { useAppContext } from "./contexts/AppContext";
 import { getContentTypes, getContentTypeSnippets } from "./utils/mapi";
 import { ContentTypeModels, ContentTypeSnippetModels } from "@kontent-ai/management-sdk";
 import { Loader } from "./components/Loader";
 import { ReactFlowProvider } from "reactflow";
-import { Toolbar } from "./components/Toolbar";
 import { SnippetsProvider } from "./contexts/SnippetsContext";
 
 const App: React.FC = () => {
@@ -93,20 +91,13 @@ const App: React.FC = () => {
           showSnippets={showSnippets}
           toggleSnippets={() => setShowSnippets(!showSnippets)}
         >
-          <div className="w-64 border-r border-gray-200 relative z-10 shadow-lg shadow-neutral-300">
-            <Sidebar types={contentTypes} snippets={snippets} onMenuSelect={handleNodeSelect} />
-          </div>
-          <div className="z-1">
-            <Toolbar environmentId={environmentId} />
-          </div>
-          <div className="flex-1 pt-12">
-            <Canvas
-              types={contentTypes}
-              snippets={snippets}
-              selectedNodeId={selectedNodeId}
-              onNodeSelect={handleNodeSelect}
-            />
-          </div>
+          <Canvas
+            types={contentTypes}
+            snippets={snippets}
+            selectedNodeId={selectedNodeId}
+            onNodeSelect={handleNodeSelect}
+            environmentId={environmentId}
+          />
         </SnippetsProvider>
       </ReactFlowProvider>
     </div>

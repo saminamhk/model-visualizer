@@ -7,6 +7,8 @@ import { ContentTypeElements, ContentTypeModels, ContentTypeSnippetModels } from
 import { useExpandedNodes } from "../contexts/ExpandedNodesContext";
 import { SnippetNode } from "./SnippetNode";
 import { useSnippets } from "../contexts/SnippetsContext";
+import { Toolbar } from "./Toolbar";
+import { Sidebar } from "./Sidebar";
 
 type ContentType = ContentTypeModels.ContentType;
 
@@ -101,6 +103,7 @@ type CanvasProps = {
   snippets: Array<ContentTypeSnippetModels.ContentTypeSnippet>;
   selectedNodeId: string | null;
   onNodeSelect: (nodeId: string) => void;
+  environmentId: string;
 };
 
 export const Canvas: React.FC<CanvasProps> = ({
@@ -108,6 +111,7 @@ export const Canvas: React.FC<CanvasProps> = ({
   selectedNodeId,
   snippets,
   onNodeSelect,
+  environmentId,
 }) => {
   const processedSnippets = useMemo(() => processSnippets(snippets), [snippets]);
   const processedGraph = useMemo(() => processContentTypes(types), [types]);
@@ -183,19 +187,23 @@ export const Canvas: React.FC<CanvasProps> = ({
   }, []);
 
   return (
-    <div className="w-full h-full">
-      <ReactFlow
-        nodes={showSnippets ? [...processedSnippets, ...nodes] : nodes}
-        edges={showSnippets ? [...processedGraph.edges, ...snippetEdges] : processedGraph.edges}
-        onNodesChange={onNodesChange}
-        nodeTypes={nodeTypes}
-        onNodeClick={(_, node) => onNodeSelect(node.id)}
-        fitView
-      >
-        <MiniMap pannable />
-        <Controls />
-        <Background id="background-1" color="grey" gap={20} />
-      </ReactFlow>
+    <div className="flex h-full w-full">
+      <Sidebar types={types} snippets={snippets} onMenuSelect={onNodeSelect} />
+      <div className="flex-1 w-full h-full pb-12">
+        <Toolbar environmentId={environmentId} />
+        <ReactFlow
+          nodes={showSnippets ? [...processedSnippets, ...nodes] : nodes}
+          edges={showSnippets ? [...processedGraph.edges, ...snippetEdges] : processedGraph.edges}
+          onNodesChange={onNodesChange}
+          nodeTypes={nodeTypes}
+          onNodeClick={(_, node) => onNodeSelect(node.id)}
+          fitView
+        >
+          <MiniMap pannable />
+          <Controls />
+          <Background id="background-1" color="grey" gap={20} />
+        </ReactFlow>
+      </div>
     </div>
   );
 };
