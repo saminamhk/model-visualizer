@@ -5,17 +5,28 @@ import { useNodeState } from "../../contexts/NodeStateContext";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
 import { useAppContext } from "../../contexts/AppContext";
+import IconExpand from "../icons/IconExpand";
+import IconCollapse from "../icons/IconCollapse";
+import IconArrowReturn from "../icons/IconArrowReturn";
+import IconFilePdf from "../icons/FilePdf";
+
 export const Toolbar: React.FC = () => {
   const { expandedNodes, toggleNode, resetIsolation } = useNodeState();
   const { getNodes, fitView } = useReactFlow();
-  const { showSnippets, toggleSnippets } = useEntities();
+  const { toggleSnippets } = useEntities();
   const { customApp } = useAppContext();
   const [isExporting, setIsExporting] = useState(false);
   const environmentId = customApp.context.environmentId;
 
   const handleSnippetToggle = () => {
     toggleSnippets();
-    setTimeout(() => fitView({ duration: 800 }), 50);
+    // Force all new nodes to match current expansion state
+    const allExpanded = getNodes().every(node => expandedNodes.has(node.id));
+    setTimeout(() => {
+      const nodes = getNodes(); // Get fresh nodes after snippets toggle
+      nodes.forEach(node => toggleNode(node.id, allExpanded));
+      fitView({ duration: 800 });
+    }, 50);
   };
 
   const handleExpandCollapse = () => {
@@ -53,7 +64,9 @@ export const Toolbar: React.FC = () => {
 
     try {
       const flowElement = document.querySelector(".react-flow");
-      if (flowElement) await exportToPdf(flowElement as HTMLElement);
+      if (flowElement) {
+        await exportToPdf(flowElement as HTMLElement);
+      }
     } catch (error) {
       console.error("Export failed:", error);
     } finally {
@@ -66,26 +79,63 @@ export const Toolbar: React.FC = () => {
     return expandedNodes.size === nodes.length;
   };
 
-  const toolbarButton = (onClick: () => void, title: string, icon: string) => (
+  const toolbarButton = (onClick: () => void, title: string, content: React.ReactNode, className?: string) => (
     <button
       onClick={onClick}
-      className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+      className={`px-4 py-2 button ${className || "purple secondary"}`}
       title={title}
     >
-      {icon}
+      {content}
     </button>
   );
 
+  const toolbarCheckbox = (onClick: () => void, id: string, content: string, className?: string) => (
+    <span className={`${className || ""}`}>
+      <label className={`checkbox`}>
+        <input type="checkbox" id={id} onClick={onClick} />
+        <span className="checkmark"></span>
+        <span>{content}</span>
+      </label>
+    </span>
+  );
+
   return (
-    <div className="flex items-center gap-2 px-4 py-1 h-[50px] border-b border-gray-200">
+    <div className="flex items-center gap-2 px-4 h-[56px] border-b border-gray-200">
       {toolbarButton(
         handleExpandCollapse,
-        "Expand/Collapse All",
-        isAllExpanded() ? "➖ Collapse All" : "➕ Expand All",
+        isAllExpanded() ? "Collapse All" : "Expand All",
+        <div className="flex items-center gap-2 justify-around">
+          {isAllExpanded() ? <IconCollapse /> : <IconExpand />}
+          <span>{isAllExpanded() ? "Collapse All" : "Expand All"}</span>
+        </div>,
+        "purple secondary min-w-[170px]",
       )}
-      {toolbarButton(handleReset, "Reset View", "🔄 Reset View")}
-      {toolbarButton(handleExport, "Export to PDF", isExporting ? "⏳" : "📑 Export to PDF")}
-      {toolbarButton(handleSnippetToggle, "Toggle Snippets", showSnippets ? "📌 Hide Snippets" : "📌 Show Snippets")}
+      {toolbarButton(
+        handleReset,
+        "Reset View",
+        <div className="flex items-center gap-2">
+          <IconArrowReturn /> <span>Reset View</span>
+        </div>,
+      )}
+      {toolbarCheckbox(
+        handleSnippetToggle,
+        "toggleSnippets",
+        "Include Snippets",
+        "pl-4",
+      )}
+      <div className="flex-1">
+      </div>
+      {toolbarButton(
+        handleExport,
+        "Export to PDF",
+        <div className="flex items-center gap-2">
+          <span className="text-base pt-1">
+            <IconFilePdf />
+          </span>
+          <span>{isExporting ? "Exporting..." : "Export to PDF"}</span>
+        </div>,
+        "green",
+      )}
     </div>
   );
 };
