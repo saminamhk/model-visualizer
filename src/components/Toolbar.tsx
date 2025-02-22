@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { useExpandedNodes } from "../contexts/ExpandedNodesContext";
 import { useReactFlow } from "reactflow";
+import { useEntities } from "../contexts/EntityContext";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
-import { useSnippets } from "../contexts/SnippetsContext";
-
-export const Toolbar: React.FC<{ environmentId: string }> = ({ environmentId }) => {
+import { useAppContext } from "../contexts/AppContext";
+export const Toolbar: React.FC = () => {
   const { expandedNodes, toggleNode } = useExpandedNodes();
   const { getNodes, fitView, setNodes } = useReactFlow();
-  const { showSnippets, toggleSnippets } = useSnippets();
+  const { showSnippets, toggleSnippets } = useEntities();
+  const { customApp } = useAppContext();
   const [isExporting, setIsExporting] = useState(false);
+  const environmentId = customApp.context.environmentId;
 
   const handleSnippetToggle = () => {
     toggleSnippets();

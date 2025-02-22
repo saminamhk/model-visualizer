@@ -1,36 +1,52 @@
 import { ContentTypeElements } from "@kontent-ai/management-sdk";
 import dagre from "dagre";
 import { Node, Edge } from "reactflow";
+import { Element } from "./mapi";
+import { ContentTypeNode } from "../components/ContentTypeNode";
+import { SnippetNode } from "../components/SnippetNode";
 
 const nodeWidth = 172;
 
-type ElementType = ContentTypeElements.ContentTypeElementModel["type"];
-
-type ElementTypeLabels = {
-  [K in ElementType]: string;
+export const nodeBaseStyle: React.CSSProperties = {
+  paddingTop: 5,
+  paddingBottom: 5,
+  border: "1px solid #ddd",
+  borderRadius: 10,
+  cursor: "pointer",
+  position: "relative",
+  boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
 };
 
-export const elementTypeLabels: ElementTypeLabels = {
-  text: "Text",
-  rich_text: "Rich Text",
-  number: "Number",
-  multiple_choice: "Multiple Choice",
-  date_time: "Date & Time",
-  asset: "Asset",
-  modular_content: "Linked Items",
-  subpages: "Subpages",
-  url_slug: "URL Slug",
-  guidelines: "Guidelines",
-  taxonomy: "Taxonomy",
-  custom: "Custom",
-  snippet: "Content Type Snippet",
+export const nodeTypes = {
+  contentType: ContentTypeNode,
+  snippet: SnippetNode,
+} as const;
+
+export type ProcessedNode = {
+  id: string;
+  type: string;
+  data: {
+    id: string;
+    label: string;
+    elements: ContentTypeElements.ContentTypeElementModel[];
+  };
+  position: { x: number; y: number };
 };
 
-export const elementTypeMap: ReadonlyMap<ElementType, string> = new Map(
-  Object.entries(elementTypeLabels) as [ElementType, string][],
-);
+export type ProcessedEdge = {
+  id: string;
+  source: string;
+  target: string;
+  sourceHandle: string;
+  targetHandle: string;
+};
 
-type Element = ContentTypeElements.ContentTypeElementModel;
+export type ProcessedGraph = {
+  typeNodes: ProcessedNode[];
+  typeEdges: ProcessedEdge[];
+  snippetNodes: ProcessedNode[];
+  snippetEdges: ProcessedEdge[];
+};
 
 type NodeCalculation = {
   height: number;
@@ -126,7 +142,7 @@ export const getLayoutedElements = (
 };
 
 export const isRelationshipElement = (
-  element: ContentTypeElements.ContentTypeElementModel,
+  element: Element,
 ): element is
   | ContentTypeElements.ILinkedItemsElement
   | ContentTypeElements.ISubpagesElement

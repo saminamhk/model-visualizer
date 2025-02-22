@@ -1,9 +1,48 @@
-import { ContentTypeModels, ContentTypeSnippetModels } from "@kontent-ai/management-sdk";
+import { ContentTypeElements, ContentTypeModels, ContentTypeSnippetModels } from "@kontent-ai/management-sdk";
 
-export interface ApiResponse<T> {
+export type ApiResponse<T> = {
   data?: T;
   error?: string;
-}
+};
+
+export type Element = ContentTypeElements.ContentTypeElementModel;
+
+export type ContentType = ContentTypeModels.ContentType;
+
+export type Snippet = ContentTypeSnippetModels.ContentTypeSnippet;
+
+export type SnippetElement = ContentTypeElements.ISnippetElement;
+
+export type ElementType = Element["type"];
+
+export type NamedElement = Exclude<
+  ContentTypeElements.ContentTypeElementModel,
+  ContentTypeElements.IGuidelinesElement | ContentTypeElements.ISnippetElement
+>;
+
+type ElementTypeLabels = {
+  [K in ElementType]: string;
+};
+
+export const elementTypeLabels: ElementTypeLabels = {
+  text: "Text",
+  rich_text: "Rich Text",
+  number: "Number",
+  multiple_choice: "Multiple Choice",
+  date_time: "Date & Time",
+  asset: "Asset",
+  modular_content: "Linked Items",
+  subpages: "Subpages",
+  url_slug: "URL Slug",
+  guidelines: "Guidelines",
+  taxonomy: "Taxonomy",
+  custom: "Custom",
+  snippet: "Snippet",
+};
+
+export const elementTypeMap: ReadonlyMap<ElementType, string> = new Map(
+  Object.entries(elementTypeLabels) as [ElementType, string][],
+);
 
 type MapiAction = "getContentTypes" | "getContentTypeSnippets";
 
