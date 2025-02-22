@@ -6,6 +6,7 @@ import { SourceHandle } from "./Handles";
 import { ElementRow } from "./ElementRow";
 import { useNodeState } from "../../contexts/NodeStateContext";
 import { nodeBaseStyle } from "../../utils/layout";
+import IconSeparate from "../icons/IconSeparate";
 
 export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
   data,
@@ -39,7 +40,7 @@ export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
         <ActionButton
           onClick={handleIsolate}
           title="Show related nodes"
-          icon="🔍"
+          iconComponent={<IconSeparate />}
         />
       </div>
       {isExpanded

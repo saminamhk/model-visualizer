@@ -52,7 +52,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ types, snippets, onMenuSelect 
           isCollapsed ? "w-0" : "w-64"
         } border-r border-gray-200 relative z-10 top-0 shadow-lg shadow-neutral-300 overflow-hidden bg-white`}
       >
-        <div className="sticky top-0 z-20 bg-white border-b border-gray-200 px-4 py-1 content-center h-[56px]">
+        <div className="sticky top-0 z-20 bg-white border-b border-gray-200 px-4 py-1 content-center h-14">
           <input
             type="text"
             placeholder="Search..."

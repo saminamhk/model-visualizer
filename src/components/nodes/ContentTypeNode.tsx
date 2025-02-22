@@ -6,6 +6,7 @@ import { ContentTypeNodeData, getFilteredElementsData, nodeBaseStyle } from "../
 import { ActionButton } from "./ActionButton";
 import { ElementRow } from "./ElementRow";
 import { useNodeState } from "../../contexts/NodeStateContext";
+import IconSchemeConnected from "../icons/IconSchemeConnected";
 
 export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
   data,
@@ -37,7 +38,7 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
         <ActionButton
           onClick={handleIsolate}
           title="Show related nodes"
-          icon="🔍"
+          iconComponent={<IconSchemeConnected />}
         />
       </div>
       <TargetHandle id="target" />

@@ -35,7 +35,7 @@ export const Canvas: React.FC<CanvasProps> = ({
   return (
     <div className="flex h-full w-full">
       <Sidebar types={contentTypes} snippets={snippets} onMenuSelect={onNodeSelect} />
-      <div className="flex-1 w-full h-full pb-12">
+      <div className="flex-1 w-full h-full pb-14">
         <Toolbar />
         <ReactFlow
           defaultNodes={[]}
