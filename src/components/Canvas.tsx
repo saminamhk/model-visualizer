@@ -1,13 +1,13 @@
 import React from "react";
-import ReactFlow, { MiniMap, Controls, Background } from "reactflow";
+import ReactFlow, { MiniMap, Controls, Background, applyNodeChanges, useReactFlow } from "reactflow";
 import "reactflow/dist/style.css";
-import { useExpandedNodes } from "../contexts/ExpandedNodesContext";
 import { useEntities } from "../contexts/EntityContext";
 import { useGraphData } from "../hooks/useGraphData";
-import { useNodeState } from "../hooks/useNodeState";
 import { Toolbar } from "./Toolbar";
 import { Sidebar } from "./Sidebar";
 import { nodeTypes } from "../utils/layout";
+import { useNodeState } from "../contexts/NodeStateContext";
+import { useNodeLayout } from "../hooks/useNodeLayout";
 
 type CanvasProps = {
   selectedNodeId: string | null;
@@ -18,15 +18,18 @@ export const Canvas: React.FC<CanvasProps> = ({
   selectedNodeId,
   onNodeSelect,
 }) => {
-  const { expandedNodes } = useExpandedNodes();
-  const { showSnippets, contentTypes, snippets } = useEntities();
-
+  const { contentTypes, snippets, showSnippets } = useEntities();
+  const { expandedNodes, isolatedNodeId } = useNodeState();
+  const { setNodes } = useReactFlow();
   const processedGraph = useGraphData(contentTypes, snippets);
-  const { nodes, onNodesChange } = useNodeState(
+
+  useNodeLayout(
     processedGraph,
     selectedNodeId,
     expandedNodes,
+    isolatedNodeId,
     showSnippets,
+    setNodes,
   );
 
   return (
@@ -35,11 +38,11 @@ export const Canvas: React.FC<CanvasProps> = ({
       <div className="flex-1 w-full h-full pb-12">
         <Toolbar />
         <ReactFlow
-          nodes={nodes}
+          defaultNodes={[]}
           edges={showSnippets
             ? [...processedGraph.typeEdges, ...processedGraph.snippetEdges]
             : processedGraph.typeEdges}
-          onNodesChange={onNodesChange}
+          onNodesChange={(changes) => setNodes(nodes => applyNodeChanges(changes, nodes))}
           nodeTypes={nodeTypes}
           onNodeClick={(_, node) => onNodeSelect(node.id)}
           fitView

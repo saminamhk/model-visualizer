@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { useExpandedNodes } from "../contexts/ExpandedNodesContext";
 import { useReactFlow } from "reactflow";
 import { useEntities } from "../contexts/EntityContext";
+import { useNodeState } from "../contexts/NodeStateContext";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
 import { useAppContext } from "../contexts/AppContext";
 export const Toolbar: React.FC = () => {
-  const { expandedNodes, toggleNode } = useExpandedNodes();
-  const { getNodes, fitView, setNodes } = useReactFlow();
+  const { expandedNodes, toggleNode, resetIsolation } = useNodeState();
+  const { getNodes, fitView } = useReactFlow();
   const { showSnippets, toggleSnippets } = useEntities();
   const { customApp } = useAppContext();
   const [isExporting, setIsExporting] = useState(false);
@@ -26,7 +26,7 @@ export const Toolbar: React.FC = () => {
   };
 
   const handleReset = () => {
-    setNodes(nodes => nodes.map(node => ({ ...node, hidden: false })));
+    resetIsolation();
     getNodes().forEach(node => toggleNode(node.id, false));
     setTimeout(() => fitView({ duration: 800 }), 50);
   };

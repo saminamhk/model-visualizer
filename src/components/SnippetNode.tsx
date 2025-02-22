@@ -1,19 +1,26 @@
 import React from "react";
-import { NodeProps } from "reactflow";
+import { NodeProps, useReactFlow } from "reactflow";
 import { SnippetNodeData } from "../utils/layout";
 import { ActionButton } from "./ActionButton";
 import { SourceHandle } from "./Handles";
 import { ElementRow } from "./ElementRow";
-import { useNodeExpansion } from "../hooks/useNodeExpansion";
-import { useNodeIsolation } from "../hooks/useNodeIsolation";
+import { useNodeState } from "../contexts/NodeStateContext";
 import { nodeBaseStyle } from "../utils/layout";
 
 export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
   data,
   selected,
 }) => {
-  const { isExpanded, toggleExpansion } = useNodeExpansion(data.id);
-  const isolateNode = useNodeIsolation(data.id);
+  const { expandedNodes, toggleNode, isolateNode } = useNodeState();
+  const { fitView } = useReactFlow();
+
+  const isExpanded = expandedNodes.has(data.id);
+
+  const handleIsolate = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    isolateNode(data.id);
+    setTimeout(() => fitView({ duration: 800 }), 50);
+  };
 
   const containerStyle: React.CSSProperties = {
     ...nodeBaseStyle,
@@ -26,11 +33,11 @@ export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
   );
 
   return (
-    <div onClick={toggleExpansion} style={containerStyle}>
+    <div onClick={() => toggleNode(data.id)} style={containerStyle}>
       <div className="flex justify-between items-center px-2 py-1">
         <div className="font-bold">{data.label}</div>
         <ActionButton
-          onClick={isolateNode}
+          onClick={handleIsolate}
           title="Show related nodes"
           icon="🔍"
         />

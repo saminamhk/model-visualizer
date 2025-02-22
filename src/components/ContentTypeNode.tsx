@@ -1,21 +1,28 @@
 import React from "react";
-import { NodeProps } from "reactflow";
+import { NodeProps, useReactFlow } from "reactflow";
 import { SourceHandle, TargetHandle } from "./Handles";
 import { useEntities } from "../contexts/EntityContext";
 import { ContentTypeNodeData, getFilteredElementsData, nodeBaseStyle } from "../utils/layout";
 import { ActionButton } from "./ActionButton";
 import { ElementRow } from "./ElementRow";
-import { useNodeExpansion } from "../hooks/useNodeExpansion";
-import { useNodeIsolation } from "../hooks/useNodeIsolation";
+import { useNodeState } from "../contexts/NodeStateContext";
 
 export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
   data,
   selected,
 }) => {
-  const { isExpanded, toggleExpansion } = useNodeExpansion(data.id);
-  const isolateNode = useNodeIsolation(data.id);
+  const { expandedNodes, toggleNode, isolateNode } = useNodeState();
+  const { fitView } = useReactFlow();
   const { filteredElements } = getFilteredElementsData(data);
   const { snippets } = useEntities();
+
+  const isExpanded = expandedNodes.has(data.id);
+
+  const handleIsolate = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    isolateNode(data.id);
+    setTimeout(() => fitView({ duration: 800 }), 50);
+  };
 
   const containerStyle: React.CSSProperties = {
     ...nodeBaseStyle,
@@ -24,12 +31,12 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
   };
 
   return (
-    <div onClick={toggleExpansion} style={containerStyle}>
+    <div onClick={() => toggleNode(data.id)} style={containerStyle}>
       <div className="flex justify-between items-center px-2 py-1">
         <div className="font-bold">{data.label}</div>
         <ActionButton
-          onClick={isolateNode}
-          title="Isolate related nodes"
+          onClick={handleIsolate}
+          title="Show related nodes"
           icon="🔍"
         />
       </div>

@@ -1,10 +1,9 @@
 import { useMemo } from "react";
-import { isRelationshipElement, ProcessedEdge } from "../utils/layout";
+import { isRelationshipElement, ProcessedEdge, ProcessedGraph } from "../utils/layout";
 import { Element, ContentType, Snippet } from "../utils/mapi";
-import { ProcessedGraph } from "../utils/layout";
 
-const createNodes = (contentTypes: ContentType[], snippets: Snippet[]) => {
-  const typeNodes = contentTypes.map((type) => ({
+const createNodes = (types: ContentType[], snippets: Snippet[]) => {
+  const typeNodes = types.map((type) => ({
     id: type.id,
     type: "contentType",
     data: {
@@ -12,13 +11,17 @@ const createNodes = (contentTypes: ContentType[], snippets: Snippet[]) => {
       label: type.name,
       elements: type.elements,
       selfReferences: type.elements
-        .filter(el => isRelationshipElement(el) && el.allowed_content_types?.some(t => t.id === type.id))
-        .map(el => el.id),
+        .filter(
+          (el: Element) =>
+            isRelationshipElement(el)
+            && el.allowed_content_types?.some((allowed) => allowed.id === type.id),
+        )
+        .map((el: Element) => el.id),
     },
     position: { x: 0, y: 0 },
   }));
 
-  const snippetNodes = snippets.map(snippet => ({
+  const snippetNodes = snippets.map((snippet) => ({
     id: snippet.id,
     type: "snippet",
     data: {
@@ -32,67 +35,47 @@ const createNodes = (contentTypes: ContentType[], snippets: Snippet[]) => {
   return { typeNodes, snippetNodes };
 };
 
-const createEdges = (contentTypes: ContentType[], snippets: Snippet[]) => {
-  const { typeEdges } = contentTypes.reduce(
-    (acc, sourceType) => {
-      sourceType.elements.forEach((element: Element) => {
-        if (isRelationshipElement(element)) {
-          element.allowed_content_types?.forEach((allowed) => {
-            const targetId = allowed.id;
-            if (sourceType.id !== targetId) {
-              const edgeKey = `${sourceType.id}-${element.id}-${targetId}`;
-              if (!acc.edgeSet.has(edgeKey)) {
-                acc.edgeSet.add(edgeKey);
-                acc.typeEdges.push({
-                  id: edgeKey,
-                  source: sourceType.id,
-                  target: targetId ?? "",
-                  sourceHandle: `source-${element.id}`,
-                  targetHandle: "target",
-                });
-              }
-            }
-          });
-        }
-      });
-      return acc;
-    },
-    { typeEdges: [] as ProcessedEdge[], edgeSet: new Set<string>() },
-  );
+const createEdgesFromSources = (
+  sources: (ContentType | Snippet)[],
+  checkSelfReference: boolean,
+): ProcessedEdge[] => {
+  const edgeSet = new Set<string>();
+  const edges: ProcessedEdge[] = [];
 
-  const { snippetEdges } = snippets.reduce(
-    (acc, snippet) => {
-      snippet.elements.forEach(element => {
-        if (isRelationshipElement(element)) {
-          element.allowed_content_types?.forEach(allowed => {
-            acc.edgeSet.add(`${snippet.id}-${element.id}-${allowed.id}`);
-            acc.snippetEdges.push({
-              id: `${snippet.id}-${element.id}-${allowed.id}`,
-              source: snippet.id,
-              sourceHandle: `source-${element.id}`,
+  sources.forEach((source) => {
+    source.elements.forEach((element: Element) => {
+      if (isRelationshipElement(element)) {
+        element.allowed_content_types?.forEach((allowed) => {
+          // Optionally skip self-references if desired.
+          if (checkSelfReference && source.id === allowed.id) return;
+          const edgeKey = `${source.id}-${element.id}-${allowed.id}`;
+          if (!edgeSet.has(edgeKey)) {
+            edgeSet.add(edgeKey);
+            edges.push({
+              id: edgeKey,
+              source: source.id,
               target: allowed.id ?? "",
+              sourceHandle: `source-${element.id}`,
               targetHandle: "target",
             });
-          });
-        }
-      });
-      return acc;
-    },
-    { snippetEdges: [] as ProcessedEdge[], edgeSet: new Set<string>() },
-  );
+          }
+        });
+      }
+    });
+  });
 
-  return { typeEdges, snippetEdges };
+  return edges;
 };
 
 export const useGraphData = (types: ContentType[], snippets: Snippet[]): ProcessedGraph => {
   return useMemo(() => {
     const { typeNodes, snippetNodes } = createNodes(types, snippets);
-    const { typeEdges, snippetEdges } = createEdges(types, snippets);
-
+    const typeEdges = createEdgesFromSources(types, true);
+    const snippetEdges = createEdgesFromSources(snippets, false);
     return {
       typeNodes,
-      typeEdges,
       snippetNodes,
+      typeEdges,
       snippetEdges,
     };
   }, [types, snippets]);

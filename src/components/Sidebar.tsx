@@ -1,6 +1,6 @@
 import { ContentTypeModels, ContentTypeSnippetModels } from "@kontent-ai/management-sdk";
 import React, { useState } from "react";
-import { useExpandedNodes } from "../contexts/ExpandedNodesContext";
+import { useNodeState } from "../contexts/NodeStateContext";
 import { useReactFlow } from "reactflow";
 
 type ContentType = ContentTypeModels.ContentType;
@@ -13,16 +13,15 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ types, snippets, onMenuSelect }) => {
-  const { toggleNode } = useExpandedNodes();
+  const { toggleNode } = useNodeState();
   const { getNodes, setCenter } = useReactFlow();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleSidebarSelection = (typeId: string) => {
     onMenuSelect(typeId);
-    toggleNode(typeId, true);
-
     const node = getNodes().find(n => n.id === typeId);
     if (node) {
+      toggleNode(typeId, true);
       setCenter(node.position.x + 125, node.position.y + 80, { duration: 800, zoom: 1.2 });
     }
   };
