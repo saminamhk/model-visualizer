@@ -53,6 +53,7 @@ export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
                 isLast={i === namedElements.length - 1}
               />
             ))}
+            <SourceHandle id="source" />
           </div>
         )
         : <SourceHandle id="source" />}

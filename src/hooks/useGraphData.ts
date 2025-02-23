@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { isRelationshipElement, ProcessedEdge, ProcessedGraph } from "../utils/layout";
+import { isRelationshipElement, isSnippetElement, ProcessedEdge, ProcessedGraph } from "../utils/layout";
 import { Element, ContentType, Snippet } from "../utils/mapi";
 
 const createNodes = (types: ContentType[], snippets: Snippet[]) => {
@@ -60,6 +60,19 @@ const createEdgesFromSources = (
             });
           }
         });
+      }
+      if (isSnippetElement(element)) {
+        const edgeKey = `${source.id}-${element.id}-${element.snippet.id}`;
+        if (!edgeSet.has(edgeKey)) {
+          edgeSet.add(edgeKey);
+          edges.push({
+            id: edgeKey,
+            source: element.snippet.id ?? "",
+            target: source.id ?? "", // snippet edges are created in reverse
+            sourceHandle: "source",
+            targetHandle: `target-${element.id}`,
+          });
+        }
       }
     });
   });
