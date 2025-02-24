@@ -9,7 +9,7 @@ import { useContentModel } from "./hooks/useContentModel";
 
 const App: React.FC = () => {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-  const { contentTypes, snippets, showSnippets, toggleSnippets, loading, error } = useContentModel();
+  const { contentTypes, snippets, loading, error } = useContentModel();
 
   const handleNodeSelect = useCallback((nodeId: string) => {
     setSelectedNodeId(nodeId);
@@ -35,8 +35,6 @@ const App: React.FC = () => {
       <EntityProvider
         contentTypes={contentTypes}
         snippets={snippets}
-        showSnippets={showSnippets}
-        toggleSnippets={toggleSnippets}
       >
         <Canvas selectedNodeId={selectedNodeId} onNodeSelect={handleNodeSelect} />
       </EntityProvider>

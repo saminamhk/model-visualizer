@@ -4,8 +4,6 @@ import { ContentTypeModels, ContentTypeSnippetModels } from "@kontent-ai/managem
 type EntityContextType = {
   contentTypes: ContentTypeModels.ContentType[];
   snippets: ContentTypeSnippetModels.ContentTypeSnippet[];
-  showSnippets: boolean;
-  toggleSnippets: () => void;
   getEntityById: (id: string) => {
     type: "contentType" | "snippet";
     name: string;
@@ -19,9 +17,7 @@ export const EntityProvider: React.FC<{
   children: React.ReactNode;
   contentTypes: ContentTypeModels.ContentType[];
   snippets: ContentTypeSnippetModels.ContentTypeSnippet[];
-  showSnippets: boolean;
-  toggleSnippets: () => void;
-}> = ({ children, contentTypes, snippets, showSnippets, toggleSnippets }) => {
+}> = ({ children, contentTypes, snippets }) => {
   const getEntityById = (id: string) => {
     const contentType = contentTypes.find(t => t.id === id);
     if (contentType) return { type: "contentType" as const, name: contentType.name, data: contentType };
@@ -37,8 +33,6 @@ export const EntityProvider: React.FC<{
       value={{
         contentTypes,
         snippets,
-        showSnippets,
-        toggleSnippets,
         getEntityById,
       }}
     >

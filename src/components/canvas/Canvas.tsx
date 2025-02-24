@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactFlow, { MiniMap, Controls, Background, applyNodeChanges, useReactFlow } from "reactflow";
 import "reactflow/dist/style.css";
 import { useEntities } from "../../contexts/EntityContext";
@@ -18,10 +18,11 @@ export const Canvas: React.FC<CanvasProps> = ({
   selectedNodeId,
   onNodeSelect,
 }) => {
-  const { contentTypes, snippets, showSnippets } = useEntities();
+  const { contentTypes, snippets } = useEntities();
   const { expandedNodes, isolatedNodeId } = useNodeState();
   const { setNodes } = useReactFlow();
   const processedGraph = useGraphData(contentTypes, snippets);
+  const [showSnippets, setShowSnippets] = useState(false);
 
   useNodeLayout(
     processedGraph,
@@ -36,12 +37,10 @@ export const Canvas: React.FC<CanvasProps> = ({
     <div className="flex h-full w-full">
       <Sidebar types={contentTypes} snippets={snippets} onMenuSelect={onNodeSelect} />
       <div className="flex-1 w-full h-full pb-14">
-        <Toolbar />
+        <Toolbar onToggleSnippets={() => setShowSnippets(!showSnippets)} />
         <ReactFlow
           defaultNodes={[]}
-          edges={showSnippets
-            ? [...processedGraph.typeEdges, ...processedGraph.snippetEdges]
-            : processedGraph.typeEdges}
+          edges={processedGraph.edges}
           onNodesChange={(changes) => setNodes(nodes => applyNodeChanges(changes, nodes))}
           nodeTypes={nodeTypes}
           onNodeClick={(_, node) => onNodeSelect(node.id)}

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useReactFlow } from "reactflow";
-import { useEntities } from "../../contexts/EntityContext";
 import { useNodeState } from "../../contexts/NodeStateContext";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
@@ -10,21 +9,20 @@ import IconCollapse from "../icons/IconCollapse";
 import IconArrowReturn from "../icons/IconArrowReturn";
 import IconFilePdf from "../icons/IconFilePdf";
 
-export const Toolbar: React.FC = () => {
+type ToolbarProps = {
+  onToggleSnippets: () => void;
+};
+
+export const Toolbar: React.FC<ToolbarProps> = ({ onToggleSnippets }) => {
   const { expandedNodes, toggleNode, resetIsolation } = useNodeState();
   const { getNodes, fitView } = useReactFlow();
-  const { toggleSnippets } = useEntities();
   const { customApp } = useAppContext();
   const [isExporting, setIsExporting] = useState(false);
   const environmentId = customApp.context.environmentId;
 
   const handleSnippetToggle = () => {
-    toggleSnippets();
-    // Force all new nodes to match current expansion state
-    const allExpanded = getNodes().every(node => expandedNodes.has(node.id));
+    onToggleSnippets();
     setTimeout(() => {
-      const nodes = getNodes(); // Get fresh nodes after snippets toggle
-      nodes.forEach(node => toggleNode(node.id, allExpanded));
       fitView({ duration: 800 });
     }, 50);
   };

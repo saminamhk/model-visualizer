@@ -12,6 +12,7 @@ export const useNodeLayout = (
   setNodes: (nodes: Node[]) => void,
 ) => {
   useEffect(() => {
+    console.log("useNodeLayout called");
     const typeNodes = processedGraph.typeNodes.map(node => ({
       ...node,
       selected: node.id === selectedNodeId,
@@ -19,11 +20,13 @@ export const useNodeLayout = (
         ...node.data,
         isExpanded: expandedNodes.has(node.id),
       },
-      hidden: isolatedNodeId ? !isNodeRelated(node.id, isolatedNodeId, processedGraph.typeEdges) : false,
+      hidden: isolatedNodeId ? !isNodeRelated(node.id, isolatedNodeId, processedGraph.edges) : false,
     }));
 
+    const typeEdges = processedGraph.edges.filter(edge => edge.edgeType === "contentType");
+
     if (!showSnippets) {
-      setNodes(getLayoutedElements(typeNodes, processedGraph.typeEdges).nodes);
+      setNodes(getLayoutedElements(typeNodes, typeEdges).nodes);
       return;
     }
 
@@ -35,21 +38,12 @@ export const useNodeLayout = (
         isExpanded: expandedNodes.has(node.id),
       },
       hidden: isolatedNodeId
-        ? !isNodeRelated(node.id, isolatedNodeId, [...processedGraph.typeEdges, ...processedGraph.snippetEdges])
+        ? !isNodeRelated(node.id, isolatedNodeId, processedGraph.edges)
         : false,
     }));
 
-    const allNodes = [
-      ...getLayoutedElements(typeNodes, processedGraph.typeEdges).nodes,
-      ...getLayoutedElements(snippetNodes, processedGraph.snippetEdges, "LR").nodes.map(node => ({
-        ...node,
-        position: {
-          x: node.position.x - 300,
-          y: node.position.y,
-        },
-      })),
-    ];
 
-    setNodes(allNodes);
-  }, [processedGraph, selectedNodeId, expandedNodes, isolatedNodeId, showSnippets, setNodes]);
+
+    setNodes(getLayoutedElements([...typeNodes, ...snippetNodes], processedGraph.edges).nodes);
+  }, [isolatedNodeId, showSnippets, setNodes]);
 };

@@ -6,7 +6,6 @@ export const useContentModel = () => {
   const { customApp } = useAppContext();
   const [contentTypes, setContentTypes] = useState<ContentType[]>([]);
   const [snippets, setSnippets] = useState<Snippet[]>([]);
-  const [showSnippets, setShowSnippets] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<{ description: string; code: string } | null>(null);
 
@@ -37,8 +36,6 @@ export const useContentModel = () => {
   return {
     contentTypes,
     snippets,
-    showSnippets,
-    toggleSnippets: () => setShowSnippets(prev => !prev),
     loading,
     error,
   };

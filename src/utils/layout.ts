@@ -39,26 +39,31 @@ export type ProcessedEdge = {
   target: string;
   sourceHandle: string;
   targetHandle: string;
+  edgeType: "contentType" | "snippet";
 };
 
 export type ProcessedGraph = {
   typeNodes: ProcessedNode[];
-  typeEdges: ProcessedEdge[];
   snippetNodes: ProcessedNode[];
-  snippetEdges: ProcessedEdge[];
+  edges: ProcessedEdge[];
 };
 
-export type ContentTypeNodeData = {
+type NodeData = {
   id: string;
   label: string;
-  elements: Element[];
-  selfReferences: string[];
   isExpanded?: boolean;
 };
 
-export type SnippetNodeData = Omit<ContentTypeNodeData, "selfReferences">;
+export type ContentTypeNodeData = NodeData & {
+  elements: Element[];
+  selfReferences: string[];
+};
 
-export const calculateNodeHeight = (data: ContentTypeNodeData) => {
+export type SnippetNodeData = NodeData & {
+  elements: Element[];
+};
+
+export const calculateNodeHeight = (data: ContentTypeNodeData | SnippetNodeData) => {
   const filteredElements = data.elements.filter(element => element.type !== "guidelines");
   const baseNodeHeight = 42;
   const elementHeight = 24;
