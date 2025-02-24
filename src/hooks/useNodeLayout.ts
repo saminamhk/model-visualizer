@@ -44,7 +44,7 @@ export const useNodeLayout = (
       ...getLayoutedElements(snippetNodes, processedGraph.snippetEdges, "LR").nodes.map(node => ({
         ...node,
         position: {
-          x: node.position.x - 500,
+          x: node.position.x - 300,
           y: node.position.y,
         },
       })),

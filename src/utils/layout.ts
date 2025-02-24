@@ -1,7 +1,7 @@
 import { ContentTypeElements } from "@kontent-ai/management-sdk";
 import dagre from "dagre";
 import { Node, Edge } from "reactflow";
-import { Element } from "./mapi";
+import { Element, SnippetElement } from "./mapi";
 import { ContentTypeNode } from "../components/nodes/ContentTypeNode";
 import { SnippetNode } from "../components/nodes/SnippetNode";
 
@@ -48,47 +48,22 @@ export type ProcessedGraph = {
   snippetEdges: ProcessedEdge[];
 };
 
-type NodeCalculation = {
-  height: number;
-  filteredElements: Element[];
-};
-
 export type ContentTypeNodeData = {
   id: string;
   label: string;
   elements: Element[];
-  isExpanded?: boolean;
-  selfReferences: string[]; // Array of element IDs that self-reference
-};
-
-export type SnippetNodeData = {
-  id: string;
-  label: string;
-  elements: Element[];
+  selfReferences: string[];
   isExpanded?: boolean;
 };
 
-// Helper to calculate node height and filter elements
-export const getFilteredElementsData = (data: ContentTypeNodeData): NodeCalculation => {
+export type SnippetNodeData = Omit<ContentTypeNodeData, "selfReferences">;
+
+export const calculateNodeHeight = (data: ContentTypeNodeData) => {
   const filteredElements = data.elements.filter(element => element.type !== "guidelines");
+  const baseNodeHeight = 42;
+  const elementHeight = 24;
 
-  if (!data.isExpanded) {
-    return {
-      height: 36, // Base height for collapsed node
-      filteredElements,
-    };
-  }
-
-  // Calculate expanded height:
-  // - Header: 36px
-  // - Each element: 28px (including border)
-  // - Padding: 16px (8px top + 8px bottom)
-  const elementsHeight = filteredElements.length * 28;
-
-  return {
-    height: 36 + elementsHeight + 16,
-    filteredElements,
-  };
+  return data.isExpanded ? baseNodeHeight + filteredElements.length * elementHeight : baseNodeHeight;
 };
 
 export const getLayoutedElements = (
@@ -96,25 +71,23 @@ export const getLayoutedElements = (
   edges: Edge[],
   direction: "TB" | "LR" = "LR",
 ) => {
+  console.log("getLayoutedElements called");
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
-
-  const isSnippet = (node: Node) => node.type === "snippet";
 
   dagreGraph.setGraph({
     rankdir: direction,
     nodesep: 50,
     ranksep: 200,
-    align: "UL",
+    align: "UL", // UL, UR, DL, DR
+    ranker: "tight-tree", // network-simplex, tight-tree, longest-path
   });
 
-  // Add nodes to graph with type-specific handling
   nodes.forEach((node) => {
-    const { height } = getFilteredElementsData(node.data);
+    const height = calculateNodeHeight(node.data);
     dagreGraph.setNode(node.id, {
       width: nodeWidth,
       height: height,
-      rank: isSnippet(node) ? 0 : 1, // Place snippets in first rank
     });
   });
 
@@ -127,7 +100,7 @@ export const getLayoutedElements = (
   return {
     nodes: nodes.map((node) => {
       const nodeWithPosition = dagreGraph.node(node.id);
-      const { height } = getFilteredElementsData(node.data);
+      const height = calculateNodeHeight(node.data);
 
       return {
         ...node,
@@ -160,4 +133,8 @@ export const isNodeRelated = (nodeId: string, targetId: string, edges: Edge[]): 
     (edge.source === nodeId && edge.target === targetId)
     || (edge.target === nodeId && edge.source === targetId)
   );
+};
+
+export const isSnippetElement = (element: Element): element is SnippetElement => {
+  return element.type === "snippet";
 };

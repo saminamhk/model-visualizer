@@ -2,7 +2,7 @@ import React from "react";
 import { NodeProps, useReactFlow } from "reactflow";
 import { SourceHandle, TargetHandle } from "./Handles";
 import { useEntities } from "../../contexts/EntityContext";
-import { ContentTypeNodeData, getFilteredElementsData, nodeBaseStyle } from "../../utils/layout";
+import { ContentTypeNodeData, nodeBaseStyle } from "../../utils/layout";
 import { ActionButton } from "./ActionButton";
 import { ElementRow } from "./ElementRow";
 import { useNodeState } from "../../contexts/NodeStateContext";
@@ -14,7 +14,6 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
 }) => {
   const { expandedNodes, toggleNode, isolateNode } = useNodeState();
   const { fitView } = useReactFlow();
-  const { filteredElements } = getFilteredElementsData(data);
   const { snippets } = useEntities();
 
   const isExpanded = expandedNodes.has(data.id);
@@ -31,6 +30,8 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
     minWidth: 250,
   };
 
+  const filteredElements = data.elements.filter(el => el.type !== "guidelines");
+
   return (
     <div onClick={() => toggleNode(data.id)} style={containerStyle}>
       <div className="flex justify-between items-center px-2 py-1">
@@ -46,8 +47,7 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
         ? (
           <div style={{ display: "flex", flexDirection: "column" }}>
             {filteredElements
-              .filter(el => el.type !== "guidelines")
-              .map((el, i, arr) => (
+              .map((el, i) => (
                 <ElementRow
                   key={el.id}
                   element={el.type === "snippet"
@@ -56,7 +56,7 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
                       name: snippets.find(s => s.id === el.snippet?.id)?.name ?? "Unknown Snippet",
                     }
                     : el}
-                  isLast={i === arr.length - 1}
+                  isLast={i === filteredElements.length - 1}
                 />
               ))}
           </div>
