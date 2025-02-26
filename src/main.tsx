@@ -16,8 +16,6 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
           <EntityProvider
             contentTypes={[]}
             snippets={[]}
-            showSnippets={false}
-            toggleSnippets={() => {}}
           >
             <App />
           </EntityProvider>

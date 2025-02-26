@@ -40,7 +40,7 @@ export const Canvas: React.FC<CanvasProps> = ({
         <Toolbar onToggleSnippets={() => setShowSnippets(!showSnippets)} />
         <ReactFlow
           defaultNodes={[]}
-          edges={processedGraph.edges}
+          edges={[...processedGraph.typeEdges, ...processedGraph.snippetEdges]}
           onNodesChange={(changes) => setNodes(nodes => applyNodeChanges(changes, nodes))}
           nodeTypes={nodeTypes}
           onNodeClick={(_, node) => onNodeSelect(node.id)}

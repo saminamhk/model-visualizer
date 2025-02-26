@@ -45,7 +45,8 @@ export type ProcessedEdge = {
 export type ProcessedGraph = {
   typeNodes: ProcessedNode[];
   snippetNodes: ProcessedNode[];
-  edges: ProcessedEdge[];
+  typeEdges: ProcessedEdge[];
+  snippetEdges: ProcessedEdge[];
 };
 
 type NodeData = {

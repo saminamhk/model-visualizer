@@ -20,13 +20,11 @@ export const useNodeLayout = (
         ...node.data,
         isExpanded: expandedNodes.has(node.id),
       },
-      hidden: isolatedNodeId ? !isNodeRelated(node.id, isolatedNodeId, processedGraph.edges) : false,
+      hidden: isolatedNodeId ? !isNodeRelated(node.id, isolatedNodeId, processedGraph.typeEdges) : false,
     }));
 
-    const typeEdges = processedGraph.edges.filter(edge => edge.edgeType === "contentType");
-
     if (!showSnippets) {
-      setNodes(getLayoutedElements(typeNodes, typeEdges).nodes);
+      setNodes(getLayoutedElements(typeNodes, processedGraph.typeEdges).nodes);
       return;
     }
 
@@ -38,12 +36,21 @@ export const useNodeLayout = (
         isExpanded: expandedNodes.has(node.id),
       },
       hidden: isolatedNodeId
-        ? !isNodeRelated(node.id, isolatedNodeId, processedGraph.edges)
+        ? !isNodeRelated(node.id, isolatedNodeId, processedGraph.typeEdges)
         : false,
     }));
 
+    const allNodes = [
+      ...getLayoutedElements(typeNodes, processedGraph.typeEdges).nodes,
+      ...getLayoutedElements(snippetNodes, processedGraph.snippetEdges).nodes.map((node) => ({
+        ...node,
+        position: {
+          x: node.position.x - 400,
+          y: node.position.y,
+        },
+      })),
+    ];
 
-
-    setNodes(getLayoutedElements([...typeNodes, ...snippetNodes], processedGraph.edges).nodes);
-  }, [isolatedNodeId, showSnippets, setNodes]);
+    setNodes(allNodes);
+  }, [processedGraph, selectedNodeId, expandedNodes, isolatedNodeId, showSnippets, setNodes]);
 };

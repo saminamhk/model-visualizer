@@ -35,23 +35,23 @@ const createNodes = (types: ContentType[], snippets: Snippet[]) => {
   return { typeNodes, snippetNodes };
 };
 
-const createEdgesFromTypes = (
-  types: ContentType[],
-  checkSelfReference: boolean,
-): ProcessedEdge[] => {
+const createEdgesFromSources = (
+  sources: ContentType[] | Snippet[],
+): { typeEdges: ProcessedEdge[], snippetEdges: ProcessedEdge[] } => {
   const edgeSet = new Set<string>();
-  const edges: ProcessedEdge[] = [];
+  const typeEdges: ProcessedEdge[] = [];
+  const snippetEdges: ProcessedEdge[] = [];
 
-  types.forEach((type) => {
+  sources.forEach((type) => {
     type.elements.forEach((element: Element) => {
       if (isRelationshipElement(element)) {
         element.allowed_content_types?.forEach((allowed) => {
           // Optionally skip self-references if desired.
-          if (checkSelfReference && type.id === allowed.id) return;
+          if (type.id === allowed.id) return;
           const edgeKey = `${type.id}-${element.id}-${allowed.id}`;
           if (!edgeSet.has(edgeKey)) {
             edgeSet.add(edgeKey);
-            edges.push({
+            typeEdges.push({
               id: edgeKey,
               source: type.id,
               target: allowed.id ?? "",
@@ -66,7 +66,7 @@ const createEdgesFromTypes = (
         const edgeKey = `${type.id}-${element.id}-${element.snippet.id}`;
         if (!edgeSet.has(edgeKey)) {
           edgeSet.add(edgeKey);
-          edges.push({
+          snippetEdges.push({ 
             id: edgeKey,
             source: element.snippet.id ?? "",
             target: type.id ?? "", // snippet edges are created in reverse
@@ -79,19 +79,19 @@ const createEdgesFromTypes = (
     });
   });
 
-  return edges;
+  return { typeEdges, snippetEdges };
 };
 
 export const useGraphData = (types: ContentType[], snippets: Snippet[]): ProcessedGraph => {
   return useMemo(() => {
     console.log("useGraphData called");
     const { typeNodes, snippetNodes } = createNodes(types, snippets);
-    const edges = createEdgesFromTypes(types, true);
-    //const typeEdges = edges.filter(edge => edge.edgeType === "contentType");
+    const { typeEdges, snippetEdges } = createEdgesFromSources([...types, ...snippets]);
     return {
       typeNodes,
       snippetNodes,
-      edges,
+      typeEdges,
+      snippetEdges,
     };
   }, [types, snippets]);
 };
