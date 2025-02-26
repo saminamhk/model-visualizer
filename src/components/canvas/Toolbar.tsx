@@ -9,23 +9,12 @@ import IconCollapse from "../icons/IconCollapse";
 import IconArrowReturn from "../icons/IconArrowReturn";
 import IconFilePdf from "../icons/IconFilePdf";
 
-type ToolbarProps = {
-  onToggleSnippets: () => void;
-};
-
-export const Toolbar: React.FC<ToolbarProps> = ({ onToggleSnippets }) => {
+export const Toolbar: React.FC = () => {
   const { expandedNodes, toggleNode, resetIsolation } = useNodeState();
   const { getNodes, fitView } = useReactFlow();
   const { customApp } = useAppContext();
   const [isExporting, setIsExporting] = useState(false);
   const environmentId = customApp.context.environmentId;
-
-  const handleSnippetToggle = () => {
-    onToggleSnippets();
-    setTimeout(() => {
-      fitView({ duration: 800 });
-    }, 50);
-  };
 
   const handleExpandCollapse = () => {
     const nodes = getNodes();
@@ -86,16 +75,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onToggleSnippets }) => {
     </button>
   );
 
-  const toolbarCheckbox = (onClick: () => void, id: string, content: string, className?: string) => (
-    <span className={`${className || ""}`}>
-      <label className={`checkbox`}>
-        <input type="checkbox" id={id} onClick={onClick} />
-        <span className="checkmark"></span>
-        <span>{content}</span>
-      </label>
-    </span>
-  );
-
   return (
     <div className="flex items-center gap-2 px-4 h-14 border-b border-gray-200">
       {toolbarButton(
@@ -111,12 +90,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onToggleSnippets }) => {
         <div className="flex items-center gap-2">
           <IconArrowReturn /> <span>Reset View</span>
         </div>,
-      )}
-      {toolbarCheckbox(
-        handleSnippetToggle,
-        "toggleSnippets",
-        "Include Snippets",
-        "pl-4 caret-transparent",
       )}
       <div className="flex-1">
       </div>

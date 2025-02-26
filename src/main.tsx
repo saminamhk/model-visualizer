@@ -16,6 +16,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
           <EntityProvider
             contentTypes={[]}
             snippets={[]}
+            typesWithSnippets={[]}
           >
             <App />
           </EntityProvider>

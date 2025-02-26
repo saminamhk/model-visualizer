@@ -8,49 +8,20 @@ export const useNodeLayout = (
   selectedNodeId: string | null,
   expandedNodes: Set<string>,
   isolatedNodeId: string | null,
-  showSnippets: boolean,
   setNodes: (nodes: Node[]) => void,
 ) => {
   useEffect(() => {
     console.log("useNodeLayout called");
-    const typeNodes = processedGraph.typeNodes.map(node => ({
+    const typeNodes = processedGraph.nodes.map(node => ({
       ...node,
       selected: node.id === selectedNodeId,
       data: {
         ...node.data,
         isExpanded: expandedNodes.has(node.id),
       },
-      hidden: isolatedNodeId ? !isNodeRelated(node.id, isolatedNodeId, processedGraph.typeEdges) : false,
+      hidden: isolatedNodeId ? !isNodeRelated(node.id, isolatedNodeId, processedGraph.edges) : false,
     }));
 
-    if (!showSnippets) {
-      setNodes(getLayoutedElements(typeNodes, processedGraph.typeEdges).nodes);
-      return;
-    }
-
-    const snippetNodes = processedGraph.snippetNodes.map(node => ({
-      ...node,
-      selected: node.id === selectedNodeId,
-      data: {
-        ...node.data,
-        isExpanded: expandedNodes.has(node.id),
-      },
-      hidden: isolatedNodeId
-        ? !isNodeRelated(node.id, isolatedNodeId, processedGraph.typeEdges)
-        : false,
-    }));
-
-    const allNodes = [
-      ...getLayoutedElements(typeNodes, processedGraph.typeEdges).nodes,
-      ...getLayoutedElements(snippetNodes, processedGraph.snippetEdges).nodes.map((node) => ({
-        ...node,
-        position: {
-          x: node.position.x - 400,
-          y: node.position.y,
-        },
-      })),
-    ];
-
-    setNodes(allNodes);
-  }, [processedGraph, selectedNodeId, expandedNodes, isolatedNodeId, showSnippets, setNodes]);
+    setNodes(getLayoutedElements(typeNodes, processedGraph.edges).nodes);
+  }, [processedGraph, selectedNodeId, expandedNodes, isolatedNodeId, setNodes]);
 };

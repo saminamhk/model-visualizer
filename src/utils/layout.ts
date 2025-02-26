@@ -43,10 +43,8 @@ export type ProcessedEdge = {
 };
 
 export type ProcessedGraph = {
-  typeNodes: ProcessedNode[];
-  snippetNodes: ProcessedNode[];
-  typeEdges: ProcessedEdge[];
-  snippetEdges: ProcessedEdge[];
+  nodes: ProcessedNode[];
+  edges: ProcessedEdge[];
 };
 
 type NodeData = {
@@ -83,10 +81,11 @@ export const getLayoutedElements = (
 
   dagreGraph.setGraph({
     rankdir: direction,
-    nodesep: 50,
+    nodesep: 100,
     ranksep: 200,
     align: "UL", // UL, UR, DL, DR
-    ranker: "tight-tree", // network-simplex, tight-tree, longest-path
+    ranker: "network-simplex", // network-simplex, tight-tree, longest-path
+    // acyclicer: "greedy",
   });
 
   nodes.forEach((node) => {

@@ -1,5 +1,12 @@
 import { useState, useEffect } from "react";
-import { ContentType, getContentTypes, getContentTypeSnippets, Snippet } from "../utils/mapi";
+import {
+  ContentType,
+  getContentTypes,
+  getContentTypeSnippets,
+  mergeTypesWithSnippets,
+  Snippet,
+  TypeWithResolvedSnippets,
+} from "../utils/mapi";
 import { useAppContext } from "../contexts/AppContext";
 
 export const useContentModel = () => {
@@ -8,6 +15,7 @@ export const useContentModel = () => {
   const [snippets, setSnippets] = useState<Snippet[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<{ description: string; code: string } | null>(null);
+  const [typesWithSnippets, setTypesWithSnippets] = useState<TypeWithResolvedSnippets[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,6 +30,7 @@ export const useContentModel = () => {
 
         setContentTypes(typesResult.data || []);
         setSnippets(snippetsResult.data || []);
+        setTypesWithSnippets(mergeTypesWithSnippets(typesResult.data || [], snippetsResult.data || []));
       } catch (err) {
         console.error(err);
         setError({ description: "Failed to fetch content types and snippets", code: "FETCH_ERROR" });
@@ -36,6 +45,7 @@ export const useContentModel = () => {
   return {
     contentTypes,
     snippets,
+    typesWithSnippets,
     loading,
     error,
   };
