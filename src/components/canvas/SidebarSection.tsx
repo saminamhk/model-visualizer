@@ -1,4 +1,9 @@
 import React, { useState } from "react";
+import IconSchemeConnected from "../icons/IconSchemeConnected";
+import IconMagnifier from "../icons/Magnifier";
+import { ActionButton } from "../nodes/ActionButton";
+import { useNodeState } from "../../contexts/NodeStateContext";
+import { useReactFlow } from "reactflow";
 
 interface SidebarSectionProps {
   title: string;
@@ -12,6 +17,22 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
   onItemSelect,
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
+  const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
+  const { isolateRelated, isolateSingle, toggleNode } = useNodeState();
+  const { fitView } = useReactFlow();
+
+  const handleIsolateRelated = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    isolateRelated(id);
+    setTimeout(() => fitView({ duration: 800 }), 50);
+  };
+
+  const handleIsolateSingle = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    isolateSingle(id);
+    toggleNode(id);
+    setTimeout(() => fitView({ duration: 800 }), 50);
+  };
 
   return (
     <div className="flex flex-col">
@@ -30,18 +51,37 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
         <span className="text-xs text-gray-500">{items.length}</span>
       </button>
       <div
-        className={`overflow-hidden transition-all duration-300 ${
-          isExpanded ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
-        }`}
+        className={`overflow-auto transition-all duration-300 ${isExpanded ? "opacity-100" : "max-h-0 opacity-0"}`}
       >
-        <ul className="mt-2 space-y-1 mb-4">
+        <ul className="mt-2 space-y-1 mb-15">
           {items.map(({ id, name }) => (
             <li
               key={id}
               onClick={() => onItemSelect(id)}
-              className="cursor-pointer px-4 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors rounded"
+              onMouseEnter={() => setHoveredItemId(id)}
+              onMouseLeave={() => setHoveredItemId(null)}
+              className="cursor-pointer px-4 py-2 text-sm text-gray-600 hover:bg-[#b3b3ff39] hover:text-black transition-colors rounded flex items-center"
             >
               {name}
+              <span className="flex-1"></span>
+              <div
+                className="flex gap-1"
+                style={{
+                  opacity: hoveredItemId === id ? 1 : 0,
+                  transition: "opacity 50ms ease-in-out",
+                }}
+              >
+                <ActionButton
+                  onClick={(e) => handleIsolateRelated(e, id)}
+                  title="Show related nodes"
+                  iconComponent={<IconSchemeConnected />}
+                />
+                <ActionButton
+                  onClick={(e) => handleIsolateSingle(e, id)}
+                  title="Isolate node"
+                  iconComponent={<IconMagnifier />}
+                />
+              </div>
             </li>
           ))}
         </ul>

@@ -18,7 +18,7 @@ export const Canvas: React.FC<CanvasProps> = ({
   selectedNodeId,
   onNodeSelect,
 }) => {
-  const { contentTypes, snippets, typesWithSnippets } = useEntities();
+  const { contentTypes, typesWithSnippets } = useEntities();
   const { expandedNodes, isolationMode } = useNodeState();
   const { setNodes } = useReactFlow();
   const { nodes, edges } = useGraphData(typesWithSnippets);
@@ -27,7 +27,7 @@ export const Canvas: React.FC<CanvasProps> = ({
 
   return (
     <div className="flex h-full w-full">
-      <Sidebar types={contentTypes} snippets={snippets} onMenuSelect={onNodeSelect} />
+      <Sidebar types={contentTypes} onMenuSelect={onNodeSelect} />
       <div className="flex-1 w-full h-full pb-14">
         <Toolbar />
         <ReactFlow
