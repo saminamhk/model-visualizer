@@ -6,11 +6,6 @@ type EntityContextType = {
   contentTypes: ContentTypeModels.ContentType[];
   snippets: ContentTypeSnippetModels.ContentTypeSnippet[];
   typesWithSnippets: TypeWithResolvedSnippets[];
-  getEntityById: (id: string) => {
-    type: "contentType" | "snippet";
-    name: string;
-    data: ContentTypeModels.ContentType | ContentTypeSnippetModels.ContentTypeSnippet;
-  } | undefined;
 };
 
 const EntityContext = createContext<EntityContextType | null>(null);
@@ -20,30 +15,17 @@ export const EntityProvider: React.FC<{
   contentTypes: ContentTypeModels.ContentType[];
   snippets: ContentTypeSnippetModels.ContentTypeSnippet[];
   typesWithSnippets: TypeWithResolvedSnippets[];
-}> = ({ children, contentTypes, snippets, typesWithSnippets }) => {
-  const getEntityById = (id: string) => {
-    const contentType = contentTypes.find(t => t.id === id);
-    if (contentType) return { type: "contentType" as const, name: contentType.name, data: contentType };
-
-    const snippet = snippets.find(s => s.id === id);
-    if (snippet) return { type: "snippet" as const, name: snippet.name, data: snippet };
-
-    return undefined;
-  };
-
-  return (
-    <EntityContext.Provider
-      value={{
-        contentTypes,
-        snippets,
-        typesWithSnippets,
-        getEntityById,
-      }}
-    >
-      {children}
-    </EntityContext.Provider>
-  );
-};
+}> = ({ children, contentTypes, snippets, typesWithSnippets }) => (
+  <EntityContext.Provider
+    value={{
+      contentTypes,
+      snippets,
+      typesWithSnippets,
+    }}
+  >
+    {children}
+  </EntityContext.Provider>
+);
 
 export const useEntities = () => {
   const context = useContext(EntityContext);

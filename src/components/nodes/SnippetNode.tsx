@@ -12,14 +12,14 @@ export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
   data,
   selected,
 }) => {
-  const { expandedNodes, toggleNode, isolateNode } = useNodeState();
+  const { expandedNodes, toggleNode, isolateRelated } = useNodeState();
   const { fitView } = useReactFlow();
 
   const isExpanded = expandedNodes.has(data.id);
 
   const handleIsolate = (e: React.MouseEvent) => {
     e.stopPropagation();
-    isolateNode(data.id);
+    isolateRelated(data.id);
     setTimeout(() => fitView({ duration: 800 }), 50);
   };
 

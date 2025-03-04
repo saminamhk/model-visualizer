@@ -1,8 +1,9 @@
 import { useMemo } from "react";
-import { isRelationshipElement, ProcessedEdge, ProcessedGraph } from "../utils/layout";
+import { isRelationshipElement, Graph } from "../utils/layout";
 import { Element, TypeWithResolvedSnippets } from "../utils/mapi";
+import { Edge } from "reactflow";
 
-const createNodes = (types: TypeWithResolvedSnippets[]) =>
+const createNodesFromTypes = (types: TypeWithResolvedSnippets[]) =>
   types.map((type) => ({
     id: type.id,
     type: "contentType",
@@ -21,11 +22,11 @@ const createNodes = (types: TypeWithResolvedSnippets[]) =>
     position: { x: 0, y: 0 },
   }));
 
-const createEdgesFromSources = (
+const createEdgesFromTypes = (
   sources: TypeWithResolvedSnippets[],
-): ProcessedEdge[] => {
+): Edge[] => {
   const edgeSet = new Set<string>();
-  const edges: ProcessedEdge[] = [];
+  const edges: Edge[] = [];
 
   sources.forEach((type) => {
     type.elements.forEach((element: Element) => {
@@ -42,7 +43,7 @@ const createEdgesFromSources = (
               target: allowed.id ?? "",
               sourceHandle: `source-${element.id}`,
               targetHandle: "target",
-              edgeType: "contentType",
+              // edgeType: "contentType",
             });
           }
         });
@@ -53,11 +54,11 @@ const createEdgesFromSources = (
   return edges;
 };
 
-export const useGraphData = (types: TypeWithResolvedSnippets[]): ProcessedGraph => {
+export const useGraphData = (types: TypeWithResolvedSnippets[]): Graph => {
   return useMemo(() => {
     console.log("useGraphData called");
-    const nodes = createNodes(types);
-    const edges = createEdgesFromSources(types);
+    const nodes = createNodesFromTypes(types);
+    const edges = createEdgesFromTypes(types);
     return {
       nodes,
       edges,

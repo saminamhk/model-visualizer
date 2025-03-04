@@ -1,27 +1,44 @@
 import { useEffect } from "react";
-import { Node } from "reactflow";
-import { ProcessedGraph } from "../utils/layout";
+import { Edge, Node } from "reactflow";
 import { getLayoutedElements, isNodeRelated } from "../utils/layout";
+import { IsolationMode } from "../utils/layout";
 
 export const useNodeLayout = (
-  processedGraph: ProcessedGraph,
+  nodes: Node[],
+  edges: Edge[],
   selectedNodeId: string | null,
   expandedNodes: Set<string>,
-  isolatedNodeId: string | null,
+  isolationMode: IsolationMode,
   setNodes: (nodes: Node[]) => void,
 ) => {
   useEffect(() => {
-    console.log("useNodeLayout called");
-    const typeNodes = processedGraph.nodes.map(node => ({
+    const updatedNodes = nodes.map(node => ({
       ...node,
       selected: node.id === selectedNodeId,
       data: {
         ...node.data,
         isExpanded: expandedNodes.has(node.id),
       },
-      hidden: isolatedNodeId ? !isNodeRelated(node.id, isolatedNodeId, processedGraph.edges) : false,
+      hidden: (() => {
+        if (!isolationMode) return false;
+        switch (isolationMode.mode) {
+          case "related":
+            return !isNodeRelated(node.id, isolationMode.nodeId, edges);
+          case "single":
+            return node.id !== isolationMode.nodeId;
+          default:
+            return false;
+        }
+      })(),
     }));
 
-    setNodes(getLayoutedElements(typeNodes, processedGraph.edges).nodes);
-  }, [processedGraph, selectedNodeId, expandedNodes, isolatedNodeId, setNodes]);
+    const visibleNodes = updatedNodes.filter(node => !node.hidden);
+    const visibleEdges = edges.filter(
+      edge =>
+        visibleNodes.some(node => node.id === edge.source)
+        && visibleNodes.some(node => node.id === edge.target),
+    );
+
+    setNodes(getLayoutedElements(visibleNodes, visibleEdges).nodes);
+  }, [selectedNodeId, isolationMode, expandedNodes, nodes, edges, setNodes]);
 };

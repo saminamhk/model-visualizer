@@ -7,20 +7,28 @@ import { ActionButton } from "./ActionButton";
 import { ElementRow } from "./ElementRow";
 import { useNodeState } from "../../contexts/NodeStateContext";
 import IconSchemeConnected from "../icons/IconSchemeConnected";
+import IconMagnifier from "../icons/Magnifier";
 
 export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
   data,
   selected,
 }) => {
-  const { expandedNodes, toggleNode, isolateNode } = useNodeState();
+  const { expandedNodes, toggleNode, isolateRelated, isolateSingle } = useNodeState();
   const { fitView } = useReactFlow();
   const { snippets } = useEntities();
 
   const isExpanded = expandedNodes.has(data.id);
 
-  const handleIsolate = (e: React.MouseEvent) => {
+  const handleIsolateRelated = (e: React.MouseEvent) => {
     e.stopPropagation();
-    isolateNode(data.id);
+    isolateRelated(data.id);
+    setTimeout(() => fitView({ duration: 800 }), 50);
+  };
+
+  const handleIsolateSingle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    isolateSingle(data.id);
+    toggleNode(data.id);
     setTimeout(() => fitView({ duration: 800 }), 50);
   };
 
@@ -36,10 +44,16 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
     <div onClick={() => toggleNode(data.id)} style={containerStyle}>
       <div className="flex justify-between items-center px-2 py-1">
         <div className="font-bold">{data.label}</div>
+        <span className="flex-1"></span>
         <ActionButton
-          onClick={handleIsolate}
+          onClick={handleIsolateRelated}
           title="Show related nodes"
           iconComponent={<IconSchemeConnected />}
+        />
+        <ActionButton
+          onClick={handleIsolateSingle}
+          title="Isolate node"
+          iconComponent={<IconMagnifier />}
         />
       </div>
       <TargetHandle id="target" />

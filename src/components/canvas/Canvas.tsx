@@ -19,17 +19,11 @@ export const Canvas: React.FC<CanvasProps> = ({
   onNodeSelect,
 }) => {
   const { contentTypes, snippets, typesWithSnippets } = useEntities();
-  const { expandedNodes, isolatedNodeId } = useNodeState();
+  const { expandedNodes, isolationMode } = useNodeState();
   const { setNodes } = useReactFlow();
-  const processedGraph = useGraphData(typesWithSnippets);
+  const { nodes, edges } = useGraphData(typesWithSnippets);
 
-  useNodeLayout(
-    processedGraph,
-    selectedNodeId,
-    expandedNodes,
-    isolatedNodeId,
-    setNodes,
-  );
+  useNodeLayout(nodes, edges, selectedNodeId, expandedNodes, isolationMode, setNodes);
 
   return (
     <div className="flex h-full w-full">
@@ -38,7 +32,7 @@ export const Canvas: React.FC<CanvasProps> = ({
         <Toolbar />
         <ReactFlow
           defaultNodes={[]}
-          edges={processedGraph.edges}
+          edges={edges}
           onNodesChange={(changes) => setNodes(nodes => applyNodeChanges(changes, nodes))}
           nodeTypes={nodeTypes}
           onNodeClick={(_, node) => onNodeSelect(node.id)}

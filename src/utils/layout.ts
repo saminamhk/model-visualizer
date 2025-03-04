@@ -22,29 +22,14 @@ export const nodeTypes = {
   snippet: SnippetNode,
 } as const;
 
-export type ProcessedNode = {
-  id: string;
-  type: string;
-  data: {
-    id: string;
-    label: string;
-    elements: ContentTypeElements.ContentTypeElementModel[];
-  };
-  position: { x: number; y: number };
-};
+export type IsolationMode = {
+  nodeId: string;
+  mode: "related" | "single";
+} | null;
 
-export type ProcessedEdge = {
-  id: string;
-  source: string;
-  target: string;
-  sourceHandle: string;
-  targetHandle: string;
-  edgeType: "contentType" | "snippet";
-};
-
-export type ProcessedGraph = {
-  nodes: ProcessedNode[];
-  edges: ProcessedEdge[];
+export type Graph = {
+  nodes: Node[];
+  edges: Edge[];
 };
 
 type NodeData = {

@@ -18,19 +18,17 @@ type ElementRowProps = {
   isLast: boolean;
 };
 
-export const ElementRow: React.FC<ElementRowProps> = ({ element, isLast }) => {
-  return (
-    <div
-      className="flex items-center justify-between py-1 px-2 relative"
-      style={{
-        borderBottom: !isLast ? "1px solid #ddd" : "none",
-      }}
-    >
-      <div className="font-bold text-xs">{element.name}</div>
-      <div className="text-xs">
-        {elementTypeMap.get(element.type) || element.type}
-      </div>
-      {isRelationshipElement(element) && <SourceHandle id={`source-${element.id}`} />}
+export const ElementRow: React.FC<ElementRowProps> = ({ element, isLast }) => (
+  <div
+    className="flex items-center justify-between py-1 px-2 relative"
+    style={{
+      borderBottom: !isLast ? "1px solid #ddd" : "none",
+    }}
+  >
+    <div className="font-bold text-xs">{element.name}</div>
+    <div className="text-xs">
+      {elementTypeMap.get(element.type) || element.type}
     </div>
-  );
-};
+    {isRelationshipElement(element) && <SourceHandle id={`source-${element.id}`} />}
+  </div>
+);
