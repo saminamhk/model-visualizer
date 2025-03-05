@@ -53,14 +53,14 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
       <div
         className={`overflow-auto transition-all duration-300 ${isExpanded ? "opacity-100" : "max-h-0 opacity-0"}`}
       >
-        <ul className="mt-2 space-y-1 mb-15">
+        <ul className="mb-15">
           {items.map(({ id, name }) => (
             <li
               key={id}
               onClick={() => onItemSelect(id)}
               onMouseEnter={() => setHoveredItemId(id)}
               onMouseLeave={() => setHoveredItemId(null)}
-              className="cursor-pointer px-4 py-2 text-sm text-gray-600 hover:bg-[#b3b3ff39] hover:text-black transition-colors flex items-center"
+              className="cursor-pointer px-4 py-3 text-sm text-gray-600 hover:bg-[#b3b3ff39] hover:text-black transition-colors flex items-center"
             >
               {name}
               <span className="flex-1"></span>

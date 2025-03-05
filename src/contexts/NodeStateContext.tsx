@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
-import { IsolationMode } from "../utils/layout";
+import { NodeIsolation } from "../utils/layout";
 
 type NodeStateContextType = {
   expandedNodes: Set<string>;
   toggleNode: (nodeId: string, forceState?: boolean) => void;
-  isolationMode: IsolationMode;
+  isolation: NodeIsolation;
   isolateRelated: (nodeId: string) => void;
   isolateSingle: (nodeId: string) => void;
   resetIsolation: () => void;
@@ -16,7 +16,7 @@ const NodeStateContext = createContext<NodeStateContextType | undefined>(undefin
 
 export const NodeStateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
-  const [isolationMode, setIsolationMode] = useState<IsolationMode>(null);
+  const [isolation, setIsolation] = useState<NodeIsolation>(null);
   const [includeRichText, setIncludeRichText] = useState(true);
 
   const toggleNode = useCallback((nodeId: string, forceState?: boolean) => {
@@ -33,22 +33,22 @@ export const NodeStateProvider: React.FC<{ children: ReactNode }> = ({ children 
   }, []);
 
   const isolateRelated = useCallback((nodeId: string) => {
-    setIsolationMode({ nodeId, mode: "related" });
+    setIsolation({ nodeId, mode: "related" });
   }, []);
 
   const isolateSingle = useCallback((nodeId: string) => {
-    setIsolationMode({ nodeId, mode: "single" });
+    setIsolation({ nodeId, mode: "single" });
   }, []);
 
   const resetIsolation = useCallback(() => {
-    setIsolationMode(null);
+    setIsolation(null);
   }, []);
 
   return (
     <NodeStateContext.Provider
       value={{
         expandedNodes,
-        isolationMode,
+        isolation,
         includeRichText,
         toggleNode,
         isolateRelated,

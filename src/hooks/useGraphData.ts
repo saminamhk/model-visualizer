@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import { isRelationshipElement, Graph } from "../utils/layout";
-import { Element, TypeWithResolvedSnippets } from "../utils/mapi";
+import { Element, ResolvedType } from "../utils/mapi";
 import { Edge } from "reactflow";
 import { useNodeState } from "../contexts/NodeStateContext";
 
-const createNodesFromTypes = (types: TypeWithResolvedSnippets[]) =>
+const createNodesFromTypes = (types: ResolvedType[]) =>
   types.map((type) => ({
     id: type.id,
     type: "contentType",
@@ -24,7 +24,7 @@ const createNodesFromTypes = (types: TypeWithResolvedSnippets[]) =>
   }));
 
 const createEdgesFromTypes = (
-  sources: TypeWithResolvedSnippets[],
+  sources: ResolvedType[],
   includeRichText: boolean,
 ): Edge[] => {
   const edgeSet = new Set<string>();
@@ -57,7 +57,7 @@ const createEdgesFromTypes = (
   return edges;
 };
 
-export const useGraphData = (types: TypeWithResolvedSnippets[]): Graph => {
+export const useGraphData = (types: ResolvedType[]): Graph => {
   const { includeRichText } = useNodeState();
 
   return useMemo(() => {

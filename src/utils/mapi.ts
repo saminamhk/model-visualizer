@@ -15,7 +15,7 @@ export type SnippetElement = ContentTypeElements.ISnippetElement;
 
 export type AnnotatedElement = Element & { fromSnippet: { id: string; name: string } | false };
 
-export type TypeWithResolvedSnippets = Omit<ContentTypeModels.ContentType, "elements"> & {
+export type ResolvedType = Omit<ContentTypeModels.ContentType, "elements"> & {
   elements: AnnotatedElement[];
 };
 
@@ -90,7 +90,7 @@ export const getContentTypeSnippets = async (
 export const mergeTypesWithSnippets = (
   types: ContentType[],
   snippets: Snippet[],
-): TypeWithResolvedSnippets[] =>
+): ResolvedType[] =>
   types.map((type) => ({
     ...type,
     elements: type.elements.flatMap((element) => {

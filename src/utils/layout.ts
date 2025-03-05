@@ -22,7 +22,7 @@ export const nodeTypes = {
   snippet: SnippetNode,
 } as const;
 
-export type IsolationMode = {
+export type NodeIsolation = {
   nodeId: string;
   mode: "related" | "single";
 } | null;

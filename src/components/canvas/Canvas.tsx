@@ -19,11 +19,11 @@ export const Canvas: React.FC<CanvasProps> = ({
   onNodeSelect,
 }) => {
   const { contentTypes, typesWithSnippets } = useEntities();
-  const { expandedNodes, isolationMode } = useNodeState();
+  const { expandedNodes, isolation } = useNodeState();
   const { setNodes } = useReactFlow();
   const { nodes, edges } = useGraphData(typesWithSnippets);
 
-  useNodeLayout(nodes, edges, selectedNodeId, expandedNodes, isolationMode, setNodes);
+  useNodeLayout(nodes, edges, selectedNodeId, expandedNodes, isolation, setNodes);
 
   return (
     <div className="flex h-full w-full">

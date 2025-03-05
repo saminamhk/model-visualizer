@@ -37,12 +37,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             error: null,
           });
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error("Error initializing app context:", err);
         setState({
           loading: false,
           context: null,
-          error: { description: "Failed to initialize app context", code: "INIT_ERROR" },
+          error: { description: err.description ?? "Failed to initialize app context", code: err.code ??"INIT_ERROR" },
         });
       }
     };

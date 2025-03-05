@@ -28,7 +28,6 @@ export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
     minWidth: 350,
   };
 
-
   return (
     <div onClick={() => toggleNode(data.id)} style={containerStyle}>
       <div className="flex justify-between items-center px-2 py-1">

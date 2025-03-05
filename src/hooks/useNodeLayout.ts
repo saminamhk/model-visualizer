@@ -1,14 +1,14 @@
 import { useEffect } from "react";
 import { Edge, Node } from "reactflow";
 import { getLayoutedElements, isNodeRelated } from "../utils/layout";
-import { IsolationMode } from "../utils/layout";
+import { NodeIsolation } from "../utils/layout";
 
 export const useNodeLayout = (
   nodes: Node[],
   edges: Edge[],
   selectedNodeId: string | null,
   expandedNodes: Set<string>,
-  isolationMode: IsolationMode,
+  isolation: NodeIsolation,
   setNodes: (nodes: Node[]) => void,
 ) => {
   useEffect(() => {
@@ -20,12 +20,12 @@ export const useNodeLayout = (
         isExpanded: expandedNodes.has(node.id),
       },
       hidden: (() => {
-        if (!isolationMode) return false;
-        switch (isolationMode.mode) {
+        if (!isolation) return false;
+        switch (isolation.mode) {
           case "related":
-            return !isNodeRelated(node.id, isolationMode.nodeId, edges);
+            return !isNodeRelated(node.id, isolation.nodeId, edges);
           case "single":
-            return node.id !== isolationMode.nodeId;
+            return node.id !== isolation.nodeId;
           default:
             return false;
         }
@@ -40,5 +40,5 @@ export const useNodeLayout = (
     );
 
     setNodes(getLayoutedElements(visibleNodes, visibleEdges).nodes);
-  }, [selectedNodeId, isolationMode, expandedNodes, nodes, edges, setNodes]);
+  }, [selectedNodeId, isolation, expandedNodes, nodes, edges, setNodes]);
 };

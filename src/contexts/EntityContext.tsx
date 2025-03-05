@@ -1,11 +1,11 @@
 import React, { createContext, useContext } from "react";
 import { ContentTypeModels, ContentTypeSnippetModels } from "@kontent-ai/management-sdk";
-import { TypeWithResolvedSnippets } from "../utils/mapi";
+import { ResolvedType } from "../utils/mapi";
 
 type EntityContextType = {
   contentTypes: ContentTypeModels.ContentType[];
   snippets: ContentTypeSnippetModels.ContentTypeSnippet[];
-  typesWithSnippets: TypeWithResolvedSnippets[];
+  typesWithSnippets: ResolvedType[];
 };
 
 const EntityContext = createContext<EntityContextType | null>(null);
@@ -14,7 +14,7 @@ export const EntityProvider: React.FC<{
   children: React.ReactNode;
   contentTypes: ContentTypeModels.ContentType[];
   snippets: ContentTypeSnippetModels.ContentTypeSnippet[];
-  typesWithSnippets: TypeWithResolvedSnippets[];
+  typesWithSnippets: ResolvedType[];
 }> = ({ children, contentTypes, snippets, typesWithSnippets }) => (
   <EntityContext.Provider
     value={{
