@@ -10,7 +10,7 @@ import IconArrowReturn from "../icons/IconArrowReturn";
 import IconFilePdf from "../icons/IconFilePdf";
 
 export const Toolbar: React.FC = () => {
-  const { expandedNodes, toggleNode, resetIsolation } = useNodeState();
+  const { expandedNodes, toggleNode, resetIsolation, includeRichText, setIncludeRichText } = useNodeState();
   const { getNodes, fitView } = useReactFlow();
   const { customApp } = useAppContext();
   const [isExporting, setIsExporting] = useState(false);
@@ -75,6 +75,14 @@ export const Toolbar: React.FC = () => {
     </button>
   );
 
+  const toolbarCheckbox = (onClick: () => void, content: React.ReactNode, checked: boolean, className?: string) => (
+    <label className={`flex checkbox ml-3 ${className ?? ""}`}>
+      <input type="checkbox" onClick={onClick} checked={checked} />
+      <span className="checkmark purple mr-2"></span>
+      <span className="text-sm">{content}</span>
+    </label>
+  );
+
   return (
     <div className="flex items-center gap-2 px-4 h-14 border-b border-gray-200">
       {toolbarButton(
@@ -90,6 +98,14 @@ export const Toolbar: React.FC = () => {
         <div className="flex items-center gap-2">
           <IconArrowReturn /> <span>Reset View</span>
         </div>,
+      )}
+      {toolbarCheckbox(
+        () => {
+          setIncludeRichText(!includeRichText);
+          fitView({ duration: 800 });
+        },
+        "Include rich text edges",
+        includeRichText,
       )}
       <div className="flex-1">
       </div>

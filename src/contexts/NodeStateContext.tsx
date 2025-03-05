@@ -8,6 +8,8 @@ type NodeStateContextType = {
   isolateRelated: (nodeId: string) => void;
   isolateSingle: (nodeId: string) => void;
   resetIsolation: () => void;
+  includeRichText: boolean;
+  setIncludeRichText: (value: boolean) => void;
 };
 
 const NodeStateContext = createContext<NodeStateContextType | undefined>(undefined);
@@ -15,6 +17,7 @@ const NodeStateContext = createContext<NodeStateContextType | undefined>(undefin
 export const NodeStateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const [isolationMode, setIsolationMode] = useState<IsolationMode>(null);
+  const [includeRichText, setIncludeRichText] = useState(true);
 
   const toggleNode = useCallback((nodeId: string, forceState?: boolean) => {
     setExpandedNodes((prev) => {
@@ -45,11 +48,13 @@ export const NodeStateProvider: React.FC<{ children: ReactNode }> = ({ children 
     <NodeStateContext.Provider
       value={{
         expandedNodes,
-        toggleNode,
         isolationMode,
+        includeRichText,
+        toggleNode,
         isolateRelated,
         isolateSingle,
         resetIsolation,
+        setIncludeRichText,
       }}
     >
       {children}

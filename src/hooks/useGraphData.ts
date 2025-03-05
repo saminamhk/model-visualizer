@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { isRelationshipElement, Graph } from "../utils/layout";
 import { Element, TypeWithResolvedSnippets } from "../utils/mapi";
 import { Edge } from "reactflow";
+import { useNodeState } from "../contexts/NodeStateContext";
 
 const createNodesFromTypes = (types: TypeWithResolvedSnippets[]) =>
   types.map((type) => ({
@@ -24,6 +25,7 @@ const createNodesFromTypes = (types: TypeWithResolvedSnippets[]) =>
 
 const createEdgesFromTypes = (
   sources: TypeWithResolvedSnippets[],
+  includeRichText: boolean,
 ): Edge[] => {
   const edgeSet = new Set<string>();
   const edges: Edge[] = [];
@@ -31,6 +33,8 @@ const createEdgesFromTypes = (
   sources.forEach((type) => {
     type.elements.forEach((element: Element) => {
       if (isRelationshipElement(element)) {
+        if (!includeRichText && element.type === "rich_text") return;
+
         element.allowed_content_types?.forEach((allowed) => {
           // skip self-references
           if (type.id === allowed.id) return;
@@ -54,13 +58,14 @@ const createEdgesFromTypes = (
 };
 
 export const useGraphData = (types: TypeWithResolvedSnippets[]): Graph => {
+  const { includeRichText } = useNodeState();
+
   return useMemo(() => {
-    console.log("useGraphData called");
     const nodes = createNodesFromTypes(types);
-    const edges = createEdgesFromTypes(types);
+    const edges = createEdgesFromTypes(types, includeRichText);
     return {
       nodes,
       edges,
     };
-  }, [types]);
+  }, [types, includeRichText]);
 };

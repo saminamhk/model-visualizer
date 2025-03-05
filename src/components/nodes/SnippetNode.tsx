@@ -3,7 +3,6 @@ import { NodeProps, useReactFlow } from "reactflow";
 import { SnippetNodeData } from "../../utils/layout";
 import { ActionButton } from "./ActionButton";
 import { SourceHandle } from "./Handles";
-import { ElementRow } from "./ElementRow";
 import { useNodeState } from "../../contexts/NodeStateContext";
 import { nodeBaseStyle } from "../../utils/layout";
 import IconSeparate from "../icons/IconSeparate";
@@ -29,9 +28,6 @@ export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
     minWidth: 350,
   };
 
-  const namedElements = data.elements.filter(
-    el => el.type !== "guidelines" && el.type !== "snippet",
-  );
 
   return (
     <div onClick={() => toggleNode(data.id)} style={containerStyle}>
@@ -40,19 +36,12 @@ export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
         <ActionButton
           onClick={handleIsolate}
           title="Show related nodes"
-          iconComponent={<IconSeparate />}
+          icon={<IconSeparate />}
         />
       </div>
       {isExpanded
         ? (
           <div style={{ display: "flex", flexDirection: "column" }}>
-            {namedElements.map((el, i) => (
-              <ElementRow
-                key={el.id}
-                element={el}
-                isLast={i === namedElements.length - 1}
-              />
-            ))}
             <SourceHandle id="source" />
           </div>
         )
