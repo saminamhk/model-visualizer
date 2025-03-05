@@ -48,12 +48,12 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
         <ActionButton
           onClick={handleIsolateRelated}
           title="Show related nodes"
-          iconComponent={<IconSchemeConnected />}
+          icon={<IconSchemeConnected />}
         />
         <ActionButton
           onClick={handleIsolateSingle}
           title="Isolate node"
-          iconComponent={<IconMagnifier />}
+          icon={<IconMagnifier />}
         />
       </div>
       <TargetHandle id="target" />
@@ -67,10 +67,12 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
                   element={el.type === "snippet"
                     ? {
                       ...el,
+                      fromSnippet: false,
                       name: snippets.find(s => s.id === el.snippet?.id)?.name ?? "Unknown Snippet",
                     }
                     : el}
                   isLast={i === filteredElements.length - 1}
+                  selfReferences={data.selfReferences.includes(el.id ?? "")}
                 />
               ))}
           </div>

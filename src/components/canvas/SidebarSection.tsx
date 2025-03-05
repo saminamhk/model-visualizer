@@ -74,12 +74,12 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
                 <ActionButton
                   onClick={(e) => handleIsolateRelated(e, id)}
                   title="Show related nodes"
-                  iconComponent={<IconSchemeConnected />}
+                  icon={<IconSchemeConnected />}
                 />
                 <ActionButton
                   onClick={(e) => handleIsolateSingle(e, id)}
                   title="Isolate node"
-                  iconComponent={<IconMagnifier />}
+                  icon={<IconMagnifier />}
                 />
               </div>
             </li>

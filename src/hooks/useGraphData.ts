@@ -32,7 +32,7 @@ const createEdgesFromTypes = (
     type.elements.forEach((element: Element) => {
       if (isRelationshipElement(element)) {
         element.allowed_content_types?.forEach((allowed) => {
-          // Optionally skip self-references if desired.
+          // skip self-references
           if (type.id === allowed.id) return;
           const edgeKey = `${type.id}-${element.id}-${allowed.id}`;
           if (!edgeSet.has(edgeKey)) {
@@ -43,7 +43,6 @@ const createEdgesFromTypes = (
               target: allowed.id ?? "",
               sourceHandle: `source-${element.id}`,
               targetHandle: "target",
-              // edgeType: "contentType",
             });
           }
         });

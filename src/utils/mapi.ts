@@ -13,8 +13,10 @@ export type Snippet = ContentTypeSnippetModels.ContentTypeSnippet;
 
 export type SnippetElement = ContentTypeElements.ISnippetElement;
 
+export type AnnotatedElement = Element & { fromSnippet: { id: string; name: string } | false };
+
 export type TypeWithResolvedSnippets = Omit<ContentTypeModels.ContentType, "elements"> & {
-  elements: Exclude<Element, SnippetElement>[];
+  elements: AnnotatedElement[];
 };
 
 export type ElementType = Element["type"];
@@ -89,13 +91,22 @@ export const mergeTypesWithSnippets = (
   types: ContentType[],
   snippets: Snippet[],
 ): TypeWithResolvedSnippets[] =>
-  types.map(type => ({
+  types.map((type) => ({
     ...type,
-    elements: type.elements.flatMap(element => {
+    elements: type.elements.flatMap((element) => {
       if (element.type === "snippet") {
-        const snippet = snippets.find(s => s.id === element.snippet.id);
-        return snippet?.elements ?? [];
+        const snippet = snippets.find((s) => s.id === element.snippet.id);
+        return snippet?.elements.map((s) =>
+          ({
+            ...s,
+            fromSnippet: {
+              id: snippet.id,
+              name: snippet.name,
+            },
+          }) as AnnotatedElement
+        ) ?? [];
       }
-      return [element];
-    }) as Exclude<Element, SnippetElement>[],
+
+      return [{ ...element, fromSnippet: false }];
+    }),
   }));

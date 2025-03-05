@@ -1,7 +1,7 @@
 import { ContentTypeElements } from "@kontent-ai/management-sdk";
 import dagre from "dagre";
 import { Node, Edge } from "reactflow";
-import { Element, SnippetElement } from "./mapi";
+import { AnnotatedElement, Element, SnippetElement } from "./mapi";
 import { ContentTypeNode } from "../components/nodes/ContentTypeNode";
 import { SnippetNode } from "../components/nodes/SnippetNode";
 
@@ -39,7 +39,7 @@ type NodeData = {
 };
 
 export type ContentTypeNodeData = NodeData & {
-  elements: Element[];
+  elements: AnnotatedElement[];
   selfReferences: string[];
 };
 

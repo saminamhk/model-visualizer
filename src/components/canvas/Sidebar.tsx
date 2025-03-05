@@ -83,7 +83,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ types, onMenuSelect }) => {
       </div>
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-12 top-1/2 -translate-y-1/2 bg-white border-1 border-[#5b4ff5] rounded-full w-9 h-9 hover:bg-[#e7e6ff] transition-all duration-300 z-40 flex items-center justify-center"
+        className="absolute -right-12 top-1/2 -translate-y-1/2 bg-white border-[#5b4ff5] border-2 rounded-full w-9 h-9 hover:bg-[#e7e6ff] transition-all duration-300 z-40 flex items-center justify-center"
       >
         {isCollapsed ? <IconChevronDoubleRight /> : <IconChevronDoubleLeft />}
       </button>

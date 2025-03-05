@@ -10,6 +10,7 @@ export const SourceHandle: React.FC<CustomHandleProps> = (props) => (
     type="source"
     position={Position.Right}
     className="custom-handle right"
+    isConnectable={false}
   />
 );
 
@@ -20,5 +21,6 @@ export const TargetHandle: React.FC<CustomHandleProps> = (props) => (
     type="target"
     position={Position.Left}
     className="custom-handle left"
+    isConnectable={false}
   />
 );
