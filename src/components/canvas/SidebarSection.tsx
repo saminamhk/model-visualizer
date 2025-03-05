@@ -60,7 +60,7 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
               onClick={() => onItemSelect(id)}
               onMouseEnter={() => setHoveredItemId(id)}
               onMouseLeave={() => setHoveredItemId(null)}
-              className="cursor-pointer px-4 py-2 text-sm text-gray-600 hover:bg-[#b3b3ff39] hover:text-black transition-colors rounded flex items-center"
+              className="cursor-pointer px-4 py-2 text-sm text-gray-600 hover:bg-[#b3b3ff39] hover:text-black transition-colors flex items-center"
             >
               {name}
               <span className="flex-1"></span>
