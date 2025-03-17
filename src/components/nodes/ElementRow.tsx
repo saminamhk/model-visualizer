@@ -1,11 +1,11 @@
 import React from "react";
-import { SourceHandle } from "./Handles";
+import { SourceHandle } from "../controls/Handles";
 import { AnnotatedElement, elementTypeMap } from "../../utils/mapi";
 import { isRelationshipElement } from "../../utils/layout";
 import { ContentTypeElements } from "@kontent-ai/management-sdk";
 import IconAccordion from "../icons/IconAccordion";
 import IconRotateDoubleRight from "../icons/IconRotateDoubleRight";
-import { InfoBadge } from "./InfoBadge";
+import { InfoBadge } from "../controls/InfoBadge";
 import IconBracesOctothorpe from "../icons/IconBracesOctothorpe";
 
 type NamedElement =

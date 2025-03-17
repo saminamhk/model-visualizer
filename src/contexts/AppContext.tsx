@@ -2,21 +2,21 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 import { getCustomAppContext, CustomAppContext } from "@kontent-ai/custom-app-sdk";
 import { Loader } from "../components/utils/Loader";
 import { ErrorDisplay } from "../components/utils/ErrorDisplay";
-// Only valid contexts (no error) will be passed down.
+
 export type ValidCustomAppContext = Extract<CustomAppContext, { isError: false }>;
 
 type AppContextState = {
   customApp: ValidCustomAppContext;
 };
 
-const AppContext = createContext<AppContextState | null>(null);
-
 type InternalState =
   | { loading: true }
   | { loading: false; context: ValidCustomAppContext; error: null }
   | { loading: false; context: null; error: { description: string; code: string } };
 
-export const AppProvider = ({ children }: { children: ReactNode }) => {
+const AppContext = createContext<AppContextState | null>(null);
+
+export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, setState] = useState<InternalState>({ loading: true });
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setState({
           loading: false,
           context: null,
-          error: { description: err.description ?? "Failed to initialize app context", code: err.code ??"INIT_ERROR" },
+          error: { description: err.description ?? "Failed to initialize app context", code: err.code ?? "INIT_ERROR" },
         });
       }
     };

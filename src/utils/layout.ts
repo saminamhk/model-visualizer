@@ -70,7 +70,7 @@ export const getLayoutedElements = (
     ranksep: 200,
     align: "UL", // UL, UR, DL, DR
     ranker: "network-simplex", // network-simplex, tight-tree, longest-path
-    // acyclicer: "greedy",
+    acyclicer: "greedy",
   });
 
   nodes.forEach((node) => {

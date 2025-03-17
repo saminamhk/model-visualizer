@@ -1,8 +1,8 @@
 import React from "react";
 import { NodeProps, useReactFlow } from "reactflow";
 import { SnippetNodeData } from "../../utils/layout";
-import { ActionButton } from "./ActionButton";
-import { SourceHandle } from "./Handles";
+import { ActionButton } from "../controls/ActionButton";
+import { SourceHandle } from "../controls/Handles";
 import { useNodeState } from "../../contexts/NodeStateContext";
 import { nodeBaseStyle } from "../../utils/layout";
 import IconSeparate from "../icons/IconSeparate";

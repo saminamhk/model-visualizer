@@ -1,9 +1,9 @@
 import React from "react";
 import { NodeProps, useReactFlow } from "reactflow";
-import { SourceHandle, TargetHandle } from "./Handles";
+import { SourceHandle, TargetHandle } from "../controls/Handles";
 import { useEntities } from "../../contexts/EntityContext";
 import { ContentTypeNodeData, nodeBaseStyle } from "../../utils/layout";
-import { ActionButton } from "./ActionButton";
+import { ActionButton } from "../controls/ActionButton";
 import { ElementRow } from "./ElementRow";
 import { useNodeState } from "../../contexts/NodeStateContext";
 import IconSchemeConnected from "../icons/IconSchemeConnected";

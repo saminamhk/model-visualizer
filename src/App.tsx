@@ -1,14 +1,17 @@
 import "@kontent-ai/stylekit/styles/styles.css";
 
 import React, { useState, useCallback } from "react";
-import { Canvas } from "./components/canvas/Canvas";
-import { EntityProvider } from "./contexts/EntityContext";
+import { View } from "./components/views/View";
+import { DefaultViewRenderer } from "./components/views/renderers/DefaultViewRenderer";
+import { SnippetViewRenderer } from "./components/views/renderers/SnippetViewRenderer";
+import { useView } from "./contexts/ViewContext";
 import { Loader } from "./components/utils/Loader";
 import { ErrorDisplay } from "./components/utils/ErrorDisplay";
 import { useContentModel } from "./hooks/useContentModel";
 
-const App: React.FC = () => {
+const ViewContainer: React.FC = () => {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const { currentView } = useView();
   const { contentTypes, snippets, typesWithSnippets, loading, error } = useContentModel();
 
   const handleNodeSelect = useCallback((nodeId: string) => {
@@ -30,15 +33,26 @@ const App: React.FC = () => {
     return <ErrorDisplay description={error.description} code={error.code} />;
   }
 
+  const viewProps = {
+    contentTypes,
+    snippets,
+    typesWithSnippets,
+    selectedNodeId,
+    onNodeSelect: handleNodeSelect,
+  };
+
+  return (
+    <View
+      {...viewProps}
+      renderer={currentView === "default" ? DefaultViewRenderer : SnippetViewRenderer}
+    />
+  );
+};
+
+const App: React.FC = () => {
   return (
     <div className="content-model-viewer h-screen bg-white" style={{ boxShadow: "inset 50px 0 10px -50px #bfbfbf" }}>
-      <EntityProvider
-        contentTypes={contentTypes}
-        snippets={snippets}
-        typesWithSnippets={typesWithSnippets}
-      >
-        <Canvas selectedNodeId={selectedNodeId} onNodeSelect={handleNodeSelect} />
-      </EntityProvider>
+      <ViewContainer />
     </div>
   );
 };

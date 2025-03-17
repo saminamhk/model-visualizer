@@ -44,6 +44,13 @@ body {
   min-height: 100vh;
 }
 
+/* overrides dropdown style from kontent stylekit */
+.select {
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;

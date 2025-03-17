@@ -1,33 +1,36 @@
 import React from "react";
 import ReactFlow, { MiniMap, Controls, Background, applyNodeChanges, useReactFlow } from "reactflow";
 import "reactflow/dist/style.css";
-import { useEntities } from "../../contexts/EntityContext";
-import { useGraphData } from "../../hooks/useGraphData";
 import { Toolbar } from "./Toolbar";
 import { Sidebar } from "./Sidebar";
 import { nodeTypes } from "../../utils/layout";
 import { useNodeState } from "../../contexts/NodeStateContext";
 import { useNodeLayout } from "../../hooks/useNodeLayout";
+import { Node, Edge } from "reactflow";
 
 type CanvasProps = {
+  nodes: Node[];
+  edges: Edge[];
+  types: any[]; // We'll type this properly when adding snippet support
   selectedNodeId: string | null;
   onNodeSelect: (nodeId: string) => void;
 };
 
 export const Canvas: React.FC<CanvasProps> = ({
+  nodes: initialNodes,
+  edges,
+  types,
   selectedNodeId,
   onNodeSelect,
 }) => {
-  const { contentTypes, typesWithSnippets } = useEntities();
   const { expandedNodes, isolation } = useNodeState();
   const { setNodes } = useReactFlow();
-  const { nodes, edges } = useGraphData(typesWithSnippets);
 
-  useNodeLayout(nodes, edges, selectedNodeId, expandedNodes, isolation, setNodes);
+  useNodeLayout(initialNodes, edges, selectedNodeId, expandedNodes, isolation, setNodes);
 
   return (
     <div className="flex h-full w-full">
-      <Sidebar types={contentTypes} onMenuSelect={onNodeSelect} />
+      <Sidebar types={types} onMenuSelect={onNodeSelect} />
       <div className="flex-1 w-full h-full pb-14">
         <Toolbar />
         <ReactFlow

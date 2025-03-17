@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import IconSchemeConnected from "../icons/IconSchemeConnected";
 import IconMagnifier from "../icons/Magnifier";
-import { ActionButton } from "../nodes/ActionButton";
+import { ActionButton } from "../controls/ActionButton";
 import { useNodeState } from "../../contexts/NodeStateContext";
 import { useReactFlow } from "reactflow";
 

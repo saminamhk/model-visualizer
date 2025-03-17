@@ -6,6 +6,7 @@ import "./index.css";
 import "@kontent-ai/stylekit/styles/styles.css";
 import { ReactFlowProvider } from "reactflow";
 import { NodeStateProvider } from "./contexts/NodeStateContext";
+import { ViewProvider } from "./contexts/ViewContext";
 import { EntityProvider } from "./contexts/EntityContext";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
@@ -13,13 +14,15 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <AppProvider>
       <ReactFlowProvider>
         <NodeStateProvider>
-          <EntityProvider
-            contentTypes={[]}
-            snippets={[]}
-            typesWithSnippets={[]}
-          >
-            <App />
-          </EntityProvider>
+          <ViewProvider>
+            <EntityProvider
+              contentTypes={[]}
+              snippets={[]}
+              typesWithSnippets={[]}
+            >
+              <App />
+            </EntityProvider>
+          </ViewProvider>
         </NodeStateProvider>
       </ReactFlowProvider>
     </AppProvider>

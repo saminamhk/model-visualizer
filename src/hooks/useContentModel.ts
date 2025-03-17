@@ -33,7 +33,10 @@ export const useContentModel = () => {
         setTypesWithSnippets(mergeTypesWithSnippets(typesResult.data || [], snippetsResult.data || []));
       } catch (err: any) {
         console.error(err);
-        setError({ description: err.description ?? "Failed to fetch content model data", code: err.code ?? "FETCH_ERROR" });
+        setError({
+          description: err.description ?? "Failed to fetch content model data",
+          code: err.code ?? "FETCH_ERROR",
+        });
       } finally {
         setLoading(false);
       }
