@@ -15,7 +15,7 @@ export type ViewProps = {
 
 export type ViewRenderer = {
   createNodes: (props: ViewProps) => Node[];
-  createEdges: (props: ViewProps) => Edge[];
+  createEdges: (props: ViewProps & { includeRichText: boolean }) => Edge[];
   getSidebarItems: (props: ViewProps) => { id: string; name: string }[];
 };
 
@@ -28,7 +28,7 @@ export const View: React.FC<ViewProps & { renderer: ViewRenderer }> = ({
 
   const nodes = useMemo(() => renderer.createNodes({ contentTypes, ...props }), [contentTypes, props, renderer]);
 
-  const edges = useMemo(() => renderer.createEdges({ contentTypes, ...props }), [
+  const edges = useMemo(() => renderer.createEdges({ includeRichText, contentTypes, ...props }), [
     contentTypes,
     props,
     renderer,

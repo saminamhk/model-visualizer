@@ -2,7 +2,7 @@ import { ViewRenderer } from "../View";
 import { Node, Edge } from "reactflow";
 import { ViewProps } from "../View";
 import { isRelationshipElement } from "../../../utils/layout";
-import { useNodeState } from "../../../contexts/NodeStateContext";
+import { layoutConfig } from "../../../utils/config";
 
 const createNodes = (props: ViewProps): Node[] => {
   const { typesWithSnippets } = props;
@@ -26,9 +26,8 @@ const createNodes = (props: ViewProps): Node[] => {
   }));
 };
 
-const createEdges = (props: ViewProps): Edge[] => {
-  const { typesWithSnippets } = props;
-  const { includeRichText } = useNodeState();
+const createEdges = (props: ViewProps & { includeRichText: boolean }): Edge[] => {
+  const { typesWithSnippets, includeRichText } = props;
   const edgeSet = new Set<string>();
   const edges: Edge[] = [];
 
@@ -49,6 +48,7 @@ const createEdges = (props: ViewProps): Edge[] => {
               target: allowed.id ?? "",
               sourceHandle: `source-${element.id}`,
               targetHandle: "target",
+              type: layoutConfig.edgeType,
             });
           }
         });

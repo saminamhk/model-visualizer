@@ -22,7 +22,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ types, onMenuSelect }) => {
   const sideBarSectionRef = useRef<HTMLDivElement>(null);
 
   const checkScroll = () => {
-    if (sideBarSectionRef.current) {
+    if (sideBarSectionRef.current) { // display scroll indicator (fade out) if there is a scrollbar
       const { scrollHeight, clientHeight, scrollTop } = sideBarSectionRef.current;
       setShowScrollIndicator(scrollHeight > clientHeight && scrollHeight - clientHeight - scrollTop > 10);
     }

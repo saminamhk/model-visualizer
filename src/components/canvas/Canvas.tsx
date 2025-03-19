@@ -17,7 +17,7 @@ type CanvasProps = {
 };
 
 export const Canvas: React.FC<CanvasProps> = ({
-  nodes: initialNodes,
+  nodes,
   edges,
   types,
   selectedNodeId,
@@ -26,7 +26,7 @@ export const Canvas: React.FC<CanvasProps> = ({
   const { expandedNodes, isolation } = useNodeState();
   const { setNodes } = useReactFlow();
 
-  useNodeLayout(initialNodes, edges, selectedNodeId, expandedNodes, isolation, setNodes);
+  useNodeLayout(nodes, edges, selectedNodeId, expandedNodes, isolation, setNodes);
 
   return (
     <div className="flex h-full w-full">

@@ -1,11 +1,10 @@
 import { ContentTypeElements } from "@kontent-ai/management-sdk";
 import dagre from "dagre";
 import { Node, Edge } from "reactflow";
-import { AnnotatedElement, Element, SnippetElement } from "./mapi";
+import { AnnotatedElement, Element } from "./mapi";
 import { ContentTypeNode } from "../components/nodes/ContentTypeNode";
 import { SnippetNode } from "../components/nodes/SnippetNode";
-
-const nodeWidth = 172;
+import { layoutConfig } from "./config";
 
 export const nodeBaseStyle: React.CSSProperties = {
   paddingTop: 5,
@@ -47,10 +46,14 @@ export type SnippetNodeData = NodeData & {
   elements: Element[];
 };
 
+type RelationshipElement =
+  | ContentTypeElements.ILinkedItemsElement
+  | ContentTypeElements.ISubpagesElement
+  | ContentTypeElements.IRichTextElement;
+
 export const calculateNodeHeight = (data: ContentTypeNodeData | SnippetNodeData) => {
   const filteredElements = data.elements.filter(element => element.type !== "guidelines");
-  const baseNodeHeight = 42;
-  const elementHeight = 24;
+  const { baseNodeHeight, elementHeight } = layoutConfig;
 
   return data.isExpanded ? baseNodeHeight + filteredElements.length * elementHeight : baseNodeHeight;
 };
@@ -58,25 +61,24 @@ export const calculateNodeHeight = (data: ContentTypeNodeData | SnippetNodeData)
 export const getLayoutedElements = (
   nodes: Node[],
   edges: Edge[],
-  direction: "TB" | "LR" = "LR",
 ) => {
   console.log("getLayoutedElements called");
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
   dagreGraph.setGraph({
-    rankdir: direction,
-    nodesep: 100,
-    ranksep: 200,
-    align: "UL", // UL, UR, DL, DR
-    ranker: "network-simplex", // network-simplex, tight-tree, longest-path
-    acyclicer: "greedy",
+    rankdir: layoutConfig.rankDirection,
+    nodesep: layoutConfig.nodeSeparation,
+    ranksep: layoutConfig.rankSeparation,
+    align: layoutConfig.alignment,
+    ranker: layoutConfig.ranker,
+    acyclicer: layoutConfig.acyclicer,
   });
 
   nodes.forEach((node) => {
     const height = calculateNodeHeight(node.data);
     dagreGraph.setNode(node.id, {
-      width: nodeWidth,
+      width: layoutConfig.nodeWidth,
       height: height,
     });
   });
@@ -95,7 +97,7 @@ export const getLayoutedElements = (
       return {
         ...node,
         position: {
-          x: nodeWithPosition.x - nodeWidth / 2,
+          x: nodeWithPosition.x - layoutConfig.nodeWidth / 2,
           y: nodeWithPosition.y - height / 2,
         },
       };
@@ -106,10 +108,7 @@ export const getLayoutedElements = (
 
 export const isRelationshipElement = (
   element: Element,
-): element is
-  | ContentTypeElements.ILinkedItemsElement
-  | ContentTypeElements.ISubpagesElement
-  | ContentTypeElements.IRichTextElement =>
+): element is RelationshipElement =>
   (element.type === "modular_content"
     || element.type === "subpages"
     || element.type === "rich_text")
@@ -123,8 +122,4 @@ export const isNodeRelated = (nodeId: string, targetId: string, edges: Edge[]): 
     (edge.source === nodeId && edge.target === targetId)
     || (edge.target === nodeId && edge.source === targetId)
   );
-};
-
-export const isSnippetElement = (element: Element): element is SnippetElement => {
-  return element.type === "snippet";
 };

@@ -1,13 +1,13 @@
 import React from "react";
 import { NodeProps, useReactFlow } from "reactflow";
 import { SourceHandle, TargetHandle } from "../controls/Handles";
-import { useEntities } from "../../contexts/EntityContext";
 import { ContentTypeNodeData, nodeBaseStyle } from "../../utils/layout";
 import { ActionButton } from "../controls/ActionButton";
 import { ElementRow } from "./ElementRow";
 import { useNodeState } from "../../contexts/NodeStateContext";
 import IconSchemeConnected from "../icons/IconSchemeConnected";
 import IconMagnifier from "../icons/Magnifier";
+import { useContentModel } from "../../hooks/useContentModel";
 
 export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
   data,
@@ -15,7 +15,7 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
 }) => {
   const { expandedNodes, toggleNode, isolateRelated, isolateSingle } = useNodeState();
   const { fitView } = useReactFlow();
-  const { snippets } = useEntities();
+  const { snippets } = useContentModel();
 
   const isExpanded = expandedNodes.has(data.id);
 
