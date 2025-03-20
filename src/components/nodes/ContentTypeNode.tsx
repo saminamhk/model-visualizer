@@ -1,7 +1,7 @@
 import React from "react";
-import { NodeProps, useReactFlow } from "reactflow";
+import { useReactFlow } from "@xyflow/react";
 import { SourceHandle, TargetHandle } from "../controls/Handles";
-import { ContentTypeNodeData, nodeBaseStyle } from "../../utils/layout";
+import { ContentTypeNodeData as ContentTypeNodeData, isRelationshipElement, nodeBaseStyle } from "../../utils/layout";
 import { ActionButton } from "../controls/ActionButton";
 import { ElementRow } from "./ElementRow";
 import { useNodeState } from "../../contexts/NodeStateContext";
@@ -10,7 +10,7 @@ import IconMagnifier from "../icons/Magnifier";
 import { useContentModel } from "../../hooks/useContentModel";
 import { useAppContext } from "../../contexts/AppContext";
 
-export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
+export const ContentTypeNode: React.FC<ContentTypeNodeData> = ({
   data,
   selected,
 }) => {
@@ -91,7 +91,17 @@ export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
               ))}
           </div>
         )
-        : <SourceHandle id="source" />}
+        : (
+          <div>
+            {filteredElements.map(el =>
+              isRelationshipElement(el)
+                ? <SourceHandle key={el.id} id={`source-${el.id}`} />
+                : el.type === "snippet"
+                ? <TargetHandle key={el.id} id={`target-${el.id}`} />
+                : null
+            )}
+          </div>
+        )}
     </div>
   );
 };

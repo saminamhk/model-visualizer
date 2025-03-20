@@ -3,7 +3,7 @@ import IconSchemeConnected from "../icons/IconSchemeConnected";
 import IconMagnifier from "../icons/Magnifier";
 import { ActionButton } from "../controls/ActionButton";
 import { useNodeState } from "../../contexts/NodeStateContext";
-import { useReactFlow } from "reactflow";
+import { useReactFlow } from "@xyflow/react";
 
 interface SidebarSectionProps {
   title: string;

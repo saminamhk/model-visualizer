@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useReactFlow } from "reactflow";
+import { useReactFlow } from "@xyflow/react";
 import { useNodeState } from "../../contexts/NodeStateContext";
 import { useView } from "../../contexts/ViewContext";
 import { VIEWS } from "../../types/views";

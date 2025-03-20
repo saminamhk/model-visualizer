@@ -1,5 +1,5 @@
 import React from "react";
-import { NodeProps, useReactFlow } from "reactflow";
+import { NodeProps, useReactFlow } from "@xyflow/react";
 import { SnippetNodeData } from "../../utils/layout";
 import { ActionButton } from "../controls/ActionButton";
 import { SourceHandle } from "../controls/Handles";
@@ -8,6 +8,7 @@ import { nodeBaseStyle } from "../../utils/layout";
 import IconSchemeConnected from "../icons/IconSchemeConnected";
 import { ElementRow } from "./ElementRow";
 import IconMagnifier from "../icons/Magnifier";
+import { useAppContext } from "../../contexts/AppContext";
 
 export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
   data,
@@ -39,9 +40,21 @@ export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
 
   const filteredElements = data.elements.filter(el => el.type !== "guidelines" && el.type !== "snippet");
 
+  const { customApp } = useAppContext();
+
   return (
     <div onClick={() => toggleNode(data.id)} style={containerStyle}>
-      <div className="text-xs text-gray-400 px-2">Snippet</div>
+      <div className="flex text-gray-400 justify-between items-center">
+        <div className="text-xs px-2">Snippet</div>
+        <a
+          className="px-2"
+          href={`https://app.kontent.ai/${customApp.context.environmentId}/content-models/snippets/edit/${data.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <ActionButton title="Edit snippet" onClick={() => {}} icon="✎" />
+        </a>
+      </div>
       <div className="flex justify-between items-center px-2 py-1">
         <div className="font-bold">{data.label}</div>
         <span className="flex-1"></span>

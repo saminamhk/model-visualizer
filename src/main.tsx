@@ -4,7 +4,7 @@ import App from "./App";
 import { AppProvider } from "./contexts/AppContext";
 import "./index.css";
 import "@kontent-ai/stylekit/styles/styles.css";
-import { ReactFlowProvider } from "reactflow";
+import { ReactFlowProvider } from "@xyflow/react";
 import { NodeStateProvider } from "./contexts/NodeStateContext";
 import { ViewProvider } from "./contexts/ViewContext";
 

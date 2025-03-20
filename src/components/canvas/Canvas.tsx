@@ -1,12 +1,11 @@
 import React from "react";
-import ReactFlow, { MiniMap, Controls, Background, applyNodeChanges, useReactFlow } from "reactflow";
-import "reactflow/dist/style.css";
+import { ReactFlow, MiniMap, Controls, Background, applyNodeChanges, useReactFlow, Node, Edge } from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 import { Toolbar } from "./Toolbar";
 import { Sidebar } from "./Sidebar";
 import { nodeTypes } from "../../utils/layout";
 import { useNodeState } from "../../contexts/NodeStateContext";
 import { useNodeLayout } from "../../hooks/useNodeLayout";
-import { Node, Edge } from "reactflow";
 
 type CanvasProps = {
   nodes: Node[];
@@ -38,7 +37,6 @@ export const Canvas: React.FC<CanvasProps> = ({
           edges={edges}
           onNodesChange={(changes) => setNodes(nodes => applyNodeChanges(changes, nodes))}
           nodeTypes={nodeTypes}
-          onNodeClick={(_, node) => onNodeSelect(node.id)}
           fitView
         >
           <MiniMap pannable />

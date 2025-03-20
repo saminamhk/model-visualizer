@@ -1,5 +1,5 @@
 import { ViewRenderer } from "../View";
-import { Node, Edge } from "reactflow";
+import { Node, Edge } from "@xyflow/react";
 import { ViewProps } from "../View";
 import { isRelationshipElement } from "../../../utils/layout";
 import { layoutConfig } from "../../../utils/config";

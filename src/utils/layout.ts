@@ -1,6 +1,6 @@
 import { ContentTypeElements } from "@kontent-ai/management-sdk";
-import dagre from "dagre";
-import { Node, Edge } from "reactflow";
+import Dagre from "@dagrejs/dagre";
+import { Node, Edge, NodeTypes } from "@xyflow/react";
 import { AnnotatedElement, Element } from "./mapi";
 import { ContentTypeNode } from "../components/nodes/ContentTypeNode";
 import { SnippetNode } from "../components/nodes/SnippetNode";
@@ -17,9 +17,9 @@ export const nodeBaseStyle: React.CSSProperties = {
 };
 
 export const nodeTypes = {
-  contentType: ContentTypeNode,
-  snippet: SnippetNode,
-} as const;
+  contentType: ContentTypeNode as unknown as NodeTypes["contentType"],
+  snippet: SnippetNode as unknown as NodeTypes["snippet"],
+} as const satisfies NodeTypes;
 
 export type NodeIsolation = {
   nodeId: string;
@@ -37,14 +37,18 @@ type NodeData = {
   isExpanded?: boolean;
 };
 
-export type ContentTypeNodeData = NodeData & {
-  elements: AnnotatedElement[];
-  selfReferences?: string[];
-};
+export type ContentTypeNodeData = Node<
+  {
+    elements: AnnotatedElement[];
+    selfReferences?: string[];
+  } & NodeData
+>;
 
-export type SnippetNodeData = NodeData & {
-  elements: Element[];
-};
+export type SnippetNodeData = Node<
+  {
+    elements: Element[];
+  } & NodeData
+>;
 
 type RelationshipElement =
   | ContentTypeElements.ILinkedItemsElement
@@ -53,11 +57,11 @@ type RelationshipElement =
 
 type RequirableElement = Exclude<Element, ContentTypeElements.IGuidelinesElement | ContentTypeElements.ISnippetElement>;
 
-export const calculateNodeHeight = (data: ContentTypeNodeData | SnippetNodeData) => {
-  const filteredElements = data.elements.filter(element => element.type !== "guidelines");
+export const calculateNodeHeight = (node: ContentTypeNodeData | SnippetNodeData) => {
+  const filteredElements = node.data.elements.filter(element => element.type !== "guidelines");
   const { baseNodeHeight, elementHeight } = layoutConfig;
 
-  return data.isExpanded ? baseNodeHeight + filteredElements.length * elementHeight : baseNodeHeight;
+  return node.data.isExpanded ? baseNodeHeight + filteredElements.length * elementHeight : baseNodeHeight;
 };
 
 export const getLayoutedElements = (
@@ -65,10 +69,9 @@ export const getLayoutedElements = (
   edges: Edge[],
 ) => {
   console.log("getLayoutedElements called");
-  const dagreGraph = new dagre.graphlib.Graph();
-  dagreGraph.setDefaultEdgeLabel(() => ({}));
+  const graph = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 
-  dagreGraph.setGraph({
+  graph.setGraph({
     rankdir: layoutConfig.rankDirection,
     nodesep: layoutConfig.nodeSeparation,
     ranksep: layoutConfig.rankSeparation,
@@ -78,24 +81,23 @@ export const getLayoutedElements = (
   });
 
   nodes.forEach((node) => {
-    console.log(node.height);
-    const height = calculateNodeHeight(node.data);
-    dagreGraph.setNode(node.id, {
+    const height = calculateNodeHeight(node as ContentTypeNodeData | SnippetNodeData);
+    graph.setNode(node.id, {
       width: layoutConfig.nodeWidth,
       height: height,
     });
   });
 
   edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target);
+    graph.setEdge(edge.source, edge.target);
   });
 
-  dagre.layout(dagreGraph);
+  Dagre.layout(graph);
 
   return {
     nodes: nodes.map((node) => {
-      const nodeWithPosition = dagreGraph.node(node.id);
-      const height = calculateNodeHeight(node.data);
+      const nodeWithPosition = graph.node(node.id);
+      const height = calculateNodeHeight(node as ContentTypeNodeData | SnippetNodeData);
 
       return {
         ...node,

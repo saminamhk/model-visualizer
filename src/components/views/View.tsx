@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Node, Edge } from "reactflow";
+import { Node, Edge } from "@xyflow/react";
 import { ResolvedType, Snippet } from "../../utils/mapi";
 import { ContentTypeModels } from "@kontent-ai/management-sdk";
 import { Canvas } from "../canvas/Canvas";

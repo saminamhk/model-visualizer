@@ -1,5 +1,5 @@
 import React from "react";
-import { Handle, HandleProps, Position } from "reactflow";
+import { Handle, HandleProps, Position } from "@xyflow/react";
 
 type CustomHandleProps = Omit<HandleProps, "type" | "position">;
 

@@ -1,7 +1,7 @@
 import { ContentTypeModels } from "@kontent-ai/management-sdk";
 import React, { useState, useRef, useEffect } from "react";
 import { useNodeState } from "../../contexts/NodeStateContext";
-import { useReactFlow } from "reactflow";
+import { useReactFlow } from "@xyflow/react";
 import { SidebarSection } from "./SidebarSection";
 import IconChevronDoubleRight from "../icons/IconChevronDoubleRight";
 import IconChevronDoubleLeft from "../icons/IconChevronDoubleLeft";

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Edge, Node } from "reactflow";
+import { Edge, Node } from "@xyflow/react";
 import { getLayoutedElements, isNodeRelated } from "../utils/layout";
 import { NodeIsolation } from "../utils/layout";
 
