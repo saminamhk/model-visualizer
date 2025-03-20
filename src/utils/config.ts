@@ -20,6 +20,6 @@ export const layoutConfig: Readonly<LayoutConfig> = {
   nodeSeparation: 100,
   rankSeparation: 200,
   nodeWidth: 172,
-  baseNodeHeight: 42,
+  baseNodeHeight: 76,
   elementHeight: 24,
 };

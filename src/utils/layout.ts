@@ -39,7 +39,7 @@ type NodeData = {
 
 export type ContentTypeNodeData = NodeData & {
   elements: AnnotatedElement[];
-  selfReferences: string[];
+  selfReferences?: string[];
 };
 
 export type SnippetNodeData = NodeData & {
@@ -50,6 +50,8 @@ type RelationshipElement =
   | ContentTypeElements.ILinkedItemsElement
   | ContentTypeElements.ISubpagesElement
   | ContentTypeElements.IRichTextElement;
+
+type RequirableElement = Exclude<Element, ContentTypeElements.IGuidelinesElement | ContentTypeElements.ISnippetElement>;
 
 export const calculateNodeHeight = (data: ContentTypeNodeData | SnippetNodeData) => {
   const filteredElements = data.elements.filter(element => element.type !== "guidelines");
@@ -76,6 +78,7 @@ export const getLayoutedElements = (
   });
 
   nodes.forEach((node) => {
+    console.log(node.height);
     const height = calculateNodeHeight(node.data);
     dagreGraph.setNode(node.id, {
       width: layoutConfig.nodeWidth,
@@ -113,6 +116,10 @@ export const isRelationshipElement = (
     || element.type === "subpages"
     || element.type === "rich_text")
   && Array.isArray(element.allowed_content_types);
+
+export const isRequirableElement = (element: Element): element is RequirableElement =>
+  element.type !== "guidelines"
+  && element.type !== "snippet";
 
 export const isNodeRelated = (nodeId: string, targetId: string, edges: Edge[]): boolean => {
   if (nodeId === targetId) return true;

@@ -1,7 +1,7 @@
 import React from "react";
-import { SourceHandle } from "../controls/Handles";
+import { SourceHandle, TargetHandle } from "../controls/Handles";
 import { AnnotatedElement, elementTypeMap } from "../../utils/mapi";
-import { isRelationshipElement } from "../../utils/layout";
+import { isRelationshipElement, isRequirableElement } from "../../utils/layout";
 import { ContentTypeElements } from "@kontent-ai/management-sdk";
 import IconAccordion from "../icons/IconAccordion";
 import IconRotateDoubleRight from "../icons/IconRotateDoubleRight";
@@ -21,7 +21,7 @@ type NamedElement =
 type ElementRowProps = {
   element: NamedElement;
   isLast: boolean;
-  selfReferences: boolean;
+  selfReferences?: boolean;
 };
 
 const linkedItemConditionMap: ReadonlyMap<"at_least" | "at_most" | "exactly", string> = new Map([
@@ -37,8 +37,14 @@ export const ElementRow: React.FC<ElementRowProps> = ({ element, isLast, selfRef
       borderBottom: !isLast ? "1px solid #ddd" : "none",
     }}
   >
+    {element.type === "snippet" && ( // element height is 24px, handle is offset by 12px to align vertically
+      <div className="absolute left-0 top-[-12px]">
+        <TargetHandle id={`target-${element.id}`} />
+      </div>
+    )}
     <div className="font-bold text-xs">{element.name}</div>
     <span className="flex-1"></span>
+    {isRequirableElement(element) && element.is_required && <InfoBadge title={`This element is required.`} icon="❋" />}
     {element.fromSnippet && (
       <InfoBadge title={`This element comes from ${element.fromSnippet.name} snippet`} icon={<IconAccordion />} />
     )}

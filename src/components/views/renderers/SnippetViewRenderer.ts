@@ -2,22 +2,37 @@ import { ViewRenderer } from "../View";
 import { Node, Edge } from "reactflow";
 import { ViewProps } from "../View";
 
-const createNodes = (props: ViewProps): Node[] => {
-  const { snippets, contentTypes } = props;
+const createSnippetNodes = (props: ViewProps): Node[] => {
+  const { snippets } = props;
 
-  const entities = [...snippets, ...contentTypes];
-
-  return entities.map((entity, index) => ({
-    id: entity.id,
-    type: "contentType",
+  return snippets.map((snippet, index) => ({
+    id: snippet.id,
+    type: "snippet",
     position: { x: 0, y: index * 100 }, // Initial position, will be adjusted by layout
     data: {
-      id: entity.id,
-      label: entity.name,
-      elements: entity.elements,
+      id: snippet.id,
+      label: snippet.name,
+      elements: snippet.elements,
     },
   }));
 };
+
+const createTypeNodes = (props: ViewProps): Node[] => {
+  const { contentTypes } = props;
+
+  return contentTypes.map((type, index) => ({
+    id: type.id,
+    type: "contentType",
+    position: { x: 0, y: index * 100 }, // Initial position, will be adjusted by layout
+    data: {
+      id: type.id,
+      label: type.name,
+      elements: type.elements,
+    },
+  }));
+};
+
+const createNodes = (props: ViewProps): Node[] => [...createSnippetNodes(props), ...createTypeNodes(props)];
 
 const createEdges = (props: ViewProps): Edge[] => {
   const { contentTypes, snippets } = props;
@@ -33,7 +48,7 @@ const createEdges = (props: ViewProps): Edge[] => {
             source: snippet.id,
             target: type.id,
             sourceHandle: "source",
-            targetHandle: "target",
+            targetHandle: `target-${element.id}`,
           });
         }
       }
