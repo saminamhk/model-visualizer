@@ -28,7 +28,7 @@ export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
   const handleIsolateSingle = (e: React.MouseEvent) => {
     e.stopPropagation();
     isolateSingle(data.id);
-    toggleNode(data.id);
+    toggleNode(data.id, true);
     setTimeout(() => fitView({ duration: 800 }), 50);
   };
 

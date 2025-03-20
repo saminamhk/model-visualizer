@@ -33,10 +33,11 @@ export const Canvas: React.FC<CanvasProps> = ({
       <div className="flex-1 w-full h-full pb-14">
         <Toolbar />
         <ReactFlow
-          defaultNodes={[]}
+          defaultNodes={[] as Node[]}
           edges={edges}
-          onNodesChange={(changes) => setNodes(nodes => applyNodeChanges(changes, nodes))}
           nodeTypes={nodeTypes}
+          onNodeClick={(_, node) => onNodeSelect(node.id)}
+          onNodesChange={(changes) => setNodes(nodes => applyNodeChanges(changes, nodes))}
           fitView
         >
           <MiniMap pannable />

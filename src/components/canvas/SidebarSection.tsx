@@ -30,7 +30,7 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
   const handleIsolateSingle = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     isolateSingle(id);
-    toggleNode(id);
+    toggleNode(id, true);
     setTimeout(() => fitView({ duration: 800 }), 50);
   };
 
