@@ -1,43 +1,83 @@
-import React from "react";
-import { ReactFlow, MiniMap, Controls, Background, applyNodeChanges, useReactFlow, Node, Edge } from "@xyflow/react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
+import {
+  ReactFlow,
+  MiniMap,
+  Controls,
+  Background,
+  applyNodeChanges,
+  useReactFlow,
+  Node,
+  Edge,
+  useNodesInitialized,
+} from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { Toolbar } from "./Toolbar";
 import { Sidebar } from "./Sidebar";
-import { nodeTypes } from "../../utils/layout";
+import { getLayoutedElements, isNodeRelated, nodeTypes } from "../../utils/layout";
 import { useNodeState } from "../../contexts/NodeStateContext";
-import { useNodeLayout } from "../../hooks/useNodeLayout";
 
 type CanvasProps = {
   nodes: Node[];
   edges: Edge[];
   types: any[]; // We'll type this properly when adding snippet support
-  selectedNodeId: string | null;
-  onNodeSelect: (nodeId: string) => void;
 };
 
 export const Canvas: React.FC<CanvasProps> = ({
   nodes,
   edges,
   types,
-  selectedNodeId,
-  onNodeSelect,
 }) => {
   const { expandedNodes, isolation } = useNodeState();
-  const { setNodes } = useReactFlow();
+  const { setNodes, getNodes, getEdges } = useReactFlow();
+  const nodesInitialized = useNodesInitialized();
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
-  useNodeLayout(nodes, edges, selectedNodeId, expandedNodes, isolation, setNodes);
+  const handleNodeSelect = useCallback((node: Node) => {
+    setSelectedNodeId(node.id);
+  }, []);
+
+  // TODO: optimize these two useEffects
+
+  useEffect(() => {
+    if (nodesInitialized) {
+      setNodes(getLayoutedElements(getNodes(), getEdges()).nodes);
+    }
+  }, [nodesInitialized, getEdges, getNodes, setNodes]);
+
+  const updatedNodes: Node[] = useMemo(() =>
+    nodes.map(node => ({
+      ...node,
+      selected: node.id === selectedNodeId,
+      data: {
+        ...node.data,
+        isExpanded: expandedNodes.has(node.id),
+      },
+      hidden: isolation
+        ? isolation.mode === "related"
+          ? !isNodeRelated(node.id, isolation.nodeId, edges)
+          : node.id !== isolation.nodeId
+        : false,
+    })), [nodes, selectedNodeId, expandedNodes, isolation, edges]);
+
+  useEffect(() => {
+    console.log("nodes");
+    setNodes(getLayoutedElements(updatedNodes, getEdges()).nodes);
+  }, [updatedNodes, getEdges, setNodes]);
 
   return (
     <div className="flex h-full w-full">
-      <Sidebar types={types} onMenuSelect={onNodeSelect} />
+      <Sidebar types={types} onMenuSelect={setSelectedNodeId} />
       <div className="flex-1 w-full h-full pb-14">
         <Toolbar />
         <ReactFlow
-          defaultNodes={[] as Node[]}
+          defaultNodes={nodes}
           edges={edges}
           nodeTypes={nodeTypes}
-          onNodeClick={(_, node) => onNodeSelect(node.id)}
-          onNodesChange={(changes) => setNodes(nodes => applyNodeChanges(changes, nodes))}
+          onNodeClick={(_, node) => handleNodeSelect(node)}
+          onNodesChange={(changes) => {
+            console.log("changes", changes);
+            return setNodes(nodes => applyNodeChanges(changes, nodes));
+          }}
           fitView
         >
           <MiniMap pannable />

@@ -1,47 +1,56 @@
 import { Handler, HandlerEvent } from "@netlify/functions";
 import { ManagementClient } from "@kontent-ai/management-sdk";
 
-type Action = "getContentTypes" | "getContentTypeSnippets";
+type Action = keyof Pick<ManagementClient, "listContentTypes" | "listContentTypeSnippets" | "listTaxonomies">;
 
-type ProxyRequest = {
+type ActionMap = {
+  [K in Action]: () => ReturnType<ManagementClient[K]>;
+};
+
+type RequestPayload = {
   environmentId: string;
   action: Action;
 };
 
+const createResponse = (statusCode: number, body: string) => ({
+  statusCode,
+  body,
+});
+
 export const handler: Handler = async (event: HandlerEvent) => {
   if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
+    return createResponse(405, "Method Not Allowed");
   }
 
   try {
-    const { environmentId, action }: ProxyRequest = JSON.parse(event.body || "{}");
+    const { environmentId, action }: RequestPayload = JSON.parse(event.body || "{}");
     if (!environmentId || !action) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Missing environmentId or action" }) };
+      return createResponse(400, "Missing environmentId or action");
     }
 
     const apiKey = process.env.MAPI_KEY;
     if (!apiKey) {
       console.error("API key is missing from environment variables.");
-      return { statusCode: 500, body: JSON.stringify({ error: "Server misconfiguration" }) };
+      return createResponse(500, "Server misconfiguration");
     }
 
     const client = new ManagementClient({ environmentId, apiKey });
-    const actions = {
-      getContentTypes: () => client.listContentTypes(),
-      getContentTypeSnippets: () => client.listContentTypeSnippets(),
-      // more actions here
+
+    const actions: ActionMap = {
+      listContentTypes: () => client.listContentTypes(),
+      listContentTypeSnippets: () => client.listContentTypeSnippets(),
+      listTaxonomies: () => client.listTaxonomies(),
     };
 
     const actionFn = actions[action];
     if (!actionFn) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Unsupported action" }) };
+      return createResponse(400, "Unsupported action");
     }
 
     const response = await actionFn().toAllPromise();
-    return { statusCode: 200, body: JSON.stringify(response.data.items) };
+    return createResponse(200, JSON.stringify(response.data.items));
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
-    console.error("Error:", errorMessage);
-    return { statusCode: 500, body: JSON.stringify({ error: errorMessage }) };
+    console.error("Error:", error);
+    return createResponse(500, error instanceof Error ? error.message : "An unknown error occurred");
   }
 };

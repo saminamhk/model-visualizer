@@ -9,8 +9,6 @@ export type ViewProps = {
   contentTypes: ContentTypeModels.ContentType[];
   snippets: Snippet[];
   typesWithSnippets: ResolvedType[];
-  selectedNodeId: string | null;
-  onNodeSelect: (nodeId: string) => void;
 };
 
 export type ViewRenderer = {
@@ -40,8 +38,6 @@ export const View: React.FC<ViewProps & { renderer: ViewRenderer }> = ({
       nodes={nodes}
       edges={edges}
       types={contentTypes}
-      selectedNodeId={props.selectedNodeId}
-      onNodeSelect={props.onNodeSelect}
     />
   );
 };

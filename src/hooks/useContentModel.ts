@@ -9,46 +9,67 @@ import {
 } from "../utils/mapi";
 import { useAppContext } from "../contexts/AppContext";
 
+type ContentModelState = {
+  contentTypes: ContentType[];
+  snippets: Snippet[];
+  typesWithSnippets: ResolvedType[];
+};
+
+type ContentModelError = {
+  description: string;
+  code: string;
+};
+
+const initialState: ContentModelState = {
+  contentTypes: [],
+  snippets: [],
+  typesWithSnippets: [],
+};
+
 export const useContentModel = () => {
   const { customApp } = useAppContext();
-  const [contentTypes, setContentTypes] = useState<ContentType[]>([]);
-  const [snippets, setSnippets] = useState<Snippet[]>([]);
+  const [state, setState] = useState<ContentModelState>(initialState);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<{ description: string; code: string } | null>(null);
-  const [typesWithSnippets, setTypesWithSnippets] = useState<ResolvedType[]>([]);
+  const [error, setError] = useState<ContentModelError | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const getContentModel = async () => {
       try {
         setLoading(true);
+        setError(null);
+
         const [typesResult, snippetsResult] = await Promise.all([
           getContentTypes(customApp.context.environmentId),
           getContentTypeSnippets(customApp.context.environmentId),
         ]);
+
         if (typesResult.error) throw typesResult.error;
         if (snippetsResult.error) throw snippetsResult.error;
 
-        setContentTypes(typesResult.data || []);
-        setSnippets(snippetsResult.data || []);
-        setTypesWithSnippets(mergeTypesWithSnippets(typesResult.data || [], snippetsResult.data || []));
-      } catch (err: any) {
-        console.error(err);
+        const types = typesResult.data || [];
+        const snippets = snippetsResult.data || [];
+
+        setState({
+          contentTypes: types,
+          snippets: snippets,
+          typesWithSnippets: mergeTypesWithSnippets(types, snippets),
+        });
+      } catch (error) {
+        console.error(error);
         setError({
-          description: err.description ?? "Failed to fetch content model data",
-          code: err.code ?? "FETCH_ERROR",
+          description: error instanceof Error ? error.message : "Failed to fetch content model data",
+          code: "FETCH_ERROR",
         });
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    getContentModel();
   }, [customApp.context.environmentId]);
 
   return {
-    contentTypes,
-    snippets,
-    typesWithSnippets,
+    ...state,
     loading,
     error,
   };

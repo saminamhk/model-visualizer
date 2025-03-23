@@ -57,18 +57,19 @@ type RelationshipElement =
 
 type RequirableElement = Exclude<Element, ContentTypeElements.IGuidelinesElement | ContentTypeElements.ISnippetElement>;
 
-export const calculateNodeHeight = (node: ContentTypeNodeData | SnippetNodeData) => {
-  const filteredElements = node.data.elements.filter(element => element.type !== "guidelines");
-  const { baseNodeHeight, elementHeight } = layoutConfig;
+export const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
+  const baseNodeHeight = 76;
+  const baseNodeWidth = 172;
+  // Split nodes into visible and hidden
+  const visibleNodes = nodes.filter(node => !node.hidden);
+  const hiddenNodes = nodes.filter(node => node.hidden);
 
-  return node.data.isExpanded ? baseNodeHeight + filteredElements.length * elementHeight : baseNodeHeight;
-};
+  // Only use visible edges (those connecting visible nodes)
+  const visibleEdges = edges.filter(edge =>
+    visibleNodes.some(node => node.id === edge.source)
+    && visibleNodes.some(node => node.id === edge.target)
+  );
 
-export const getLayoutedElements = (
-  nodes: Node[],
-  edges: Edge[],
-) => {
-  console.log("getLayoutedElements called");
   const graph = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 
   graph.setGraph({
@@ -80,33 +81,38 @@ export const getLayoutedElements = (
     acyclicer: layoutConfig.acyclicer,
   });
 
-  nodes.forEach((node) => {
-    const height = calculateNodeHeight(node as ContentTypeNodeData | SnippetNodeData);
-    graph.setNode(node.id, {
-      width: layoutConfig.nodeWidth,
-      height: height,
-    });
+  // Process only visible nodes for layout
+  visibleNodes.forEach((node) => {
+    const width = node.width ?? node.measured?.width ?? baseNodeWidth;
+    const height = node.height ?? node.measured?.height ?? baseNodeHeight;
+
+    graph.setNode(node.id, { width, height });
   });
 
-  edges.forEach((edge) => {
+  visibleEdges.forEach((edge) => {
     graph.setEdge(edge.source, edge.target);
   });
 
   Dagre.layout(graph);
 
-  return {
-    nodes: nodes.map((node) => {
-      const nodeWithPosition = graph.node(node.id);
-      const height = calculateNodeHeight(node as ContentTypeNodeData | SnippetNodeData);
+  // Process visible nodes with new positions
+  const layoutedVisibleNodes = visibleNodes.map((node) => {
+    const nodeWithPosition = graph.node(node.id);
+    const width = node.width ?? node.measured?.width ?? baseNodeWidth;
+    const height = node.height ?? node.measured?.height ?? baseNodeHeight;
 
-      return {
-        ...node,
-        position: {
-          x: nodeWithPosition.x - layoutConfig.nodeWidth / 2,
-          y: nodeWithPosition.y - height / 2,
-        },
-      };
-    }),
+    return {
+      ...node,
+      position: {
+        x: nodeWithPosition.x - width / 2,
+        y: nodeWithPosition.y - height / 2,
+      },
+    };
+  });
+
+  // Combine layouted visible nodes with unchanged hidden nodes
+  return {
+    nodes: [...layoutedVisibleNodes, ...hiddenNodes],
     edges,
   };
 };
@@ -123,12 +129,10 @@ export const isRequirableElement = (element: Element): element is RequirableElem
   element.type !== "guidelines"
   && element.type !== "snippet";
 
-export const isNodeRelated = (nodeId: string, targetId: string, edges: Edge[]): boolean => {
-  if (nodeId === targetId) return true;
-
-  // Check if there's a direct connection in either direction
-  return edges.some(edge =>
-    (edge.source === nodeId && edge.target === targetId)
-    || (edge.target === nodeId && edge.source === targetId)
-  );
-};
+export const isNodeRelated = (nodeId: string, targetId: string, edges: Edge[]): boolean =>
+  nodeId === targetId
+    ? true
+    : edges.some(edge =>
+      (edge.source === nodeId && edge.target === targetId)
+      || (edge.target === nodeId && edge.source === targetId)
+    );

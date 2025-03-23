@@ -15,7 +15,7 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ types, onMenuSelect }) => {
   const { toggleNode } = useNodeState();
-  const { getNodes, setCenter } = useReactFlow();
+  const { getNodes, fitView } = useReactFlow();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -37,7 +37,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ types, onMenuSelect }) => {
     const node = getNodes().find(n => n.id === typeId);
     if (node) {
       toggleNode(typeId, true);
-      setCenter(node.position.x + 125, node.position.y + 80, { duration: 800, zoom: 1.2 });
+      setTimeout(() => fitView({ duration: 800, nodes: [node] }), 50);
     }
   };
 

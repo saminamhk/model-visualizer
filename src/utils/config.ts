@@ -6,9 +6,8 @@ type LayoutConfig = {
   acyclicer: "greedy" | "none";
   nodeSeparation: number;
   rankSeparation: number;
-  nodeWidth: number;
+  baseNodeWidth: number;
   baseNodeHeight: number;
-  elementHeight: number;
 };
 
 export const layoutConfig: Readonly<LayoutConfig> = {
@@ -17,9 +16,8 @@ export const layoutConfig: Readonly<LayoutConfig> = {
   rankDirection: "LR",
   ranker: "network-simplex",
   acyclicer: "greedy",
-  nodeSeparation: 100,
+  nodeSeparation: 60,
   rankSeparation: 200,
-  nodeWidth: 172,
+  baseNodeWidth: 172,
   baseNodeHeight: 76,
-  elementHeight: 24,
 };

@@ -1,6 +1,6 @@
 import "@kontent-ai/stylekit/styles/styles.css";
 
-import React, { useState, useCallback } from "react";
+import React from "react";
 import { View } from "./components/views/View";
 import { DefaultViewRenderer } from "./components/views/renderers/DefaultViewRenderer";
 import { SnippetViewRenderer } from "./components/views/renderers/SnippetViewRenderer";
@@ -10,13 +10,8 @@ import { ErrorDisplay } from "./components/utils/ErrorDisplay";
 import { useContentModel } from "./hooks/useContentModel";
 
 const ViewContainer: React.FC = () => {
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const { currentView } = useView();
   const { contentTypes, snippets, typesWithSnippets, loading, error } = useContentModel();
-
-  const handleNodeSelect = useCallback((nodeId: string) => {
-    setSelectedNodeId(nodeId);
-  }, []);
 
   if (loading) {
     return (
@@ -37,8 +32,6 @@ const ViewContainer: React.FC = () => {
     contentTypes,
     snippets,
     typesWithSnippets,
-    selectedNodeId,
-    onNodeSelect: handleNodeSelect,
   };
 
   return (

@@ -1,4 +1,9 @@
-import { ContentTypeElements, ContentTypeModels, ContentTypeSnippetModels } from "@kontent-ai/management-sdk";
+import {
+  ContentTypeElements,
+  ContentTypeModels,
+  ContentTypeSnippetModels,
+  ManagementClient,
+} from "@kontent-ai/management-sdk";
 
 export type ApiResponse<T> = {
   data?: T;
@@ -30,6 +35,8 @@ type ElementTypeLabels = {
   [K in ElementType]: string;
 };
 
+type Action = keyof Pick<ManagementClient, "listContentTypes" | "listContentTypeSnippets" | "listTaxonomies">;
+
 export const elementTypeLabels: ElementTypeLabels = {
   text: "Text",
   rich_text: "Rich Text",
@@ -50,11 +57,9 @@ export const elementTypeMap: ReadonlyMap<ElementType, string> = new Map(
   Object.entries(elementTypeLabels) as [ElementType, string][],
 );
 
-type MapiAction = "getContentTypes" | "getContentTypeSnippets";
-
 const makeMapiRequest = async <T>(
   environmentId: string,
-  action: MapiAction,
+  action: Action,
 ): Promise<ApiResponse<T>> => {
   try {
     const response = await fetch("/.netlify/functions/mapiProxy", {
@@ -78,13 +83,13 @@ const makeMapiRequest = async <T>(
 export const getContentTypes = async (
   environmentId: string,
 ): Promise<ApiResponse<ContentTypeModels.ContentType[]>> => {
-  return makeMapiRequest(environmentId, "getContentTypes");
+  return makeMapiRequest(environmentId, "listContentTypes");
 };
 
 export const getContentTypeSnippets = async (
   environmentId: string,
 ): Promise<ApiResponse<ContentTypeSnippetModels.ContentTypeSnippet[]>> => {
-  return makeMapiRequest(environmentId, "getContentTypeSnippets");
+  return makeMapiRequest(environmentId, "listContentTypeSnippets");
 };
 
 export const mergeTypesWithSnippets = (
