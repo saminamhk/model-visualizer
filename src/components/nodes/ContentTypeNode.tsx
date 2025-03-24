@@ -1,7 +1,7 @@
 import React from "react";
-import { useReactFlow } from "@xyflow/react";
+import { useReactFlow, Node } from "@xyflow/react";
 import { SourceHandle, TargetHandle } from "../controls/Handles";
-import { ContentTypeNodeData as ContentTypeNodeData, isRelationshipElement, nodeBaseStyle } from "../../utils/layout";
+import { isRelationshipElement, nodeBaseStyle } from "../../utils/layout";
 import { ActionButton } from "../controls/ActionButton";
 import { ElementRow } from "./ElementRow";
 import { useNodeState } from "../../contexts/NodeStateContext";
@@ -9,6 +9,17 @@ import IconSchemeConnected from "../icons/IconSchemeConnected";
 import IconMagnifier from "../icons/Magnifier";
 import { useContentModel } from "../../hooks/useContentModel";
 import { useAppContext } from "../../contexts/AppContext";
+import { AnnotatedElement } from "../../utils/mapi";
+
+type ContentTypeNodeData = Node<
+  {
+    id: string;
+    label: string;
+    isExpanded?: boolean;
+    elements: AnnotatedElement[];
+    selfReferences?: string[];
+  }
+>;
 
 export const ContentTypeNode: React.FC<ContentTypeNodeData> = ({
   data,

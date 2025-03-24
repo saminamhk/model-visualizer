@@ -2,8 +2,6 @@ import "@kontent-ai/stylekit/styles/styles.css";
 
 import React from "react";
 import { View } from "./components/views/View";
-import { DefaultViewRenderer } from "./components/views/renderers/DefaultViewRenderer";
-import { SnippetViewRenderer } from "./components/views/renderers/SnippetViewRenderer";
 import { useView } from "./contexts/ViewContext";
 import { Loader } from "./components/utils/Loader";
 import { ErrorDisplay } from "./components/utils/ErrorDisplay";
@@ -37,7 +35,7 @@ const ViewContainer: React.FC = () => {
   return (
     <View
       {...viewProps}
-      renderer={currentView === "default" ? DefaultViewRenderer : SnippetViewRenderer}
+      renderer={currentView.renderer}
     />
   );
 };

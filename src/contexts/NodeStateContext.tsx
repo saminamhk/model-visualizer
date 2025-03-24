@@ -1,5 +1,9 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
-import { NodeIsolation } from "../utils/layout";
+
+type NodeIsolation = {
+  nodeId: string;
+  mode: "related" | "single";
+} | null;
 
 type NodeStateContextType = {
   expandedNodes: Set<string>;

@@ -1,7 +1,7 @@
 import { ContentTypeElements } from "@kontent-ai/management-sdk";
 import Dagre from "@dagrejs/dagre";
 import { Node, Edge, NodeTypes } from "@xyflow/react";
-import { AnnotatedElement, Element } from "./mapi";
+import { Element } from "./mapi";
 import { ContentTypeNode } from "../components/nodes/ContentTypeNode";
 import { SnippetNode } from "../components/nodes/SnippetNode";
 import { layoutConfig } from "./config";
@@ -20,35 +20,6 @@ export const nodeTypes = {
   contentType: ContentTypeNode as unknown as NodeTypes["contentType"],
   snippet: SnippetNode as unknown as NodeTypes["snippet"],
 } as const satisfies NodeTypes;
-
-export type NodeIsolation = {
-  nodeId: string;
-  mode: "related" | "single";
-} | null;
-
-export type Graph = {
-  nodes: Node[];
-  edges: Edge[];
-};
-
-type NodeData = {
-  id: string;
-  label: string;
-  isExpanded?: boolean;
-};
-
-export type ContentTypeNodeData = Node<
-  {
-    elements: AnnotatedElement[];
-    selfReferences?: string[];
-  } & NodeData
->;
-
-export type SnippetNodeData = Node<
-  {
-    elements: Element[];
-  } & NodeData
->;
 
 type RelationshipElement =
   | ContentTypeElements.ILinkedItemsElement

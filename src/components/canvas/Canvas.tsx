@@ -8,7 +8,7 @@ import {
   useReactFlow,
   Node,
   Edge,
-  useNodesInitialized,
+  NodeChange,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { Toolbar } from "./Toolbar";
@@ -17,35 +17,26 @@ import { getLayoutedElements, isNodeRelated, nodeTypes } from "../../utils/layou
 import { useNodeState } from "../../contexts/NodeStateContext";
 
 type CanvasProps = {
-  nodes: Node[];
-  edges: Edge[];
+  initialNodes: Node[];
+  initialEdges: Edge[];
   types: any[]; // We'll type this properly when adding snippet support
 };
 
 export const Canvas: React.FC<CanvasProps> = ({
-  nodes,
-  edges,
+  initialNodes,
+  initialEdges,
   types,
 }) => {
   const { expandedNodes, isolation } = useNodeState();
   const { setNodes, getNodes, getEdges } = useReactFlow();
-  const nodesInitialized = useNodesInitialized();
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
   const handleNodeSelect = useCallback((node: Node) => {
     setSelectedNodeId(node.id);
   }, []);
 
-  // TODO: optimize these two useEffects
-
-  useEffect(() => {
-    if (nodesInitialized) {
-      setNodes(getLayoutedElements(getNodes(), getEdges()).nodes);
-    }
-  }, [nodesInitialized, getEdges, getNodes, setNodes]);
-
   const updatedNodes: Node[] = useMemo(() =>
-    nodes.map(node => ({
+    initialNodes.map(node => ({
       ...node,
       selected: node.id === selectedNodeId,
       data: {
@@ -54,15 +45,39 @@ export const Canvas: React.FC<CanvasProps> = ({
       },
       hidden: isolation
         ? isolation.mode === "related"
-          ? !isNodeRelated(node.id, isolation.nodeId, edges)
+          ? !isNodeRelated(node.id, isolation.nodeId, initialEdges)
           : node.id !== isolation.nodeId
         : false,
-    })), [nodes, selectedNodeId, expandedNodes, isolation, edges]);
+    })), [selectedNodeId, expandedNodes, isolation]);
 
+  // Combine both layout effects into a single layout handler
+  const handleLayout = useCallback((nodes: Node[], edges: Edge[]) => {
+    const layoutedNodes = getLayoutedElements(nodes, edges).nodes;
+    setNodes(layoutedNodes);
+  }, [setNodes]);
+
+  // Initial layout
   useEffect(() => {
-    console.log("nodes");
-    setNodes(getLayoutedElements(updatedNodes, getEdges()).nodes);
-  }, [updatedNodes, getEdges, setNodes]);
+    handleLayout(initialNodes, initialEdges);
+  }, [handleLayout, initialNodes, initialEdges]);
+
+  // Handle isolation layout updates
+  useEffect(() => {
+    if (isolation) {
+      handleLayout(updatedNodes, initialEdges);
+    }
+  }, [handleLayout, isolation, updatedNodes, initialEdges]);
+
+  // Handle node changes and trigger layout when dimensions change
+  const handleNodesChange = useCallback((changes: NodeChange[]) => {
+    const layoutNeeded = changes.some(c => c.type === "dimensions");
+
+    if (layoutNeeded) {
+      handleLayout(getNodes(), getEdges());
+    } else {
+      setNodes(nodes => applyNodeChanges(changes, nodes));
+    }
+  }, [getNodes, getEdges, handleLayout]);
 
   return (
     <div className="flex h-full w-full">
@@ -70,14 +85,11 @@ export const Canvas: React.FC<CanvasProps> = ({
       <div className="flex-1 w-full h-full pb-14">
         <Toolbar />
         <ReactFlow
-          defaultNodes={nodes}
-          edges={edges}
+          defaultNodes={initialNodes}
+          edges={initialEdges}
           nodeTypes={nodeTypes}
           onNodeClick={(_, node) => handleNodeSelect(node)}
-          onNodesChange={(changes) => {
-            console.log("changes", changes);
-            return setNodes(nodes => applyNodeChanges(changes, nodes));
-          }}
+          onNodesChange={handleNodesChange}
           fitView
         >
           <MiniMap pannable />

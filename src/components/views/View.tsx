@@ -35,8 +35,8 @@ export const View: React.FC<ViewProps & { renderer: ViewRenderer }> = ({
 
   return (
     <Canvas
-      nodes={nodes}
-      edges={edges}
+      initialNodes={nodes}
+      initialEdges={edges}
       types={contentTypes}
     />
   );

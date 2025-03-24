@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useReactFlow } from "@xyflow/react";
 import { useNodeState } from "../../contexts/NodeStateContext";
 import { useView } from "../../contexts/ViewContext";
-import { VIEWS } from "../../types/views";
+import { ViewMap, Views, ViewType } from "../views/views";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
 import { useAppContext } from "../../contexts/AppContext";
@@ -35,8 +35,8 @@ export const Toolbar: React.FC = () => {
     setTimeout(() => fitView({ duration: 800 }), 50);
   };
 
-  const handleViewChange = (viewId: string) => {
-    setCurrentView(viewId as "default" | "snippet");
+  const handleViewChange = (viewId: keyof ViewMap) => {
+    setCurrentView(Views[viewId]);
     handleReset();
   };
 
@@ -94,19 +94,19 @@ export const Toolbar: React.FC = () => {
     <div className="flex items-center gap-2 px-4 h-14 border-b border-gray-200">
       <div className="flex flex-col items-center caret-transparent">
         <div onClick={() => setIsToggled(!isToggled)} className={`select ${isToggled ? "open" : ""}`}>
-          {VIEWS.find(view => view.id === currentView)?.label}
+          {currentView.label}
         </div>
         <div className={`options ${isToggled ? "block" : "hidden"} absolute top-[50px] z-1000 bg-white min-w-[150px]`}>
-          {VIEWS.map(view => (
+          {Object.entries(Views).map(([k, v]) => (
             <div
-              className={`option ${currentView === view.id ? "selected" : ""}`}
+              className={`option ${currentView === v ? "selected" : ""}`}
               onClick={() => {
-                handleViewChange(view.id);
+                handleViewChange(k as ViewType);
                 setIsToggled(false);
               }}
-              key={view.id}
+              key={k}
             >
-              {view.label}
+              {v.label}
             </div>
           ))}
         </div>

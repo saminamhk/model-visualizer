@@ -1,6 +1,5 @@
 import React from "react";
-import { NodeProps, useReactFlow } from "@xyflow/react";
-import { SnippetNodeData } from "../../utils/layout";
+import { NodeProps, useReactFlow, Node } from "@xyflow/react";
 import { ActionButton } from "../controls/ActionButton";
 import { SourceHandle } from "../controls/Handles";
 import { useNodeState } from "../../contexts/NodeStateContext";
@@ -9,6 +8,16 @@ import IconSchemeConnected from "../icons/IconSchemeConnected";
 import { ElementRow } from "./ElementRow";
 import IconMagnifier from "../icons/Magnifier";
 import { useAppContext } from "../../contexts/AppContext";
+import { AnnotatedElement } from "../../utils/mapi";
+
+type SnippetNodeData = Node<
+  {
+    id: string;
+    label: string;
+    isExpanded?: boolean;
+    elements: AnnotatedElement[];
+  }
+>;
 
 export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
   data,
