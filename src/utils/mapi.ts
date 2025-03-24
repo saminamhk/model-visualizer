@@ -3,6 +3,7 @@ import {
   ContentTypeModels,
   ContentTypeSnippetModels,
   ManagementClient,
+  TaxonomyModels,
 } from "@kontent-ai/management-sdk";
 
 export type ApiResponse<T> = {
@@ -23,6 +24,8 @@ export type AnnotatedElement = Element & { fromSnippet: { id: string; name: stri
 export type ResolvedType = Omit<ContentTypeModels.ContentType, "elements"> & {
   elements: AnnotatedElement[];
 };
+
+export type Taxonomy = TaxonomyModels.Taxonomy;
 
 export type ElementType = Element["type"];
 
@@ -82,14 +85,20 @@ const makeMapiRequest = async <T>(
 
 export const getContentTypes = async (
   environmentId: string,
-): Promise<ApiResponse<ContentTypeModels.ContentType[]>> => {
+): Promise<ApiResponse<ContentType[]>> => {
   return makeMapiRequest(environmentId, "listContentTypes");
 };
 
 export const getContentTypeSnippets = async (
   environmentId: string,
-): Promise<ApiResponse<ContentTypeSnippetModels.ContentTypeSnippet[]>> => {
+): Promise<ApiResponse<Snippet[]>> => {
   return makeMapiRequest(environmentId, "listContentTypeSnippets");
+};
+
+export const getTaxonomies = async (
+  environmentId: string,
+): Promise<ApiResponse<Taxonomy[]>> => {
+  return makeMapiRequest(environmentId, "listTaxonomies");
 };
 
 export const mergeTypesWithSnippets = (

@@ -42,6 +42,11 @@ export const ElementRow: React.FC<ElementRowProps> = ({ element, isLast, selfRef
         <TargetHandle id={`target-${element.id}`} />
       </div>
     )}
+    {element.type === "taxonomy" && (
+      <div className="absolute left-0 top-[-12px]">
+        <TargetHandle id={`target-${element.id}`} />
+      </div>
+    )}
     <div className="font-bold text-xs">{element.name}</div>
     <span className="flex-1"></span>
     {isRequirableElement(element) && element.is_required && <InfoBadge title={`This element is required.`} icon="❋" />}

@@ -24,6 +24,7 @@ const createTypeNodes = (props: ViewProps): Node[] => {
     id: type.id,
     type: "contentType",
     position: { x: 0, y: index * 100 }, // Initial position, will be adjusted by layout
+    hidden: !type.elements.some((el) => el.type === "snippet"),
     data: {
       id: type.id,
       label: type.name,

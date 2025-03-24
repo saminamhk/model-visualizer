@@ -1,7 +1,7 @@
 import React from "react";
 import { useReactFlow, Node } from "@xyflow/react";
-import { SourceHandle, TargetHandle } from "../controls/Handles";
-import { isRelationshipElement, nodeBaseStyle } from "../../utils/layout";
+import { renderCollapsedHandles, TargetHandle } from "../controls/Handles";
+import { nodeBaseStyle } from "../../utils/layout";
 import { ActionButton } from "../controls/ActionButton";
 import { ElementRow } from "./ElementRow";
 import { useNodeState } from "../../contexts/NodeStateContext";
@@ -104,13 +104,7 @@ export const ContentTypeNode: React.FC<ContentTypeNodeData> = ({
         )
         : (
           <div>
-            {filteredElements.map(el =>
-              isRelationshipElement(el)
-                ? <SourceHandle key={el.id} id={`source-${el.id}`} />
-                : el.type === "snippet"
-                ? <TargetHandle key={el.id} id={`target-${el.id}`} />
-                : null
-            )}
+            {filteredElements.map(renderCollapsedHandles)}
           </div>
         )}
     </div>

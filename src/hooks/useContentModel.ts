@@ -6,6 +6,8 @@ import {
   mergeTypesWithSnippets,
   Snippet,
   ResolvedType,
+  Taxonomy,
+  getTaxonomies,
 } from "../utils/mapi";
 import { useAppContext } from "../contexts/AppContext";
 
@@ -13,6 +15,7 @@ type ContentModelState = {
   contentTypes: ContentType[];
   snippets: Snippet[];
   typesWithSnippets: ResolvedType[];
+  taxonomies: Taxonomy[];
 };
 
 type ContentModelError = {
@@ -24,6 +27,7 @@ const initialState: ContentModelState = {
   contentTypes: [],
   snippets: [],
   typesWithSnippets: [],
+  taxonomies: [],
 };
 
 export const useContentModel = () => {
@@ -38,21 +42,25 @@ export const useContentModel = () => {
         setLoading(true);
         setError(null);
 
-        const [typesResult, snippetsResult] = await Promise.all([
+        const [typesResult, snippetsResult, taxonomiesResult] = await Promise.all([
           getContentTypes(customApp.context.environmentId),
           getContentTypeSnippets(customApp.context.environmentId),
+          getTaxonomies(customApp.context.environmentId),
         ]);
 
         if (typesResult.error) throw typesResult.error;
         if (snippetsResult.error) throw snippetsResult.error;
+        if (taxonomiesResult.error) throw taxonomiesResult.error;
 
         const types = typesResult.data || [];
         const snippets = snippetsResult.data || [];
+        const taxonomies = taxonomiesResult.data || [];
 
         setState({
           contentTypes: types,
           snippets: snippets,
           typesWithSnippets: mergeTypesWithSnippets(types, snippets),
+          taxonomies: taxonomies,
         });
       } catch (error) {
         console.error(error);

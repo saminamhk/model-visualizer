@@ -1,0 +1,93 @@
+import React from "react";
+import { Node, useReactFlow } from "@xyflow/react";
+import { useNodeState } from "../../contexts/NodeStateContext";
+import { nodeBaseStyle } from "../../utils/layout";
+import { useAppContext } from "../../contexts/AppContext";
+import { ActionButton } from "../controls/ActionButton";
+import IconSchemeConnected from "../icons/IconSchemeConnected";
+import IconMagnifier from "../icons/Magnifier";
+import { SourceHandle } from "../controls/Handles";
+import { InfoBadge } from "../controls/InfoBadge";
+import IconWarning from "../icons/IconWarning";
+
+type TaxonomyNodeData = Node<{
+  id: string;
+  label: string;
+  isExpanded?: boolean;
+  terms: string[];
+}>;
+
+export const TaxonomyNode: React.FC<TaxonomyNodeData> = ({ data, selected }) => {
+  const { expandedNodes, toggleNode, isolateRelated, isolateSingle } = useNodeState();
+  const { fitView } = useReactFlow();
+
+  const isExpanded = expandedNodes.has(data.id);
+
+  const handleIsolateRelated = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    isolateRelated(data.id);
+    setTimeout(() => fitView({ duration: 800 }), 50);
+  };
+
+  const handleIsolateSingle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    isolateSingle(data.id);
+    toggleNode(data.id, true);
+    setTimeout(() => fitView({ duration: 800 }), 50);
+  };
+
+  const containerStyle: React.CSSProperties = {
+    ...nodeBaseStyle,
+    background: selected ? "#f3f3fe" : "white",
+    minWidth: 250,
+  };
+
+  const { customApp } = useAppContext();
+
+  return (
+    <div onClick={() => toggleNode(data.id)} style={containerStyle}>
+      <div className="flex text-gray-400 justify-between items-center">
+        <div className="text-xs px-2">Taxonomy</div>
+        <a
+          className="px-2"
+          href={`https://app.kontent.ai/${customApp.context.environmentId}/content-models/taxonomy/edit/${data.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <ActionButton title="Edit taxonomy" onClick={() => {}} icon="✎" />
+        </a>
+      </div>
+      <div className="flex justify-between items-center px-2 py-1">
+        <div className="font-bold">{data.label}</div>
+        <span className="flex-1"></span>
+        <InfoBadge
+          title="Only first level terms shown."
+          icon={<IconWarning />}
+          className="text-sm"
+        />
+        <ActionButton
+          onClick={handleIsolateRelated}
+          title="Show related nodes"
+          icon={<IconSchemeConnected />}
+        />
+        <ActionButton
+          onClick={handleIsolateSingle}
+          title="Isolate node"
+          icon={<IconMagnifier />}
+        />
+      </div>
+      <SourceHandle id={`source-${data.id}`} />
+      {isExpanded
+        ? (
+          <ul className="px-2 list-disc list-inside marker:text-[#5b4ff5] text-xs">
+            {data.terms.map((term) => (
+              <li key={term} className="py-1">
+                <span className="relative left-[-5px]">{term}</span>
+              </li>
+            ))}
+          </ul>
+        )
+        : null}
+    </div>
+  );
+};

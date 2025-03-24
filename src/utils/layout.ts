@@ -4,6 +4,7 @@ import { Node, Edge, NodeTypes } from "@xyflow/react";
 import { Element } from "./mapi";
 import { ContentTypeNode } from "../components/nodes/ContentTypeNode";
 import { SnippetNode } from "../components/nodes/SnippetNode";
+import { TaxonomyNode } from "../components/nodes/TaxonomyNode";
 import { layoutConfig } from "./config";
 
 export const nodeBaseStyle: React.CSSProperties = {
@@ -19,6 +20,7 @@ export const nodeBaseStyle: React.CSSProperties = {
 export const nodeTypes = {
   contentType: ContentTypeNode as unknown as NodeTypes["contentType"],
   snippet: SnippetNode as unknown as NodeTypes["snippet"],
+  taxonomy: TaxonomyNode as unknown as NodeTypes["taxonomy"],
 } as const satisfies NodeTypes;
 
 type RelationshipElement =

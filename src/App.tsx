@@ -9,7 +9,7 @@ import { useContentModel } from "./hooks/useContentModel";
 
 const ViewContainer: React.FC = () => {
   const { currentView } = useView();
-  const { contentTypes, snippets, typesWithSnippets, loading, error } = useContentModel();
+  const { contentTypes, snippets, typesWithSnippets, loading, error, taxonomies } = useContentModel();
 
   if (loading) {
     return (
@@ -30,6 +30,7 @@ const ViewContainer: React.FC = () => {
     contentTypes,
     snippets,
     typesWithSnippets,
+    taxonomies,
   };
 
   return (

@@ -63,7 +63,7 @@ export const layoutConfig: Readonly<LayoutConfig> = {
   alignment: "UL",
   rankDirection: "LR",
   ranker: "network-simplex",
-  acyclicer: "greedy",
+  acyclicer: "none",
   nodeSeparation: 60,
   rankSeparation: 200,
 };

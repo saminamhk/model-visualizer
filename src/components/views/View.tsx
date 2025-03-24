@@ -1,14 +1,14 @@
 import React, { useMemo } from "react";
 import { Node, Edge } from "@xyflow/react";
-import { ResolvedType, Snippet } from "../../utils/mapi";
-import { ContentTypeModels } from "@kontent-ai/management-sdk";
+import { ContentType, ResolvedType, Snippet, Taxonomy } from "../../utils/mapi";
 import { Canvas } from "../canvas/Canvas";
 import { useNodeState } from "../../contexts/NodeStateContext";
 
 export type ViewProps = {
-  contentTypes: ContentTypeModels.ContentType[];
+  contentTypes: ContentType[];
   snippets: Snippet[];
   typesWithSnippets: ResolvedType[];
+  taxonomies: Taxonomy[];
 };
 
 export type ViewRenderer = {

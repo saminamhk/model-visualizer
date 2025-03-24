@@ -82,9 +82,9 @@ export const Toolbar: React.FC = () => {
     </button>
   );
 
-  const toolbarCheckbox = (onClick: () => void, content: React.ReactNode, checked: boolean, className?: string) => (
+  const toolbarCheckbox = (onChange: () => void, content: React.ReactNode, checked: boolean, className?: string) => (
     <label className={`flex checkbox ml-3 ${className ?? ""}`}>
-      <input type="checkbox" onClick={onClick} checked={checked} />
+      <input type="checkbox" onChange={onChange} checked={checked} />
       <span className="checkmark purple mr-2"></span>
       <span className="text-sm">{content}</span>
     </label>
@@ -125,19 +125,24 @@ export const Toolbar: React.FC = () => {
           <IconArrowReturn /> <span>Reset View</span>
         </div>,
       )}
-      {toolbarCheckbox(
-        () => {
-          setIncludeRichText(!includeRichText);
-          fitView({ duration: 800 });
-        },
-        "Include rich text",
-        includeRichText,
+      {currentView.id === "default" && (
+        <div className="flex items-center">
+          {toolbarCheckbox(
+            () => {
+              setIncludeRichText(!includeRichText);
+              fitView({ duration: 800 });
+            },
+            "Include rich text",
+            includeRichText,
+          )}
+          <InfoBadge
+            title="Include relationships defined in rich text elements."
+            icon={<IconQuestionCircle />}
+            className="text-lg"
+          />
+        </div>
       )}
-      <InfoBadge
-        title="Include relationships defined in rich text elements."
-        icon={<IconQuestionCircle />}
-        className="text-lg"
-      />
+
       <div className="flex-1" />
       {toolbarButton(
         handleExport,
