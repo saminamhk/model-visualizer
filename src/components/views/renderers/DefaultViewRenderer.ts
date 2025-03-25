@@ -15,6 +15,7 @@ const createNodes = (props: ViewProps): Node[] => {
       id: type.id,
       label: type.name,
       elements: type.elements,
+      contentGroups: type.contentGroups,
       selfReferences: type.elements
         .filter(
           (el) =>

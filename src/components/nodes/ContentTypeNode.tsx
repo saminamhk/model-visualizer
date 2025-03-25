@@ -9,7 +9,7 @@ import IconSchemeConnected from "../icons/IconSchemeConnected";
 import IconMagnifier from "../icons/Magnifier";
 import { useContentModel } from "../../hooks/useContentModel";
 import { useAppContext } from "../../contexts/AppContext";
-import { AnnotatedElement } from "../../utils/mapi";
+import { AnnotatedElement, ContentGroup } from "../../utils/mapi";
 
 type ContentTypeNodeData = Node<
   {
@@ -18,6 +18,7 @@ type ContentTypeNodeData = Node<
     isExpanded?: boolean;
     elements: AnnotatedElement[];
     selfReferences?: string[];
+    contentGroups: ContentGroup[];
   }
 >;
 
@@ -53,6 +54,8 @@ export const ContentTypeNode: React.FC<ContentTypeNodeData> = ({
   const filteredElements = data.elements.filter(el => el.type !== "guidelines");
 
   const { customApp } = useAppContext();
+
+  console.log(data.label, data.contentGroups);
 
   return (
     <div onClick={() => toggleNode(data.id)} style={containerStyle}>
@@ -98,6 +101,7 @@ export const ContentTypeNode: React.FC<ContentTypeNodeData> = ({
                     : el}
                   isLast={i === filteredElements.length - 1}
                   selfReferences={data.selfReferences?.includes(el.id ?? "")}
+                  contentGroups={data.contentGroups}
                 />
               ))}
           </div>

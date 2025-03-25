@@ -29,6 +29,7 @@ const createTypeNodes = (props: ViewProps): Node[] => {
       id: type.id,
       label: type.name,
       elements: type.elements,
+      contentGroups: type.contentGroups,
     },
   }));
 };

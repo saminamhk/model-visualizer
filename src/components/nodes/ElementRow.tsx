@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { SourceHandle, TargetHandle } from "../controls/Handles";
-import { AnnotatedElement, elementTypeMap } from "../../utils/mapi";
+import { AnnotatedElement, ContentGroup, elementTypeMap } from "../../utils/mapi";
 import { isRelationshipElement, isRequirableElement } from "../../utils/layout";
 import { ContentTypeElements } from "@kontent-ai/management-sdk";
 import IconAccordion from "../icons/IconAccordion";
 import IconRotateDoubleRight from "../icons/IconRotateDoubleRight";
 import { InfoBadge } from "../controls/InfoBadge";
 import IconBracesOctothorpe from "../icons/IconBracesOctothorpe";
+import randomColor from "randomcolor";
 
 type NamedElement =
   | Exclude<
@@ -22,6 +23,7 @@ type ElementRowProps = {
   element: NamedElement;
   isLast: boolean;
   selfReferences?: boolean;
+  contentGroups: ContentGroup[];
 };
 
 const linkedItemConditionMap: ReadonlyMap<"at_least" | "at_most" | "exactly", string> = new Map([
@@ -30,7 +32,13 @@ const linkedItemConditionMap: ReadonlyMap<"at_least" | "at_most" | "exactly", st
   ["exactly", "Exactly"],
 ]);
 
-export const ElementRow: React.FC<ElementRowProps> = ({ element, isLast, selfReferences }) => (
+const getRandomColor = (seed: string) =>
+  randomColor({
+    luminosity: "dark",
+    seed: seed,
+  });
+
+export const ElementRow: React.FC<ElementRowProps> = ({ element, isLast, selfReferences, contentGroups }) => (
   <div
     className="flex items-center justify-between py-1 px-2 relative"
     style={{
@@ -47,9 +55,22 @@ export const ElementRow: React.FC<ElementRowProps> = ({ element, isLast, selfRef
         <TargetHandle id={`target-${element.id}`} />
       </div>
     )}
+    {element.content_group && (
+      <InfoBadge
+        title={`Content group: ${contentGroups.find(cg => cg.id === element.content_group?.id)?.name}`}
+        icon="⚫︎"
+        // using name instead of id as a seed ensures consistent colors across different content types with groups of the same name
+        iconStyle={{ color: getRandomColor(contentGroups.find(cg => cg.id === element.content_group?.id)?.name ?? "") }}
+      />
+    )}
     <div className="font-bold text-xs">{element.name}</div>
     <span className="flex-1"></span>
-    {isRequirableElement(element) && element.is_required && <InfoBadge title={`This element is required.`} icon="❋" />}
+    {isRequirableElement(element) && element.is_required && (
+      <InfoBadge
+        title={`This element is required.`}
+        icon="❋"
+      />
+    )}
     {element.fromSnippet && (
       <InfoBadge title={`This element comes from ${element.fromSnippet.name} snippet`} icon={<IconAccordion />} />
     )}

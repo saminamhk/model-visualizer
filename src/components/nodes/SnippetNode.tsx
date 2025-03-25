@@ -8,7 +8,7 @@ import IconSchemeConnected from "../icons/IconSchemeConnected";
 import { ElementRow } from "./ElementRow";
 import IconMagnifier from "../icons/Magnifier";
 import { useAppContext } from "../../contexts/AppContext";
-import { AnnotatedElement } from "../../utils/mapi";
+import { AnnotatedElement, ContentGroup } from "../../utils/mapi";
 
 type SnippetNodeData = Node<
   {
@@ -16,6 +16,7 @@ type SnippetNodeData = Node<
     label: string;
     isExpanded?: boolean;
     elements: AnnotatedElement[];
+    contentGroups: ContentGroup[];
   }
 >;
 
@@ -87,6 +88,7 @@ export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
                   key={el.id}
                   element={{ ...el, fromSnippet: false, name: el.name ?? "" }}
                   isLast={i === filteredElements.length - 1}
+                  contentGroups={data.contentGroups}
                 />
               ))}
             <SourceHandle id="source" />

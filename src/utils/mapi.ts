@@ -19,6 +19,8 @@ export type Snippet = ContentTypeSnippetModels.ContentTypeSnippet;
 
 export type SnippetElement = ContentTypeElements.ISnippetElement;
 
+export type ContentGroup = ContentTypeModels.ContentTypeGroup;
+
 export type AnnotatedElement = Element & { fromSnippet: { id: string; name: string } | false };
 
 export type ResolvedType = Omit<ContentTypeModels.ContentType, "elements"> & {
@@ -113,6 +115,7 @@ export const mergeTypesWithSnippets = (
         return snippet?.elements.map((s) =>
           ({
             ...s,
+            content_group: element.content_group,
             fromSnippet: {
               id: snippet.id,
               name: snippet.name,
