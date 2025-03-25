@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import {
   ContentType,
   getContentTypes,
@@ -9,7 +9,7 @@ import {
   Taxonomy,
   getTaxonomies,
 } from "../utils/mapi";
-import { useAppContext } from "../contexts/AppContext";
+import { useAppContext } from "./AppContext";
 import { AppError, createAppError, isKontentError, isAppError } from "../utils/errors";
 
 type ContentModelState = {
@@ -17,18 +17,20 @@ type ContentModelState = {
   snippets: Snippet[];
   typesWithSnippets: ResolvedType[];
   taxonomies: Taxonomy[];
+  loading: boolean;
+  error: AppError | null;
 };
 
-const initialState: ContentModelState = {
-  contentTypes: [],
-  snippets: [],
-  typesWithSnippets: [],
-  taxonomies: [],
-};
+const ContentModelContext = createContext<ContentModelState | null>(null);
 
-export const useContentModel = () => {
+export const ContentModelProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { customApp } = useAppContext();
-  const [state, setState] = useState<ContentModelState>(initialState);
+  const [state, setState] = useState<Omit<ContentModelState, "loading" | "error">>({
+    contentTypes: [],
+    snippets: [],
+    typesWithSnippets: [],
+    taxonomies: [],
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<AppError | null>(null);
 
@@ -37,13 +39,13 @@ export const useContentModel = () => {
       try {
         setLoading(true);
         setError(null);
+
         const [typesResult, snippetsResult, taxonomiesResult] = await Promise.all([
           getContentTypes(customApp.context.environmentId),
           getContentTypeSnippets(customApp.context.environmentId),
           getTaxonomies(customApp.context.environmentId),
         ]);
 
-        // If any request returned an error, throw it
         const error = typesResult.error || snippetsResult.error || taxonomiesResult.error;
         if (error) throw error;
 
@@ -60,19 +62,11 @@ export const useContentModel = () => {
       } catch (error) {
         console.error("Error fetching content model:", error);
         if (isKontentError(error)) {
-          setError(createAppError(
-            error.message,
-            error.errorCode,
-            error,
-          ));
+          setError(createAppError(error.message, error.errorCode, error));
         } else if (isAppError(error)) {
           setError(error);
         } else {
-          setError(createAppError(
-            "An unknown error occurred",
-            "UNKNOWN_ERROR",
-            error,
-          ));
+          setError(createAppError("An unknown error occurred", "UNKNOWN_ERROR", error));
         }
       } finally {
         setLoading(false);
@@ -82,9 +76,17 @@ export const useContentModel = () => {
     getContentModel();
   }, [customApp.context.environmentId]);
 
-  return {
-    ...state,
-    loading,
-    error,
-  };
+  return (
+    <ContentModelContext.Provider value={{ ...state, loading, error }}>
+      {children}
+    </ContentModelContext.Provider>
+  );
+};
+
+export const useContentModel = () => {
+  const context = useContext(ContentModelContext);
+  if (!context) {
+    throw new Error("useContentModel must be used within ContentModelProvider");
+  }
+  return context;
 };

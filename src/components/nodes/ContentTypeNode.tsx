@@ -7,7 +7,7 @@ import { ElementRow } from "./ElementRow";
 import { useNodeState } from "../../contexts/NodeStateContext";
 import IconSchemeConnected from "../icons/IconSchemeConnected";
 import IconMagnifier from "../icons/Magnifier";
-import { useContentModel } from "../../hooks/useContentModel";
+import { useContentModel } from "../../contexts/ContentModelContext";
 import { useAppContext } from "../../contexts/AppContext";
 import { AnnotatedElement, ContentGroup } from "../../utils/mapi";
 
