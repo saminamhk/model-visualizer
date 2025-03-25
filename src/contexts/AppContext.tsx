@@ -3,7 +3,8 @@ import { getCustomAppContext, CustomAppContext } from "@kontent-ai/custom-app-sd
 import { Loader } from "../components/utils/Loader";
 import { ErrorDisplay } from "../components/utils/ErrorDisplay";
 
-export type ValidCustomAppContext = Extract<CustomAppContext, { isError: false }>;
+type ValidCustomAppContext = Extract<CustomAppContext, { isError: false }>;
+type CustomAppError = Omit<Extract<CustomAppContext, { isError: true }>, "isError">;
 
 type AppContextState = {
   customApp: ValidCustomAppContext;
@@ -12,7 +13,7 @@ type AppContextState = {
 type InternalState =
   | { loading: true }
   | { loading: false; context: ValidCustomAppContext; error: null }
-  | { loading: false; context: null; error: { description: string; code: string } };
+  | { loading: false; context: null; error: CustomAppError | { description: string; code: string } };
 
 const AppContext = createContext<AppContextState | null>(null);
 
@@ -24,26 +25,29 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       try {
         const result = await getCustomAppContext();
         if (result.isError) {
-          setState({
-            loading: false,
-            context: null,
-            error: { description: result.description, code: result.code },
-          });
+          throw result as CustomAppError;
         } else {
-          // We know it's valid since isError is false.
           setState({
             loading: false,
-            context: result as ValidCustomAppContext,
+            context: result,
             error: null,
           });
         }
-      } catch (err: any) {
-        console.error("Error initializing app context:", err);
-        setState({
-          loading: false,
-          context: null,
-          error: { description: err.description ?? "Failed to initialize app context", code: err.code ?? "INIT_ERROR" },
-        });
+      } catch (error) {
+        console.error("Error initializing app context:", error);
+        if (isCustomAppError(error)) {
+          setState({
+            loading: false,
+            context: null,
+            error: error,
+          });
+        } else {
+          setState({
+            loading: false,
+            context: null,
+            error: { description: "Failed to initialize app context", code: "UNKNOWN_ERROR" },
+          });
+        }
       }
     };
 
@@ -78,4 +82,8 @@ export const useAppContext = () => {
     throw new Error("useAppContext must be used within an AppProvider");
   }
   return context;
+};
+
+const isCustomAppError = (error: unknown): error is CustomAppError => {
+  return typeof error === "object" && error !== null && "description" in error && "code" in error;
 };

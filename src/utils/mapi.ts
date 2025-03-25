@@ -5,10 +5,11 @@ import {
   ManagementClient,
   TaxonomyModels,
 } from "@kontent-ai/management-sdk";
+import { AppError, createAppError } from "../utils/errors";
 
 export type ApiResponse<T> = {
   data?: T;
-  error?: string;
+  error?: AppError;
 };
 
 export type Element = ContentTypeElements.ContentTypeElementModel;
@@ -75,13 +76,24 @@ const makeMapiRequest = async <T>(
         action,
       }),
     });
+
+    const responseData = await response.json();
+
     if (!response.ok) {
-      return { error: `HTTP error ${response.status}` };
+      return {
+        error: responseData as AppError,
+      };
     }
-    const data = await response.json();
-    return { data };
+
+    return { data: responseData };
   } catch (error) {
-    return { error: error instanceof Error ? error.message : "An unknown error occurred" };
+    return {
+      error: createAppError(
+        error instanceof Error ? error.message : "An unknown error occurred",
+        "FETCH_ERROR",
+        error,
+      ),
+    };
   }
 };
 

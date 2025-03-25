@@ -23,7 +23,7 @@ const ViewContainer: React.FC = () => {
   }
 
   if (error) {
-    return <ErrorDisplay description={error.description} code={error.code} />;
+    return <ErrorDisplay description={error.body} code={error.statusCode.toString()} />;
   }
 
   const viewProps = {

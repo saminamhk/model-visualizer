@@ -8,7 +8,7 @@ type ErrorDisplayProps = {
 export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ description, code }) => {
   return (
     <div className="flex items-center justify-center h-screen bg-gray-50">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full mx-4">
+      <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full mx-4">
         <div className="flex items-center mb-6">
           <span className="text-4xl">⚠️</span>
           <h2 className="text-xl font-semibold text-gray-800 ml-4">
@@ -26,7 +26,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ description, code })
           </div>
           <button
             onClick={() => window.location.reload()}
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
+            className="!w-full button orange"
           >
             Try Again
           </button>

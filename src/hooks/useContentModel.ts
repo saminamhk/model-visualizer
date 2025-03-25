@@ -10,17 +10,13 @@ import {
   getTaxonomies,
 } from "../utils/mapi";
 import { useAppContext } from "../contexts/AppContext";
+import { AppError, createAppError, isKontentError, isAppError } from "../utils/errors";
 
 type ContentModelState = {
   contentTypes: ContentType[];
   snippets: Snippet[];
   typesWithSnippets: ResolvedType[];
   taxonomies: Taxonomy[];
-};
-
-type ContentModelError = {
-  description: string;
-  code: string;
 };
 
 const initialState: ContentModelState = {
@@ -34,27 +30,26 @@ export const useContentModel = () => {
   const { customApp } = useAppContext();
   const [state, setState] = useState<ContentModelState>(initialState);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<ContentModelError | null>(null);
+  const [error, setError] = useState<AppError | null>(null);
 
   useEffect(() => {
     const getContentModel = async () => {
       try {
         setLoading(true);
         setError(null);
-
         const [typesResult, snippetsResult, taxonomiesResult] = await Promise.all([
           getContentTypes(customApp.context.environmentId),
           getContentTypeSnippets(customApp.context.environmentId),
           getTaxonomies(customApp.context.environmentId),
         ]);
 
-        if (typesResult.error) throw typesResult.error;
-        if (snippetsResult.error) throw snippetsResult.error;
-        if (taxonomiesResult.error) throw taxonomiesResult.error;
+        // If any request returned an error, throw it
+        const error = typesResult.error || snippetsResult.error || taxonomiesResult.error;
+        if (error) throw error;
 
-        const types = typesResult.data || [];
-        const snippets = snippetsResult.data || [];
-        const taxonomies = taxonomiesResult.data || [];
+        const types = typesResult.data ?? [];
+        const snippets = snippetsResult.data ?? [];
+        const taxonomies = taxonomiesResult.data ?? [];
 
         setState({
           contentTypes: types,
@@ -63,11 +58,22 @@ export const useContentModel = () => {
           taxonomies: taxonomies,
         });
       } catch (error) {
-        console.error(error);
-        setError({
-          description: error instanceof Error ? error.message : "Failed to fetch content model data",
-          code: "FETCH_ERROR",
-        });
+        console.error("Error fetching content model:", error);
+        if (isKontentError(error)) {
+          setError(createAppError(
+            error.message,
+            error.errorCode,
+            error,
+          ));
+        } else if (isAppError(error)) {
+          setError(error);
+        } else {
+          setError(createAppError(
+            "An unknown error occurred",
+            "UNKNOWN_ERROR",
+            error,
+          ));
+        }
       } finally {
         setLoading(false);
       }
