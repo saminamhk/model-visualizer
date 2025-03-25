@@ -4,10 +4,8 @@ import { ViewProps } from "../View";
 import { isRelationshipElement } from "../../../utils/layout";
 import { layoutConfig } from "../../../utils/config";
 
-const createNodes = (props: ViewProps): Node[] => {
-  const { typesWithSnippets } = props;
-
-  return typesWithSnippets.map((type) => ({
+const createNodes = ({ typesWithSnippets }: ViewProps): Node[] =>
+  typesWithSnippets.map((type) => ({
     id: type.id,
     type: "contentType",
     position: { x: 0, y: 0 }, // Initial position, will be adjusted by layout
@@ -25,10 +23,8 @@ const createNodes = (props: ViewProps): Node[] => {
         .map((el) => el.id),
     },
   }));
-};
 
-const createEdges = (props: ViewProps & { includeRichText: boolean }): Edge[] => {
-  const { typesWithSnippets, includeRichText } = props;
+const createEdges = ({ typesWithSnippets, includeRichText }: ViewProps & { includeRichText: boolean }): Edge[] => {
   const edgeSet = new Set<string>();
   const edges: Edge[] = [];
 

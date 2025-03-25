@@ -60,11 +60,13 @@ export const TaxonomyNode: React.FC<TaxonomyNodeData> = ({ data, selected }) => 
       <div className="flex justify-between items-center px-2 py-1">
         <div className="font-bold">{data.label}</div>
         <span className="flex-1"></span>
-        <InfoBadge
-          title="Only first level terms shown."
-          icon={<IconWarning />}
-          className="text-sm"
-        />
+        {isExpanded && (
+          <InfoBadge
+            title="Only first level terms shown."
+            icon={<IconWarning />}
+            className="text-sm"
+          />
+        )}
         <ActionButton
           onClick={handleIsolateRelated}
           title="Show related nodes"

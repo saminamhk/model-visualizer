@@ -2,10 +2,8 @@ import { ViewRenderer } from "../View";
 import { Node, Edge } from "@xyflow/react";
 import { ViewProps } from "../View";
 
-const createSnippetNodes = (props: ViewProps): Node[] => {
-  const { snippets } = props;
-
-  return snippets.map((snippet, index) => ({
+const createSnippetNodes = ({ snippets }: ViewProps): Node[] =>
+  snippets.map((snippet, index) => ({
     id: snippet.id,
     type: "snippet",
     position: { x: 0, y: index * 100 }, // Initial position, will be adjusted by layout
@@ -15,12 +13,9 @@ const createSnippetNodes = (props: ViewProps): Node[] => {
       elements: snippet.elements,
     },
   }));
-};
 
-const createTypeNodes = (props: ViewProps): Node[] => {
-  const { contentTypes } = props;
-
-  return contentTypes.map((type, index) => ({
+const createTypeNodes = ({ contentTypes }: ViewProps): Node[] =>
+  contentTypes.map((type, index) => ({
     id: type.id,
     type: "contentType",
     position: { x: 0, y: index * 100 }, // Initial position, will be adjusted by layout
@@ -32,12 +27,10 @@ const createTypeNodes = (props: ViewProps): Node[] => {
       contentGroups: type.contentGroups,
     },
   }));
-};
 
 const createNodes = (props: ViewProps): Node[] => [...createSnippetNodes(props), ...createTypeNodes(props)];
 
-const createEdges = (props: ViewProps): Edge[] => {
-  const { contentTypes, snippets } = props;
+const createEdges = ({ contentTypes, snippets }: ViewProps): Edge[] => {
   const edges: Edge[] = [];
 
   contentTypes.forEach(type => {

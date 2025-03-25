@@ -3,12 +3,8 @@ import { Node, Edge } from "@xyflow/react";
 import { ViewProps } from "../View";
 import { isRelationshipElement } from "../../../utils/layout";
 
-const createTaxonomyNodes = (props: ViewProps): Node[] => {
-  const { taxonomies } = props;
-
-  console.log(taxonomies);
-
-  return taxonomies.map((taxonomy, index) => ({
+const createTaxonomyNodes = ({ taxonomies }: ViewProps): Node[] =>
+  taxonomies.map((taxonomy, index) => ({
     id: taxonomy.id,
     type: "taxonomy",
     position: { x: 0, y: index * 100 }, // Initial position, will be adjusted by layout
@@ -18,12 +14,9 @@ const createTaxonomyNodes = (props: ViewProps): Node[] => {
       terms: taxonomy.terms.map((term) => term.name),
     },
   }));
-};
 
-const createTypeNodes = (props: ViewProps): Node[] => {
-  const { typesWithSnippets } = props;
-
-  return typesWithSnippets.map((type) => ({
+const createTypeNodes = ({ typesWithSnippets }: ViewProps): Node[] =>
+  typesWithSnippets.map((type) => ({
     id: type.id,
     type: "contentType",
     position: { x: 0, y: 0 }, // Initial position, will be adjusted by layout
@@ -42,12 +35,10 @@ const createTypeNodes = (props: ViewProps): Node[] => {
         .map((el) => el.id),
     },
   }));
-};
 
 const createNodes = (props: ViewProps): Node[] => [...createTaxonomyNodes(props), ...createTypeNodes(props)];
 
-const createEdges = (props: ViewProps): Edge[] => {
-  const { typesWithSnippets, taxonomies } = props;
+const createEdges = ({ typesWithSnippets, taxonomies }: ViewProps): Edge[] => {
   const edges: Edge[] = [];
 
   typesWithSnippets.forEach(type => {

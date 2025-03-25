@@ -55,8 +55,6 @@ export const ContentTypeNode: React.FC<ContentTypeNodeData> = ({
 
   const { customApp } = useAppContext();
 
-  console.log(data.label, data.contentGroups);
-
   return (
     <div onClick={() => toggleNode(data.id)} style={containerStyle}>
       <div className="flex text-gray-400 justify-between items-center">
