@@ -5,7 +5,7 @@ import { BaseCustomNode, nodeBaseStyle } from "../../utils/layout";
 import { useAppContext } from "../../contexts/AppContext";
 import { ActionButton } from "../controls/ActionButton";
 import IconSchemeConnected from "../icons/IconSchemeConnected";
-import IconMagnifier from "../icons/Magnifier";
+import IconMagnifier from "../icons/IconMagnifier";
 import { SourceHandle } from "../controls/Handles";
 import { InfoBadge } from "../controls/InfoBadge";
 import IconWarning from "../icons/IconWarning";

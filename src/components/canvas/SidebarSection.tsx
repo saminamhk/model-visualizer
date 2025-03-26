@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import IconSchemeConnected from "../icons/IconSchemeConnected";
-import IconMagnifier from "../icons/Magnifier";
+import IconMagnifier from "../icons/IconMagnifier";
 import { ActionButton } from "../controls/ActionButton";
 import { useNodeState } from "../../contexts/NodeStateContext";
 import { useReactFlow } from "@xyflow/react";

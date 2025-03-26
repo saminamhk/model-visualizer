@@ -6,7 +6,7 @@ import { useNodeState } from "../../contexts/NodeStateContext";
 import { BaseCustomNode, nodeBaseStyle } from "../../utils/layout";
 import IconSchemeConnected from "../icons/IconSchemeConnected";
 import { ElementRow } from "./ElementRow";
-import IconMagnifier from "../icons/Magnifier";
+import IconMagnifier from "../icons/IconMagnifier";
 import { useAppContext } from "../../contexts/AppContext";
 import { AnnotatedElement, ContentGroup } from "../../utils/mapi";
 
