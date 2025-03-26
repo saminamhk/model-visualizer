@@ -64,5 +64,4 @@ const createEdges = ({ typesWithSnippets, taxonomies }: ViewProps): Edge[] => {
 export const TaxonomyViewRenderer: ViewRenderer = {
   createNodes,
   createEdges,
-  getSidebarItems: ({ taxonomies }) => taxonomies.map(taxonomy => ({ id: taxonomy.id, name: taxonomy.name })),
 };

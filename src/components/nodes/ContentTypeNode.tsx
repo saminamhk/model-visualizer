@@ -1,7 +1,7 @@
 import React from "react";
-import { useReactFlow, Node } from "@xyflow/react";
+import { useReactFlow } from "@xyflow/react";
 import { renderCollapsedHandles, TargetHandle } from "../controls/Handles";
-import { nodeBaseStyle } from "../../utils/layout";
+import { BaseCustomNode, nodeBaseStyle } from "../../utils/layout";
 import { ActionButton } from "../controls/ActionButton";
 import { ElementRow } from "./ElementRow";
 import { useNodeState } from "../../contexts/NodeStateContext";
@@ -11,16 +11,12 @@ import { useContentModel } from "../../contexts/ContentModelContext";
 import { useAppContext } from "../../contexts/AppContext";
 import { AnnotatedElement, ContentGroup } from "../../utils/mapi";
 
-type ContentTypeNodeData = Node<
-  {
-    id: string;
-    label: string;
-    isExpanded?: boolean;
-    elements: AnnotatedElement[];
-    selfReferences?: string[];
-    contentGroups: ContentGroup[];
-  }
->;
+type ContentTypeNodeData = BaseCustomNode<{
+  isExpanded?: boolean;
+  elements: AnnotatedElement[];
+  selfReferences?: string[];
+  contentGroups: ContentGroup[];
+}>;
 
 export const ContentTypeNode: React.FC<ContentTypeNodeData> = ({
   data,

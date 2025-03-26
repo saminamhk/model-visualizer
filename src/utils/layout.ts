@@ -23,6 +23,10 @@ export const nodeTypes = {
   taxonomy: TaxonomyNode as unknown as NodeTypes["taxonomy"],
 } as const satisfies NodeTypes;
 
+export type BaseCustomNode<T extends Record<string, unknown> = {}> = Node<{ label: string; id: string } & T> & {
+  type: string;
+};
+
 type RelationshipElement =
   | ContentTypeElements.ILinkedItemsElement
   | ContentTypeElements.ISubpagesElement

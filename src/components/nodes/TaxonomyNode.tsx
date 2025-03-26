@@ -1,7 +1,7 @@
 import React from "react";
-import { Node, useReactFlow } from "@xyflow/react";
+import { useReactFlow } from "@xyflow/react";
 import { useNodeState } from "../../contexts/NodeStateContext";
-import { nodeBaseStyle } from "../../utils/layout";
+import { BaseCustomNode, nodeBaseStyle } from "../../utils/layout";
 import { useAppContext } from "../../contexts/AppContext";
 import { ActionButton } from "../controls/ActionButton";
 import IconSchemeConnected from "../icons/IconSchemeConnected";
@@ -10,9 +10,7 @@ import { SourceHandle } from "../controls/Handles";
 import { InfoBadge } from "../controls/InfoBadge";
 import IconWarning from "../icons/IconWarning";
 
-type TaxonomyNodeData = Node<{
-  id: string;
-  label: string;
+type TaxonomyNodeData = BaseCustomNode<{
   isExpanded?: boolean;
   terms: string[];
 }>;

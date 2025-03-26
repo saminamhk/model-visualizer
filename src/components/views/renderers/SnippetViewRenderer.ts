@@ -56,5 +56,4 @@ const createEdges = ({ contentTypes, snippets }: ViewProps): Edge[] => {
 export const SnippetViewRenderer: ViewRenderer = {
   createNodes,
   createEdges,
-  getSidebarItems: ({ snippets }) => snippets.map(snippet => ({ id: snippet.id, name: snippet.name })),
 };

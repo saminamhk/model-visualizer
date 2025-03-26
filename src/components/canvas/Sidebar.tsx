@@ -1,25 +1,59 @@
-import { ContentTypeModels } from "@kontent-ai/management-sdk";
 import React, { useState, useRef, useEffect } from "react";
 import { useNodeState } from "../../contexts/NodeStateContext";
 import { useReactFlow } from "@xyflow/react";
 import { SidebarSection } from "./SidebarSection";
 import IconChevronDoubleRight from "../icons/IconChevronDoubleRight";
 import IconChevronDoubleLeft from "../icons/IconChevronDoubleLeft";
+import { CustomNode } from "./Canvas";
 
-type ContentType = ContentTypeModels.ContentType;
+type SidebarItem = {
+  id: string;
+  name: string;
+  type: "contentType" | "snippet" | "taxonomy";
+};
 
-interface SidebarProps {
-  types: ContentType[];
+type SidebarProps = {
+  nodes: CustomNode[];
   onMenuSelect: (typeId: string) => void;
-}
+};
 
-export const Sidebar: React.FC<SidebarProps> = ({ types, onMenuSelect }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ nodes, onMenuSelect }) => {
   const { toggleNode } = useNodeState();
-  const { getNodes, fitView } = useReactFlow();
+  const { fitView } = useReactFlow();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const sideBarSectionRef = useRef<HTMLDivElement>(null);
+
+  // Group nodes by type
+  const groupedNodes = nodes.reduce((acc, node) => {
+    if (!node.hidden) { // Only include visible nodes
+      const item: SidebarItem = {
+        id: node.id,
+        name: node.data.label,
+        type: node.type as SidebarItem["type"],
+      };
+
+      if (!acc[node.type]) {
+        acc[node.type] = [];
+      }
+      acc[node.type].push(item);
+    }
+    return acc;
+  }, {} as Record<string, SidebarItem[]>);
+
+  // Filter nodes based on search term
+  const filterItems = (items: SidebarItem[]) =>
+    items.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
+  const handleSidebarSelection = (typeId: string) => {
+    onMenuSelect(typeId);
+    const node = nodes.find(n => n.id === typeId);
+    if (node) {
+      toggleNode(typeId, true);
+      setTimeout(() => fitView({ duration: 800, nodes: [node] }), 50);
+    }
+  };
 
   const checkScroll = () => {
     if (sideBarSectionRef.current) { // display scroll indicator (fade out) if there is a scrollbar
@@ -30,18 +64,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ types, onMenuSelect }) => {
 
   useEffect(() => {
     checkScroll();
-  }, [types, searchTerm]);
-
-  const handleSidebarSelection = (typeId: string) => {
-    onMenuSelect(typeId);
-    const node = getNodes().find(n => n.id === typeId);
-    if (node) {
-      toggleNode(typeId, true);
-      setTimeout(() => fitView({ duration: 800, nodes: [node] }), 50);
-    }
-  };
-
-  const filteredTypes = types.filter(type => type.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  }, [nodes, searchTerm]);
 
   return (
     <div className="relative flex">
@@ -66,12 +89,31 @@ export const Sidebar: React.FC<SidebarProps> = ({ types, onMenuSelect }) => {
             isCollapsed ? "-translate-x-full" : "translate-x-0"
           } h-full overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']`}
         >
-          <SidebarSection
-            title="Content Types"
-            items={filteredTypes}
-            onItemSelect={handleSidebarSelection}
-          />
+          {groupedNodes.contentType && (
+            <SidebarSection
+              title="Content Types"
+              items={filterItems(groupedNodes.contentType)}
+              onItemSelect={handleSidebarSelection}
+            />
+          )}
+
+          {groupedNodes.snippet && (
+            <SidebarSection
+              title="Snippets"
+              items={filterItems(groupedNodes.snippet)}
+              onItemSelect={handleSidebarSelection}
+            />
+          )}
+
+          {groupedNodes.taxonomy && (
+            <SidebarSection
+              title="Taxonomies"
+              items={filterItems(groupedNodes.taxonomy)}
+              onItemSelect={handleSidebarSelection}
+            />
+          )}
         </div>
+        <span className="mb-15"></span>
         {showScrollIndicator && (
           <div
             className="absolute bottom-0 left-0 right-0 h-12 pointer-events-none"

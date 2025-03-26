@@ -53,7 +53,7 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
       <div
         className={`overflow-auto transition-all duration-300 ${isExpanded ? "opacity-100" : "max-h-0 opacity-0"}`}
       >
-        <ul className="mb-15">
+        <ul>
           {items.map(({ id, name }) => (
             <li
               key={id}

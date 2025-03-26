@@ -4,7 +4,9 @@ import { ViewProps } from "../View";
 import { isRelationshipElement } from "../../../utils/layout";
 import { layoutConfig } from "../../../utils/config";
 
-const createNodes = ({ typesWithSnippets }: ViewProps): Node[] =>
+type DefaultViewProps = ViewProps & { includeRichText?: boolean };
+
+const createNodes = ({ typesWithSnippets }: DefaultViewProps): Node[] =>
   typesWithSnippets.map((type) => ({
     id: type.id,
     type: "contentType",
@@ -24,7 +26,7 @@ const createNodes = ({ typesWithSnippets }: ViewProps): Node[] =>
     },
   }));
 
-const createEdges = ({ typesWithSnippets, includeRichText }: ViewProps & { includeRichText: boolean }): Edge[] => {
+const createEdges = ({ typesWithSnippets, includeRichText }: DefaultViewProps): Edge[] => {
   const edgeSet = new Set<string>();
   const edges: Edge[] = [];
 
@@ -59,5 +61,4 @@ const createEdges = ({ typesWithSnippets, includeRichText }: ViewProps & { inclu
 export const DefaultViewRenderer: ViewRenderer = {
   createNodes,
   createEdges,
-  getSidebarItems: ({ contentTypes }) => contentTypes.map(type => ({ id: type.id, name: type.name })),
 };

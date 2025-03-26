@@ -13,23 +13,25 @@ import {
 import "@xyflow/react/dist/style.css";
 import { Toolbar } from "./Toolbar";
 import { Sidebar } from "./Sidebar";
-import { getLayoutedElements, isNodeRelated, nodeTypes } from "../../utils/layout";
+import { getLayoutedElements, isNodeRelated, nodeTypes, BaseCustomNode } from "../../utils/layout";
 import { useNodeState } from "../../contexts/NodeStateContext";
+import { useView } from "../../contexts/ViewContext";
 
 type CanvasProps = {
   initialNodes: Node[];
   initialEdges: Edge[];
-  types: any[]; // We'll type this properly when adding snippet support
 };
+
+export type CustomNode = BaseCustomNode & { type: string };
 
 export const Canvas: React.FC<CanvasProps> = ({
   initialNodes,
   initialEdges,
-  types,
 }) => {
   const { expandedNodes, isolation } = useNodeState();
   const { setNodes, getNodes, getEdges } = useReactFlow();
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const { currentView } = useView();
 
   const handleNodeSelect = useCallback((node: Node) => {
     setSelectedNodeId(node.id);
@@ -47,8 +49,8 @@ export const Canvas: React.FC<CanvasProps> = ({
         ? isolation.mode === "related"
           ? !isNodeRelated(node.id, isolation.nodeId, initialEdges)
           : node.id !== isolation.nodeId
-        : false,
-    })), [selectedNodeId, expandedNodes, isolation]);
+        : node.hidden,
+    })), [selectedNodeId, expandedNodes, isolation, currentView]);
 
   // Combine both layout effects into a single layout handler
   const handleLayout = useCallback((nodes: Node[], edges: Edge[]) => {
@@ -63,16 +65,12 @@ export const Canvas: React.FC<CanvasProps> = ({
 
   // Handle isolation layout updates
   useEffect(() => {
-    if (isolation) {
-      handleLayout(updatedNodes, initialEdges);
-    }
+    handleLayout(updatedNodes, initialEdges);
   }, [handleLayout, isolation, updatedNodes, initialEdges]);
 
   // Handle node changes and trigger layout when dimensions change
   const handleNodesChange = useCallback((changes: NodeChange[]) => {
-    const layoutNeeded = changes.some(c => c.type === "dimensions");
-
-    if (layoutNeeded) {
+    if (changes.some(c => c.type === "dimensions")) {
       handleLayout(getNodes(), getEdges());
     } else {
       setNodes(nodes => applyNodeChanges(changes, nodes));
@@ -81,7 +79,10 @@ export const Canvas: React.FC<CanvasProps> = ({
 
   return (
     <div className="flex h-full w-full">
-      <Sidebar types={types} onMenuSelect={setSelectedNodeId} />
+      <Sidebar
+        nodes={updatedNodes.filter(node => !node.hidden) as CustomNode[]}
+        onMenuSelect={setSelectedNodeId}
+      />
       <div className="flex-1 w-full h-full pb-14">
         <Toolbar />
         <ReactFlow
