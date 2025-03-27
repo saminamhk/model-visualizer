@@ -12,20 +12,26 @@ import {
 import { useAppContext } from "./AppContext";
 import { AppError, createAppError, isKontentError, isAppError } from "../utils/errors";
 
-type ContentModelState = {
+type ContentModelData = {
   contentTypes: ContentType[];
   snippets: Snippet[];
   typesWithSnippets: ResolvedType[];
   taxonomies: Taxonomy[];
+};
+
+type ContentModelState = ContentModelData & {
   loading: boolean;
   error: AppError | null;
+  importContentModel: (model: ContentModelData) => void;
+  isInspectMode: boolean;
+  exitInspectMode: () => void;
 };
 
 const ContentModelContext = createContext<ContentModelState | null>(null);
 
 export const ContentModelProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { customApp } = useAppContext();
-  const [state, setState] = useState<Omit<ContentModelState, "loading" | "error">>({
+  const [model, setModel] = useState<ContentModelData>({
     contentTypes: [],
     snippets: [],
     typesWithSnippets: [],
@@ -33,8 +39,24 @@ export const ContentModelProvider: React.FC<{ children: ReactNode }> = ({ childr
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<AppError | null>(null);
+  const [isInspectMode, setIsInspectMode] = useState(false);
 
+  // Import content model (enters inspect mode)
+  const importContentModel = (newModel: ContentModelData) => {
+    setModel(newModel);
+    setIsInspectMode(true);
+  };
+
+  // Exit inspect mode (triggers API reload via dependency)
+  const exitInspectMode = () => {
+    setIsInspectMode(false);
+  };
+
+  // Fetch content model from API when not in inspect mode
   useEffect(() => {
+    // Skip API call when in inspect mode
+    if (isInspectMode) return;
+
     const getContentModel = async () => {
       try {
         setLoading(true);
@@ -53,7 +75,7 @@ export const ContentModelProvider: React.FC<{ children: ReactNode }> = ({ childr
         const snippets = snippetsResult.data ?? [];
         const taxonomies = taxonomiesResult.data ?? [];
 
-        setState({
+        setModel({
           contentTypes: types,
           snippets: snippets,
           typesWithSnippets: mergeTypesWithSnippets(types, snippets),
@@ -74,10 +96,19 @@ export const ContentModelProvider: React.FC<{ children: ReactNode }> = ({ childr
     };
 
     getContentModel();
-  }, [customApp.context.environmentId]);
+  }, [customApp.context.environmentId, isInspectMode]); // Add isInspectMode to dependencies
 
   return (
-    <ContentModelContext.Provider value={{ ...state, loading, error }}>
+    <ContentModelContext.Provider
+      value={{
+        ...model,
+        loading,
+        error,
+        importContentModel,
+        isInspectMode,
+        exitInspectMode,
+      }}
+    >
       {children}
     </ContentModelContext.Provider>
   );

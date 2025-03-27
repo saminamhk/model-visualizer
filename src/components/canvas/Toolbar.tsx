@@ -3,24 +3,23 @@ import { useReactFlow } from "@xyflow/react";
 import { useNodeState } from "../../contexts/NodeStateContext";
 import { useView } from "../../contexts/ViewContext";
 import { ViewMap, Views, ViewType } from "../views/views";
-import html2canvas from "html2canvas-pro";
-import jsPDF from "jspdf";
-import { useAppContext } from "../../contexts/AppContext";
 import IconExpand from "../icons/IconExpand";
 import IconCollapse from "../icons/IconCollapse";
 import IconArrowReturn from "../icons/IconArrowReturn";
-import IconFilePdf from "../icons/IconFilePdf";
 import { InfoBadge } from "../controls/InfoBadge";
 import IconQuestionCircle from "../icons/IconQuestionCircle";
+import IconFile from "../icons/IconFile";
+import { createPortal } from "react-dom";
+import { ImportExportModal } from "../utils/ImportExportModal";
+import { useContentModel } from "../../contexts/ContentModelContext";
 
 export const Toolbar: React.FC = () => {
   const { expandedNodes, toggleNode, resetIsolation, includeRichText, setIncludeRichText } = useNodeState();
   const { currentView, setCurrentView } = useView();
   const { getNodes, fitView } = useReactFlow();
-  const { customApp } = useAppContext();
-  const [isExporting, setIsExporting] = useState(false);
   const [isToggled, setIsToggled] = useState(false);
-  const environmentId = customApp.context.environmentId;
+  const [showImportExport, setShowImportExport] = useState(false);
+  const { isInspectMode, exitInspectMode } = useContentModel();
 
   const handleExpandCollapse = () => {
     const nodes = getNodes();
@@ -38,34 +37,6 @@ export const Toolbar: React.FC = () => {
   const handleViewChange = (viewId: keyof ViewMap) => {
     setCurrentView(Views[viewId]);
     handleReset();
-  };
-
-  const exportToPdf = async (flowElement: HTMLElement) => {
-    setIsExporting(true);
-    try {
-      const canvas = await html2canvas(flowElement, {
-        backgroundColor: "#ffffff",
-        scale: 3,
-        useCORS: true,
-      });
-
-      new jsPDF({
-        orientation: "landscape",
-        unit: "px",
-        format: [canvas.width, canvas.height],
-      })
-        .addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, canvas.width, canvas.height, "", "FAST")
-        .save(`content-model-${environmentId}.pdf`);
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
-  const handleExport = () => {
-    const flowElement = document.querySelector(".react-flow") as HTMLElement;
-    if (flowElement) {
-      exportToPdf(flowElement);
-    }
   };
 
   const isAllExpanded = () => {
@@ -144,15 +115,26 @@ export const Toolbar: React.FC = () => {
       )}
 
       <div className="flex-1" />
-      {toolbarButton(
-        handleExport,
+      {isInspectMode && toolbarButton(
+        exitInspectMode,
+        <div className="flex items-center gap-2">
+          <span>Exit Inspect Mode</span>
+        </div>,
+        "red",
+      )}
+      {!isInspectMode && toolbarButton(
+        () => setShowImportExport(true),
         <div className="flex items-center gap-2">
           <span className="text-base pt-1">
-            <IconFilePdf />
+            <IconFile />
           </span>
-          <span>{isExporting ? "Exporting..." : "Export to PDF"}</span>
+          <span>Import / Export</span>
         </div>,
-        "green",
+        "purple",
+      )}
+      {showImportExport && createPortal(
+        <ImportExportModal onClose={() => setShowImportExport(false)} />,
+        document.body,
       )}
     </div>
   );

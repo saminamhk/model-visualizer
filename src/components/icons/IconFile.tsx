@@ -31,7 +31,7 @@ const IconFile = React.forwardRef<SVGSVGElement, IconFileProps>(
         </svg>
       </IconWrapper>
     );
-  }
+  },
 );
 
 IconFile.displayName = "IconFile";
