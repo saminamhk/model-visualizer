@@ -1,11 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import { NodeIsolation } from "../utils/types/layout";
 
-type NodeIsolation = {
-  nodeId: string;
-  mode: "related" | "single";
-} | null;
-
-type NodeStateContextType = {
+type NodeStateContextState = {
   expandedNodes: Set<string>;
   toggleNode: (nodeId: string, forceState?: boolean) => void;
   isolation: NodeIsolation;
@@ -16,7 +12,7 @@ type NodeStateContextType = {
   setIncludeRichText: (value: boolean) => void;
 };
 
-const NodeStateContext = createContext<NodeStateContextType | undefined>(undefined);
+const NodeStateContext = createContext<NodeStateContextState | undefined>(undefined);
 
 export const NodeStateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());

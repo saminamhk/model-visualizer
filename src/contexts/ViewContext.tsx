@@ -1,15 +1,15 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { ViewInfo, Views } from "../components/views/views";
+import { ViewInfo, views } from "../components/views/views";
 
-type ViewContextType = {
+type ViewContextState = {
   currentView: ViewInfo;
   setCurrentView: (view: ViewInfo) => void;
 };
 
-const ViewContext = createContext<ViewContextType | undefined>(undefined);
+const ViewContext = createContext<ViewContextState | undefined>(undefined);
 
 export const ViewProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [currentView, setCurrentView] = useState<ViewInfo>(Views["default"]);
+  const [currentView, setCurrentView] = useState<ViewInfo>(views["default"]);
 
   return (
     <ViewContext.Provider value={{ currentView, setCurrentView }}>

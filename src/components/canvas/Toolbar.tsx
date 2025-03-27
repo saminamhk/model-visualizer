@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useReactFlow } from "@xyflow/react";
 import { useNodeState } from "../../contexts/NodeStateContext";
 import { useView } from "../../contexts/ViewContext";
-import { ViewMap, Views, ViewType } from "../views/views";
+import { ViewMap, views, ViewType } from "../views/views";
 import IconExpand from "../icons/IconExpand";
 import IconCollapse from "../icons/IconCollapse";
 import IconArrowReturn from "../icons/IconArrowReturn";
@@ -35,7 +35,7 @@ export const Toolbar: React.FC = () => {
   };
 
   const handleViewChange = (viewId: keyof ViewMap) => {
-    setCurrentView(Views[viewId]);
+    setCurrentView(views[viewId]);
     handleReset();
   };
 
@@ -68,7 +68,7 @@ export const Toolbar: React.FC = () => {
           {currentView.label}
         </div>
         <div className={`options ${isToggled ? "block" : "hidden"} absolute top-[50px] z-1000 bg-white min-w-[150px]`}>
-          {Object.entries(Views).map(([k, v]) => (
+          {Object.entries(views).map(([k, v]) => (
             <div
               className={`option ${currentView === v ? "selected" : ""}`}
               onClick={() => {
@@ -132,6 +132,7 @@ export const Toolbar: React.FC = () => {
         </div>,
         "purple",
       )}
+      {/* portal to body to ensure the modal is rendered above the canvas */}
       {showImportExport && createPortal(
         <ImportExportModal onClose={() => setShowImportExport(false)} />,
         document.body,

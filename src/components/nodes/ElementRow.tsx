@@ -1,6 +1,7 @@
 import React from "react";
 import { SourceHandle, TargetHandle } from "../controls/Handles";
-import { AnnotatedElement, ContentGroup, elementTypeMap } from "../../utils/mapi";
+import { AnnotatedElement, ContentGroup } from "../../utils/types/mapi";
+import { elementTypeMap } from "../../utils/mapi";
 import { isRelationshipElement, isRequirableElement } from "../../utils/layout";
 import { ContentTypeElements } from "@kontent-ai/management-sdk";
 import IconAccordion from "../icons/IconAccordion";

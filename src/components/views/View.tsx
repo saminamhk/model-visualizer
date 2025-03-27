@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Node, Edge } from "@xyflow/react";
-import { ContentType, ResolvedType, Snippet, Taxonomy } from "../../utils/mapi";
+import { ContentType, ResolvedType, Snippet, Taxonomy } from "../../utils/types/mapi";
 import { Canvas } from "../canvas/Canvas";
 
 export type ViewProps = {

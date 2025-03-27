@@ -2,9 +2,9 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 import { getCustomAppContext, CustomAppContext } from "@kontent-ai/custom-app-sdk";
 import { Loader } from "../components/utils/Loader";
 import { ErrorDisplay } from "../components/utils/ErrorDisplay";
+import { CustomAppError } from "../utils/errors";
 
 type ValidCustomAppContext = Extract<CustomAppContext, { isError: false }>;
-type CustomAppError = Omit<Extract<CustomAppContext, { isError: true }>, "isError">;
 
 type AppContextState = {
   customApp: ValidCustomAppContext;

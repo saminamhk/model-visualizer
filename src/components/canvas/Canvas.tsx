@@ -13,15 +13,14 @@ import {
 import "@xyflow/react/dist/style.css";
 import { Toolbar } from "./Toolbar";
 import { Sidebar } from "./Sidebar";
-import { getLayoutedElements, isNodeRelated, nodeTypes, BaseCustomNode } from "../../utils/layout";
+import { getLayoutedElements, isNodeRelated, nodeTypes } from "../../utils/layout";
 import { useNodeState } from "../../contexts/NodeStateContext";
+import { BaseCustomNode } from "../../utils/types/layout";
 
 type CanvasProps = {
   initialNodes: Node[];
   initialEdges: Edge[];
 };
-
-export type CustomNode = BaseCustomNode & { type: string };
 
 export const Canvas: React.FC<CanvasProps> = ({
   initialNodes,
@@ -77,7 +76,7 @@ export const Canvas: React.FC<CanvasProps> = ({
   return (
     <div className="flex h-full w-full">
       <Sidebar
-        nodes={updatedNodes.filter(node => !node.hidden) as CustomNode[]}
+        nodes={updatedNodes.filter(node => !node.hidden) as BaseCustomNode[]}
         onMenuSelect={setSelectedNodeId}
       />
       <div className="flex-1 w-full h-full pb-14">

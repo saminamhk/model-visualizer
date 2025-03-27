@@ -3,12 +3,13 @@ import { NodeProps, useReactFlow } from "@xyflow/react";
 import { ActionButton } from "../controls/ActionButton";
 import { SourceHandle } from "../controls/Handles";
 import { useNodeState } from "../../contexts/NodeStateContext";
-import { BaseCustomNode, nodeBaseStyle } from "../../utils/layout";
+import { nodeBaseStyle } from "../../utils/layout";
 import IconSchemeConnected from "../icons/IconSchemeConnected";
 import { ElementRow } from "./ElementRow";
 import IconMagnifier from "../icons/IconMagnifier";
 import { useAppContext } from "../../contexts/AppContext";
-import { AnnotatedElement, ContentGroup } from "../../utils/mapi";
+import { AnnotatedElement, ContentGroup } from "../../utils/types/mapi";
+import { BaseCustomNode } from "../../utils/types/layout";
 
 type SnippetNodeData = BaseCustomNode<{
   isExpanded?: boolean;

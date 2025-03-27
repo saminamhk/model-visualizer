@@ -5,11 +5,11 @@ import { ActionButton } from "../controls/ActionButton";
 import { useNodeState } from "../../contexts/NodeStateContext";
 import { useReactFlow } from "@xyflow/react";
 
-interface SidebarSectionProps {
+type SidebarSectionProps = {
   title: string;
   items: { id: string; name: string }[];
   onItemSelect: (id: string) => void;
-}
+};
 
 export const SidebarSection: React.FC<SidebarSectionProps> = ({
   title,

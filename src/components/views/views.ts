@@ -14,7 +14,7 @@ export type ViewInfo = {
 
 export type ViewMap = Record<ViewType, ViewInfo>;
 
-export const Views: ViewMap = {
+export const views: ViewMap = {
   default: {
     id: "default",
     label: "Default View",

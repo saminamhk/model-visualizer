@@ -1,6 +1,7 @@
 import React from "react";
 import { Handle, HandleProps, Position } from "@xyflow/react";
-import { Element } from "../../utils/mapi";
+import { Element } from "../../utils/types/mapi";
+
 type CustomHandleProps = Omit<HandleProps, "type" | "position">;
 
 export const SourceHandle: React.FC<CustomHandleProps> = (props) => (

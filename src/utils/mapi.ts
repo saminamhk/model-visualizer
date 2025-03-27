@@ -1,47 +1,15 @@
-import {
-  ContentTypeElements,
-  ContentTypeModels,
-  ContentTypeSnippetModels,
-  ManagementClient,
-  TaxonomyModels,
-} from "@kontent-ai/management-sdk";
 import { AppError, createAppError } from "../utils/errors";
-
-export type ApiResponse<T> = {
-  data?: T;
-  error?: AppError;
-};
-
-export type Element = ContentTypeElements.ContentTypeElementModel;
-
-export type ContentType = ContentTypeModels.ContentType;
-
-export type Snippet = ContentTypeSnippetModels.ContentTypeSnippet;
-
-export type SnippetElement = ContentTypeElements.ISnippetElement;
-
-export type ContentGroup = ContentTypeModels.ContentTypeGroup;
-
-export type AnnotatedElement = Element & { fromSnippet: { id: string; name: string } | false };
-
-export type ResolvedType = Omit<ContentTypeModels.ContentType, "elements"> & {
-  elements: AnnotatedElement[];
-};
-
-export type Taxonomy = TaxonomyModels.Taxonomy;
-
-export type ElementType = Element["type"];
-
-export type NamedElement = Exclude<
-  ContentTypeElements.ContentTypeElementModel,
-  ContentTypeElements.IGuidelinesElement | ContentTypeElements.ISnippetElement
->;
-
-type ElementTypeLabels = {
-  [K in ElementType]: string;
-};
-
-type Action = keyof Pick<ManagementClient, "listContentTypes" | "listContentTypeSnippets" | "listTaxonomies">;
+import {
+  ElementTypeLabels,
+  ElementType,
+  Action,
+  ApiResponse,
+  ContentType,
+  Snippet,
+  Taxonomy,
+  ResolvedType,
+  AnnotatedElement,
+} from "./types/mapi";
 
 export const elementTypeLabels: ElementTypeLabels = {
   text: "Text",

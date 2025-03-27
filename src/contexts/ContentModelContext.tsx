@@ -1,16 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import {
-  ContentType,
-  getContentTypes,
-  getContentTypeSnippets,
-  mergeTypesWithSnippets,
-  Snippet,
-  ResolvedType,
-  Taxonomy,
-  getTaxonomies,
-} from "../utils/mapi";
+import { getContentTypes, getContentTypeSnippets, mergeTypesWithSnippets, getTaxonomies } from "../utils/mapi";
 import { useAppContext } from "./AppContext";
 import { AppError, createAppError, isKontentError, isAppError } from "../utils/errors";
+import { ResolvedType, ContentType, Snippet, Taxonomy } from "../utils/types/mapi";
 
 type ContentModelData = {
   contentTypes: ContentType[];
@@ -19,7 +11,7 @@ type ContentModelData = {
   taxonomies: Taxonomy[];
 };
 
-type ContentModelState = ContentModelData & {
+type ContentModelContextState = ContentModelData & {
   loading: boolean;
   error: AppError | null;
   importContentModel: (model: ContentModelData) => void;
@@ -27,7 +19,7 @@ type ContentModelState = ContentModelData & {
   exitInspectMode: () => void;
 };
 
-const ContentModelContext = createContext<ContentModelState | null>(null);
+const ContentModelContext = createContext<ContentModelContextState | null>(null);
 
 export const ContentModelProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { customApp } = useAppContext();

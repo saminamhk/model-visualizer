@@ -4,7 +4,7 @@ import { useReactFlow } from "@xyflow/react";
 import { SidebarSection } from "./SidebarSection";
 import IconChevronDoubleRight from "../icons/IconChevronDoubleRight";
 import IconChevronDoubleLeft from "../icons/IconChevronDoubleLeft";
-import { CustomNode } from "./Canvas";
+import { BaseCustomNode } from "../../utils/types/layout";
 
 type SidebarItem = {
   id: string;
@@ -13,7 +13,7 @@ type SidebarItem = {
 };
 
 type SidebarProps = {
-  nodes: CustomNode[];
+  nodes: BaseCustomNode[];
   onMenuSelect: (typeId: string) => void;
 };
 

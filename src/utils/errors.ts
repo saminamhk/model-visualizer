@@ -1,3 +1,4 @@
+import { CustomAppContext } from "@kontent-ai/custom-app-sdk";
 import { SharedModels } from "@kontent-ai/management-sdk";
 
 export type AppError = {
@@ -5,6 +6,8 @@ export type AppError = {
   statusCode: string | number;
   originalError?: unknown;
 };
+
+export type CustomAppError = Omit<Extract<CustomAppContext, { isError: true }>, "isError">;
 
 export const createAppError = (
   body: string,

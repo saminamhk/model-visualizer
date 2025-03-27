@@ -1,7 +1,6 @@
-import { ContentTypeElements } from "@kontent-ai/management-sdk";
 import Dagre from "@dagrejs/dagre";
 import { Node, Edge, NodeTypes } from "@xyflow/react";
-import { Element } from "./mapi";
+import { Element, RelationshipElement, RequirableElement } from "./types/mapi";
 import { ContentTypeNode } from "../components/nodes/ContentTypeNode";
 import { SnippetNode } from "../components/nodes/SnippetNode";
 import { TaxonomyNode } from "../components/nodes/TaxonomyNode";
@@ -22,18 +21,6 @@ export const nodeTypes = {
   snippet: SnippetNode as unknown as NodeTypes["snippet"],
   taxonomy: TaxonomyNode as unknown as NodeTypes["taxonomy"],
 } as const satisfies NodeTypes;
-
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export type BaseCustomNode<T extends Record<string, unknown> = {}> = Node<{ label: string; id: string } & T> & {
-  type: string;
-};
-
-type RelationshipElement =
-  | ContentTypeElements.ILinkedItemsElement
-  | ContentTypeElements.ISubpagesElement
-  | ContentTypeElements.IRichTextElement;
-
-type RequirableElement = Exclude<Element, ContentTypeElements.IGuidelinesElement | ContentTypeElements.ISnippetElement>;
 
 export const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
   const baseNodeHeight = 76;

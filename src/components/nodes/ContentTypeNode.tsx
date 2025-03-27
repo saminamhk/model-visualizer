@@ -1,7 +1,7 @@
 import React from "react";
 import { useReactFlow } from "@xyflow/react";
 import { renderCollapsedHandles, TargetHandle } from "../controls/Handles";
-import { BaseCustomNode, nodeBaseStyle } from "../../utils/layout";
+import { nodeBaseStyle } from "../../utils/layout";
 import { ActionButton } from "../controls/ActionButton";
 import { ElementRow } from "./ElementRow";
 import { useNodeState } from "../../contexts/NodeStateContext";
@@ -9,7 +9,8 @@ import IconSchemeConnected from "../icons/IconSchemeConnected";
 import IconMagnifier from "../icons/IconMagnifier";
 import { useContentModel } from "../../contexts/ContentModelContext";
 import { useAppContext } from "../../contexts/AppContext";
-import { AnnotatedElement, ContentGroup } from "../../utils/mapi";
+import { AnnotatedElement, ContentGroup } from "../../utils/types/mapi";
+import { BaseCustomNode } from "../../utils/types/layout";
 
 type ContentTypeNodeData = BaseCustomNode<{
   isExpanded?: boolean;
