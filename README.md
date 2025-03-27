@@ -9,32 +9,27 @@
 
 A Kontent.ai custom application for content model visualization, allowing you to explore the relationships between your content types and other entities.
 
-## Features
-
-### Interactive content model view
-
-The custom app retrieves content model entities (types, snippets and taxonomies) via management API and renders them as interactive nodes into a React Flow canvas, automatically layouted using Dagre layouting library. There are three selectable views, each with a specific purpose:
-
-#### Default (content type) view 
-Renders all content types defined in your environment and their relationships with each other based on allowed types configured in **Linked items** and optionally **Rich text** elements.
-
-Expanded nodes show individual elements defined in the type, with hoverable graphical badges informing you of the element's content group, some of its limitations and other info. 
-
-In the default view, snippets are seamlessly merged into types and their elements are decorated with a hoverable icon in a similar manner, informing you of the Snippet they originate from.
-
-#### Snippet view
-This view renders separate nodes for Snippets and Types and allows you to see where each snippet is used. Content types without snippet elements are hidden.
-
-#### Taxonomy view
-Similarly to the snippet view, renders Taxonomy nodes and edges to the Content type nodes the taxonomies are used in. Types without taxonomies are omitted.
-
-### Sidebar and search
-
-Each view comes with a collapsible sidebar, which dynamically lists the entities currently on the canvas, grouped by their type. Each sidebar entry serves as a shortcut to its corresponding node and also provides the same tools. For convenience, a search bar is also included.
-
-### Model import & export
-
-The app allows you to export your content model to a JSON file and load it later. This way you can explore models from earlier or from a completely different environment; or perhaps store a snapshot of your content model for versioning purposes. The exported file matches management API response format.
+## Contents
+- [Quick Deploy on Netlify](#quick-deploy-on-netlify)
+- [Configuration](#configuration)
+  - [Embedding the Custom App](#embedding-the-custom-app)
+  - [Layout Configuration](#layout-configuration)
+- [Features](#features)
+  - [Interactive Content Model View](#interactive-content-model-view)
+    - [Default (Content Type) View](#default-content-type-view)
+    - [Snippet View](#snippet-view)
+    - [Taxonomy View](#taxonomy-view)
+  - [Sidebar and Search](#sidebar-and-search)
+  - [Model Import & Export](#model-import--export)
+- [API Consumption](#api-consumption)
+- [Local Development](#local-development)
+  - [Running the App Locally](#running-the-app-locally)
+  - [Extending Views](#extending-views)
+- [Performance Considerations](#performance-considerations)
+- [Technical Notes](#technical-notes)
+- [License](#license)
+- [Support](#support)
+- [Additional Resources](#additional-resources)
 
 ## Quick Deploy on Netlify
 
@@ -77,6 +72,29 @@ export const layoutConfig: Readonly<LayoutConfig> = {
   rankSeparation: 200,
 };
 ```
+
+## Features
+
+### Interactive content model view
+
+The custom app retrieves content model entities (types, snippets and taxonomies) via management API and renders them as interactive nodes into a React Flow canvas, automatically layouted using Dagre layouting library. There are three selectable views, each with a specific purpose:
+
+#### Default (content type) view 
+Renders all content types defined in your environment and their relationships with each other based on allowed types configured in **Linked items** and optionally **Rich text** elements.
+
+#### Snippet view
+This view renders separate nodes for Snippets and Types and allows you to see where each snippet is used. Content types without snippet elements are hidden.
+
+#### Taxonomy view
+Similarly to the snippet view, renders Taxonomy nodes and edges to the Content type nodes the taxonomies are used in. Types without taxonomies are omitted.
+
+### Sidebar and search
+
+Each view comes with a collapsible sidebar, which dynamically lists the entities currently on the canvas, grouped by their type. Each sidebar entry serves as a shortcut to its corresponding node and also provides the same tools. For convenience, a search bar is also included.
+
+### Model import & export
+
+The app allows you to export your content model to a JSON file and load it later. This way you can explore models from earlier or from a completely different environment; or perhaps store a snapshot of your content model for versioning purposes. The exported file matches management API response format.
 
 ## API Consumption
 
