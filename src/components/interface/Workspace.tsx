@@ -14,19 +14,19 @@ import "@xyflow/react/dist/style.css";
 import { Toolbar } from "./Toolbar";
 import { Sidebar } from "./Sidebar";
 import { getLayoutedElements, isNodeRelated, nodeTypes } from "../../utils/layout";
-import { useNodeState } from "../../contexts/NodeStateContext";
+import { useCanvas } from "../../contexts/CanvasContext";
 import { BaseCustomNode } from "../../utils/types/layout";
 
-type CanvasProps = {
-  initialNodes: Node[];
-  initialEdges: Edge[];
+type WorkspaceProps = {
+  initialNodes: ReadonlyArray<Node>;
+  initialEdges: ReadonlyArray<Edge>;
 };
 
-export const Canvas: React.FC<CanvasProps> = ({
+export const WorkSpace: React.FC<WorkspaceProps> = ({
   initialNodes,
   initialEdges,
 }) => {
-  const { expandedNodes, isolation, includeRichText } = useNodeState();
+  const { expandedNodes, isolation, includeRichText } = useCanvas();
   const { setNodes, getNodes, getEdges } = useReactFlow();
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 

@@ -4,7 +4,7 @@ import { renderCollapsedHandles, TargetHandle } from "../controls/Handles";
 import { nodeBaseStyle } from "../../utils/layout";
 import { ActionButton } from "../controls/ActionButton";
 import { ElementRow } from "./ElementRow";
-import { useNodeState } from "../../contexts/NodeStateContext";
+import { useCanvas } from "../../contexts/CanvasContext";
 import IconSchemeConnected from "../icons/IconSchemeConnected";
 import IconMagnifier from "../icons/IconMagnifier";
 import { useContentModel } from "../../contexts/ContentModelContext";
@@ -14,18 +14,19 @@ import { BaseCustomNode } from "../../utils/types/layout";
 
 type ContentTypeNodeData = BaseCustomNode<{
   isExpanded?: boolean;
-  elements: AnnotatedElement[];
-  selfReferences?: string[];
-  contentGroups: ContentGroup[];
+  elements: ReadonlyArray<AnnotatedElement>;
+  selfReferences?: ReadonlyArray<string>;
+  contentGroups: ReadonlyArray<ContentGroup>;
 }>;
 
 export const ContentTypeNode: React.FC<ContentTypeNodeData> = ({
   data,
   selected,
 }) => {
-  const { expandedNodes, toggleNode, isolateRelated, isolateSingle } = useNodeState();
+  const { expandedNodes, toggleNode, isolateRelated, isolateSingle } = useCanvas();
   const { fitView } = useReactFlow();
   const { snippets } = useContentModel();
+  const { customApp } = useAppContext();
 
   const isExpanded = expandedNodes.has(data.id);
 
@@ -49,8 +50,6 @@ export const ContentTypeNode: React.FC<ContentTypeNodeData> = ({
   };
 
   const filteredElements = data.elements.filter(el => el.type !== "guidelines");
-
-  const { customApp } = useAppContext();
 
   return (
     <div onClick={() => toggleNode(data.id)} style={containerStyle}>

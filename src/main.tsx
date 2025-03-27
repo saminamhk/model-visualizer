@@ -5,18 +5,18 @@ import { AppProvider } from "./contexts/AppContext";
 import "./index.css";
 import "@kontent-ai/stylekit/styles/styles.css";
 import { ReactFlowProvider } from "@xyflow/react";
-import { NodeStateProvider } from "./contexts/NodeStateContext";
+import { CanvasProvider } from "./contexts/CanvasContext";
 import { ViewProvider } from "./contexts/ViewContext";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <AppProvider>
       <ReactFlowProvider>
-        <NodeStateProvider>
+        <CanvasProvider>
           <ViewProvider>
             <App />
           </ViewProvider>
-        </NodeStateProvider>
+        </CanvasProvider>
       </ReactFlowProvider>
     </AppProvider>
   </React.StrictMode>,

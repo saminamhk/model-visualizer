@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
 import { NodeIsolation } from "../utils/types/layout";
 
-type NodeStateContextState = {
+type CanvasContextType = {
   expandedNodes: Set<string>;
   toggleNode: (nodeId: string, forceState?: boolean) => void;
   isolation: NodeIsolation;
@@ -12,9 +12,9 @@ type NodeStateContextState = {
   setIncludeRichText: (value: boolean) => void;
 };
 
-const NodeStateContext = createContext<NodeStateContextState | undefined>(undefined);
+const CanvasContext = createContext<CanvasContextType | undefined>(undefined);
 
-export const NodeStateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const CanvasProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const [isolation, setIsolation] = useState<NodeIsolation>(null);
   const [includeRichText, setIncludeRichText] = useState(true);
@@ -45,7 +45,7 @@ export const NodeStateProvider: React.FC<{ children: ReactNode }> = ({ children 
   }, []);
 
   return (
-    <NodeStateContext.Provider
+    <CanvasContext.Provider
       value={{
         expandedNodes,
         isolation,
@@ -58,14 +58,14 @@ export const NodeStateProvider: React.FC<{ children: ReactNode }> = ({ children 
       }}
     >
       {children}
-    </NodeStateContext.Provider>
+    </CanvasContext.Provider>
   );
 };
 
-export const useNodeState = () => {
-  const context = useContext(NodeStateContext);
+export const useCanvas = () => {
+  const context = useContext(CanvasContext);
   if (!context) {
-    throw new Error("useNodeState must be used within a NodeStateProvider");
+    throw new Error("useCanvas must be used within a CanvasProvider");
   }
   return context;
 };

@@ -52,7 +52,6 @@ export const ImportExportModal: React.FC<{ onClose: () => void }> = ({ onClose }
         const importedData = JSON.parse(result);
         console.log("Importing content model data:", importedData);
 
-        // check if the imported data has the expected structure
         if (
           !importedData.contentTypes || !importedData.snippets || !importedData.taxonomies
         ) {
@@ -94,16 +93,13 @@ export const ImportExportModal: React.FC<{ onClose: () => void }> = ({ onClose }
 
     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
 
-    // create a URL for the blob
     const url = URL.createObjectURL(blob);
 
-    // create a temporary link element and trigger the download
     const link = document.createElement("a");
     link.href = url;
 
-    // generate a filename with the current date
-    const date = new Date().toISOString().slice(0, 10);
-    link.download = `model-visualizer-export-${customApp.context.environmentId}-${date}.json`;
+    const date = new Date().toISOString().slice(0, 16).replace("T", "-");
+    link.download = `model-visualizer-export-${customApp.context.environmentId}-${date}UTC.json`;
 
     // append the link to the document, click it, then remove it
     document.body.appendChild(link);

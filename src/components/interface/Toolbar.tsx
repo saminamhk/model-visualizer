@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useReactFlow } from "@xyflow/react";
-import { useNodeState } from "../../contexts/NodeStateContext";
+import { useCanvas } from "../../contexts/CanvasContext";
 import { useView } from "../../contexts/ViewContext";
 import { ViewMap, views, ViewType } from "../views/views";
 import IconExpand from "../icons/IconExpand";
@@ -14,7 +14,7 @@ import { ImportExportModal } from "../utils/ImportExportModal";
 import { useContentModel } from "../../contexts/ContentModelContext";
 
 export const Toolbar: React.FC = () => {
-  const { expandedNodes, toggleNode, resetIsolation, includeRichText, setIncludeRichText } = useNodeState();
+  const { expandedNodes, toggleNode, resetIsolation, includeRichText, setIncludeRichText } = useCanvas();
   const { currentView, setCurrentView } = useView();
   const { getNodes, fitView } = useReactFlow();
   const [isToggled, setIsToggled] = useState(false);

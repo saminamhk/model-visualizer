@@ -24,7 +24,7 @@ type ElementRowProps = {
   element: NamedElement;
   isLast: boolean;
   selfReferences?: boolean;
-  contentGroups: ContentGroup[];
+  contentGroups: ReadonlyArray<ContentGroup>;
 };
 
 const linkedItemConditionMap: ReadonlyMap<"at_least" | "at_most" | "exactly", string> = new Map([

@@ -14,7 +14,7 @@ export type ViewInfo = {
 
 export type ViewMap = Record<ViewType, ViewInfo>;
 
-export const views: ViewMap = {
+export const views = {
   default: {
     id: "default",
     label: "Default View",
@@ -33,4 +33,4 @@ export const views: ViewMap = {
     description: "Shows how taxonomies are used across content types",
     renderer: TaxonomyViewRenderer,
   },
-};
+} as const satisfies ViewMap;

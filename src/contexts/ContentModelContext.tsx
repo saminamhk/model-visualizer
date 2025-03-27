@@ -33,20 +33,18 @@ export const ContentModelProvider: React.FC<{ children: ReactNode }> = ({ childr
   const [error, setError] = useState<AppError | null>(null);
   const [isInspectMode, setIsInspectMode] = useState(false);
 
-  // Import content model (enters inspect mode)
+  // for importing model from a JSON file (enters inspect mode)
   const importContentModel = (newModel: ContentModelData) => {
     setModel(newModel);
     setIsInspectMode(true);
   };
 
-  // Exit inspect mode (triggers API reload via dependency)
   const exitInspectMode = () => {
     setIsInspectMode(false);
   };
 
-  // Fetch content model from API when not in inspect mode
   useEffect(() => {
-    // Skip API call when in inspect mode
+    // skip API calls when in inspect mode
     if (isInspectMode) return;
 
     const getContentModel = async () => {
@@ -88,7 +86,7 @@ export const ContentModelProvider: React.FC<{ children: ReactNode }> = ({ childr
     };
 
     getContentModel();
-  }, [customApp.context.environmentId, isInspectMode]); // Add isInspectMode to dependencies
+  }, [customApp.context.environmentId, isInspectMode]);
 
   return (
     <ContentModelContext.Provider

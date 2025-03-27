@@ -22,7 +22,7 @@ export const nodeTypes = {
   taxonomy: TaxonomyNode as unknown as NodeTypes["taxonomy"],
 } as const satisfies NodeTypes;
 
-export const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
+export const getLayoutedElements = (nodes: ReadonlyArray<Node>, edges: ReadonlyArray<Edge>) => {
   const baseNodeHeight = 76;
   const baseNodeWidth = 172;
 
@@ -91,7 +91,7 @@ export const isRequirableElement = (element: Element): element is RequirableElem
   element.type !== "guidelines"
   && element.type !== "snippet";
 
-export const isNodeRelated = (nodeId: string, targetId: string, edges: Edge[]): boolean =>
+export const isNodeRelated = (nodeId: string, targetId: string, edges: ReadonlyArray<Edge>): boolean =>
   nodeId === targetId
     ? true
     : edges.some(edge =>

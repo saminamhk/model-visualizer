@@ -1,13 +1,13 @@
 import { useMemo } from "react";
 import { Node, Edge } from "@xyflow/react";
 import { ContentType, ResolvedType, Snippet, Taxonomy } from "../../utils/types/mapi";
-import { Canvas } from "../canvas/Canvas";
+import { WorkSpace } from "../interface/Workspace";
 
 export type ViewProps = {
-  contentTypes: ContentType[];
-  snippets: Snippet[];
-  typesWithSnippets: ResolvedType[];
-  taxonomies: Taxonomy[];
+  contentTypes: ReadonlyArray<ContentType>;
+  snippets: ReadonlyArray<Snippet>;
+  typesWithSnippets: ReadonlyArray<ResolvedType>;
+  taxonomies: ReadonlyArray<Taxonomy>;
 };
 
 export type ViewRenderer = {
@@ -23,7 +23,7 @@ export const View = ({
   const edges = useMemo(() => renderer.createEdges(props), [props, renderer]);
 
   return (
-    <Canvas
+    <WorkSpace
       initialNodes={nodes}
       initialEdges={edges}
     />

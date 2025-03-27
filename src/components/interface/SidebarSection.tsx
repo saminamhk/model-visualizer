@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import IconSchemeConnected from "../icons/IconSchemeConnected";
 import IconMagnifier from "../icons/IconMagnifier";
 import { ActionButton } from "../controls/ActionButton";
-import { useNodeState } from "../../contexts/NodeStateContext";
+import { useCanvas } from "../../contexts/CanvasContext";
 import { useReactFlow } from "@xyflow/react";
 
 type SidebarSectionProps = {
   title: string;
-  items: { id: string; name: string }[];
+  items: ReadonlyArray<{ id: string; name: string }>;
   onItemSelect: (id: string) => void;
 };
 
@@ -18,7 +18,7 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
-  const { isolateRelated, isolateSingle, toggleNode } = useNodeState();
+  const { isolateRelated, isolateSingle, toggleNode } = useCanvas();
   const { fitView } = useReactFlow();
 
   const handleIsolateRelated = (e: React.MouseEvent, id: string) => {

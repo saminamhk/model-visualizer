@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { ViewInfo, views } from "../components/views/views";
 
-type ViewContextState = {
+type ViewContextType = {
   currentView: ViewInfo;
   setCurrentView: (view: ViewInfo) => void;
 };
 
-const ViewContext = createContext<ViewContextState | undefined>(undefined);
+const ViewContext = createContext<ViewContextType | undefined>(undefined);
 
 export const ViewProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [currentView, setCurrentView] = useState<ViewInfo>(views["default"]);

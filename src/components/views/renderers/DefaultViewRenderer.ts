@@ -14,6 +14,7 @@ const createNodes = ({ typesWithSnippets }: ViewProps): Node[] =>
       label: type.name,
       elements: type.elements,
       contentGroups: type.contentGroups,
+      // if a linked item element can reference its own type, log its id
       selfReferences: type.elements
         .filter(
           (el) =>

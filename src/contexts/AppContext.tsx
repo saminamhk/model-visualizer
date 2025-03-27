@@ -6,7 +6,7 @@ import { CustomAppError } from "../utils/errors";
 
 type ValidCustomAppContext = Extract<CustomAppContext, { isError: false }>;
 
-type AppContextState = {
+type AppContextType = {
   customApp: ValidCustomAppContext;
 };
 
@@ -15,7 +15,7 @@ type InternalState =
   | { loading: false; context: ValidCustomAppContext; error: null }
   | { loading: false; context: null; error: CustomAppError | { description: string; code: string } };
 
-const AppContext = createContext<AppContextState | null>(null);
+const AppContext = createContext<AppContextType | null>(null);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, setState] = useState<InternalState>({ loading: true });

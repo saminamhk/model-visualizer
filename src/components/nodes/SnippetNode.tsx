@@ -2,7 +2,7 @@ import React from "react";
 import { NodeProps, useReactFlow } from "@xyflow/react";
 import { ActionButton } from "../controls/ActionButton";
 import { SourceHandle } from "../controls/Handles";
-import { useNodeState } from "../../contexts/NodeStateContext";
+import { useCanvas } from "../../contexts/CanvasContext";
 import { nodeBaseStyle } from "../../utils/layout";
 import IconSchemeConnected from "../icons/IconSchemeConnected";
 import { ElementRow } from "./ElementRow";
@@ -13,16 +13,17 @@ import { BaseCustomNode } from "../../utils/types/layout";
 
 type SnippetNodeData = BaseCustomNode<{
   isExpanded?: boolean;
-  elements: AnnotatedElement[];
-  contentGroups: ContentGroup[];
+  elements: ReadonlyArray<AnnotatedElement>;
+  contentGroups: ReadonlyArray<ContentGroup>;
 }>;
 
 export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
   data,
   selected,
 }) => {
-  const { expandedNodes, toggleNode, isolateRelated, isolateSingle } = useNodeState();
+  const { expandedNodes, toggleNode, isolateRelated, isolateSingle } = useCanvas();
   const { fitView } = useReactFlow();
+  const { customApp } = useAppContext();
 
   const isExpanded = expandedNodes.has(data.id);
 
@@ -46,8 +47,6 @@ export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
   };
 
   const filteredElements = data.elements.filter(el => el.type !== "guidelines" && el.type !== "snippet");
-
-  const { customApp } = useAppContext();
 
   return (
     <div onClick={() => toggleNode(data.id)} style={containerStyle}>

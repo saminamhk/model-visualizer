@@ -1,6 +1,6 @@
 import React from "react";
 import { useReactFlow } from "@xyflow/react";
-import { useNodeState } from "../../contexts/NodeStateContext";
+import { useCanvas } from "../../contexts/CanvasContext";
 import { nodeBaseStyle } from "../../utils/layout";
 import { useAppContext } from "../../contexts/AppContext";
 import { ActionButton } from "../controls/ActionButton";
@@ -13,12 +13,13 @@ import { BaseCustomNode } from "../../utils/types/layout";
 
 type TaxonomyNodeData = BaseCustomNode<{
   isExpanded?: boolean;
-  terms: string[];
+  terms: ReadonlyArray<string>; // rendering only first level terms seems sufficient in this case
 }>;
 
 export const TaxonomyNode: React.FC<TaxonomyNodeData> = ({ data, selected }) => {
-  const { expandedNodes, toggleNode, isolateRelated, isolateSingle } = useNodeState();
+  const { expandedNodes, toggleNode, isolateRelated, isolateSingle } = useCanvas();
   const { fitView } = useReactFlow();
+  const { customApp } = useAppContext();
 
   const isExpanded = expandedNodes.has(data.id);
 
@@ -40,8 +41,6 @@ export const TaxonomyNode: React.FC<TaxonomyNodeData> = ({ data, selected }) => 
     background: selected ? "#f3f3fe" : "white",
     minWidth: 250,
   };
-
-  const { customApp } = useAppContext();
 
   return (
     <div onClick={() => toggleNode(data.id)} style={containerStyle}>

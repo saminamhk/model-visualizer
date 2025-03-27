@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNodeState } from "../../contexts/NodeStateContext";
+import { useCanvas } from "../../contexts/CanvasContext";
 import { useReactFlow } from "@xyflow/react";
 import { SidebarSection } from "./SidebarSection";
 import IconChevronDoubleRight from "../icons/IconChevronDoubleRight";
@@ -13,12 +13,12 @@ type SidebarItem = {
 };
 
 type SidebarProps = {
-  nodes: BaseCustomNode[];
+  nodes: ReadonlyArray<BaseCustomNode>;
   onMenuSelect: (typeId: string) => void;
 };
 
 export const Sidebar: React.FC<SidebarProps> = ({ nodes, onMenuSelect }) => {
-  const { toggleNode } = useNodeState();
+  const { toggleNode } = useCanvas();
   const { fitView } = useReactFlow();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
@@ -43,7 +43,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ nodes, onMenuSelect }) => {
   }, {} as Record<string, SidebarItem[]>);
 
   // Filter nodes based on search term
-  const filterItems = (items: SidebarItem[]) =>
+  const filterItems = (items: ReadonlyArray<SidebarItem>) =>
     items.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   const handleSidebarSelection = (typeId: string) => {
