@@ -74,7 +74,7 @@ export const ContentModelProvider: React.FC<{ children: ReactNode }> = ({ childr
       } catch (error) {
         console.error("Error fetching content model:", error);
         if (isKontentError(error)) {
-          setError(createAppError(error.message, error.errorCode, error));
+          setError(createAppError(JSON.stringify(error), error.errorCode, error));
         } else if (isAppError(error)) {
           setError(error);
         } else {
