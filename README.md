@@ -50,11 +50,11 @@ The visualization layout can be customized by modifying the `layoutConfig` objec
 
 | Option | Default | Available Values | Description |
 |--------|---------|-----------------|-------------|
-| edgeType | "default" | "default", "straight", "smoothstep", "step" | Shape of the edge connecting nodes. `default` is a bezier curve. |
-| alignment | "DL" | "UL", "UR", "DL", "DR" | Node alignment within ranks. `UL` = up-left, `UR` = up-right, `DL` = down-left, `DR` = down-right |
-| rankDirection | "TB" | "TB", "LR" | Direction of the graph layout. `TB` = top to bottom, `RL` = left to right |
-| ranker | "network-simplex" | "network-simplex", "tight-tree", "longest-path" | Algorithm used for ranking nodes. Network-simplex generally gives the best results |
-| acyclicer | "none" | "greedy", "none" | Method to handle cyclic relationships. `greedy` attempts to minimize edge crossings and may result in a more compact graph. |
+| edgeType | `default` | `default`, `straight`, `smoothstep`, `step` | Shape of the edge connecting nodes. `default` is a bezier curve. |
+| alignment | `DL` | `UL`, `UR`, `DL`, `DR` | Node alignment within ranks. `UL` = up-left, `UR` = up-right, `DL` = down-left, `DR` = down-right |
+| rankDirection | `TB` | `TB`, `LR` | Direction of the graph layout. `TB` = top to bottom, `RL` = left to right |
+| ranker | `network-simplex` | `network-simplex`, `tight-tree`, `longest-path` | Algorithm used for ranking nodes. Network-simplex generally gives the best results |
+| acyclicer | `none` | `greedy`, `none` | Method to handle cyclic relationships. `greedy` attempts to minimize edge crossings and may result in a more compact graph. |
 | nodeSeparation | 60 | number (pixels) | Horizontal spacing between nodes at the same rank |
 | rankSeparation | 200 | number (pixels) | Vertical spacing between ranks (levels) in the graph |
 
@@ -82,11 +82,17 @@ The custom app retrieves content model entities (types, snippets and taxonomies)
 #### Default (content type) view 
 Renders all content types defined in your environment and their relationships with each other based on allowed types configured in **Linked items** and optionally **Rich text** elements.
 
+![image](https://github.com/user-attachments/assets/f3410193-6c90-4570-8e6d-650b45f840c1)
+
 #### Snippet view
 This view renders separate nodes for Snippets and Types and allows you to see where each snippet is used. Content types without snippet elements are hidden.
 
+![image](https://github.com/user-attachments/assets/b2f049ab-a5a0-4ee8-830d-a49af30b5737)
+
 #### Taxonomy view
 Similarly to the snippet view, renders Taxonomy nodes and edges to the Content type nodes the taxonomies are used in. Types without taxonomies are omitted.
+
+![image](https://github.com/user-attachments/assets/a75f6b23-2728-4a2b-ace6-d3af37501590)
 
 ### Sidebar and search
 
