@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import { Node, Edge } from "@xyflow/react";
 import { ContentType, ResolvedType, Snippet, Taxonomy } from "../../utils/mapi";
 import { Canvas } from "../canvas/Canvas";
-import { useNodeState } from "../../contexts/NodeStateContext";
 
 export type ViewProps = {
   contentTypes: ContentType[];
@@ -11,23 +10,17 @@ export type ViewProps = {
   taxonomies: Taxonomy[];
 };
 
-export type ViewRenderer<T extends ViewProps = ViewProps> = {
-  createNodes: (props: T) => Node[];
-  createEdges: (props: T) => Edge[];
+export type ViewRenderer = {
+  createNodes: (props: ViewProps) => Node[];
+  createEdges: (props: ViewProps) => Edge[];
 };
 
-export const View = <T extends ViewProps>({
+export const View = ({
   renderer,
   ...props
-}: T & { renderer: ViewRenderer<T> } & { includeRichText?: boolean }) => {
-  const { includeRichText } = useNodeState();
-
-  const nodes = useMemo(() => renderer.createNodes(props as T), [props, renderer]);
-  const edges = useMemo(() => renderer.createEdges({ ...props as T, includeRichText }), [
-    props,
-    renderer,
-    includeRichText,
-  ]);
+}: ViewProps & { renderer: ViewRenderer }) => {
+  const nodes = useMemo(() => renderer.createNodes(props), [props, renderer]);
+  const edges = useMemo(() => renderer.createEdges(props), [props, renderer]);
 
   return (
     <Canvas

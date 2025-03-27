@@ -23,6 +23,7 @@ export const nodeTypes = {
   taxonomy: TaxonomyNode as unknown as NodeTypes["taxonomy"],
 } as const satisfies NodeTypes;
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type BaseCustomNode<T extends Record<string, unknown> = {}> = Node<{ label: string; id: string } & T> & {
   type: string;
 };
@@ -37,14 +38,15 @@ type RequirableElement = Exclude<Element, ContentTypeElements.IGuidelinesElement
 export const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
   const baseNodeHeight = 76;
   const baseNodeWidth = 172;
-  // Split nodes into visible and hidden
-  const visibleNodes = nodes.filter(node => !node.hidden);
-  const hiddenNodes = nodes.filter(node => node.hidden);
 
-  // Only use visible edges (those connecting visible nodes)
+  // exclude hidden nodes from layouting
+  const visibleNodes = nodes.filter(node => !node.hidden);
+
+  // edges disappear when their nodes are hidden, but this doesn't set their hidden property, hence the thorough filtering
   const visibleEdges = edges.filter(edge =>
     visibleNodes.some(node => node.id === edge.source)
     && visibleNodes.some(node => node.id === edge.target)
+    && !edge.hidden
   );
 
   const graph = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
@@ -58,7 +60,6 @@ export const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
     acyclicer: layoutConfig.acyclicer,
   });
 
-  // Process only visible nodes for layout
   visibleNodes.forEach((node) => {
     const width = node.width ?? node.measured?.width ?? baseNodeWidth;
     const height = node.height ?? node.measured?.height ?? baseNodeHeight;
@@ -73,23 +74,20 @@ export const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
   Dagre.layout(graph);
 
   // Process visible nodes with new positions
-  const layoutedVisibleNodes = visibleNodes.map((node) => {
-    const nodeWithPosition = graph.node(node.id);
-    const width = node.width ?? node.measured?.width ?? baseNodeWidth;
-    const height = node.height ?? node.measured?.height ?? baseNodeHeight;
-
-    return {
-      ...node,
-      position: {
-        x: nodeWithPosition.x - width / 2,
-        y: nodeWithPosition.y - height / 2,
-      },
-    };
-  });
-
-  // Combine layouted visible nodes with unchanged hidden nodes
   return {
-    nodes: [...layoutedVisibleNodes, ...hiddenNodes],
+    nodes: visibleNodes.map((node) => {
+      const nodeWithPosition = graph.node(node.id);
+      const width = node.width ?? node.measured?.width ?? baseNodeWidth;
+      const height = node.height ?? node.measured?.height ?? baseNodeHeight;
+
+      return {
+        ...node,
+        position: {
+          x: nodeWithPosition.x - width / 2,
+          y: nodeWithPosition.y - height / 2,
+        },
+      };
+    }),
     edges,
   };
 };

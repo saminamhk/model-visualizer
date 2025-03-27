@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { SourceHandle, TargetHandle } from "../controls/Handles";
 import { AnnotatedElement, ContentGroup, elementTypeMap } from "../../utils/mapi";
 import { isRelationshipElement, isRequirableElement } from "../../utils/layout";

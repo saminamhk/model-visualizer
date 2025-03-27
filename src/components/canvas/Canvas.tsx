@@ -15,7 +15,6 @@ import { Toolbar } from "./Toolbar";
 import { Sidebar } from "./Sidebar";
 import { getLayoutedElements, isNodeRelated, nodeTypes, BaseCustomNode } from "../../utils/layout";
 import { useNodeState } from "../../contexts/NodeStateContext";
-import { useView } from "../../contexts/ViewContext";
 
 type CanvasProps = {
   initialNodes: Node[];
@@ -28,14 +27,18 @@ export const Canvas: React.FC<CanvasProps> = ({
   initialNodes,
   initialEdges,
 }) => {
-  const { expandedNodes, isolation } = useNodeState();
+  const { expandedNodes, isolation, includeRichText } = useNodeState();
   const { setNodes, getNodes, getEdges } = useReactFlow();
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-  const { currentView } = useView();
 
   const handleNodeSelect = useCallback((node: Node) => {
     setSelectedNodeId(node.id);
   }, []);
+
+  const handleLayout = useCallback((nodes: Node[], edges: Edge[]) => {
+    const layoutedNodes = getLayoutedElements(nodes, edges).nodes;
+    setNodes(layoutedNodes);
+  }, [setNodes]);
 
   const updatedNodes: Node[] = useMemo(() =>
     initialNodes.map(node => ({
@@ -50,23 +53,17 @@ export const Canvas: React.FC<CanvasProps> = ({
           ? !isNodeRelated(node.id, isolation.nodeId, initialEdges)
           : node.id !== isolation.nodeId
         : node.hidden,
-    })), [selectedNodeId, expandedNodes, isolation, currentView]);
+    })), [selectedNodeId, expandedNodes, isolation, initialEdges, initialNodes]);
 
-  // Combine both layout effects into a single layout handler
-  const handleLayout = useCallback((nodes: Node[], edges: Edge[]) => {
-    const layoutedNodes = getLayoutedElements(nodes, edges).nodes;
-    setNodes(layoutedNodes);
-  }, [setNodes]);
+  const updatedEdges: Edge[] = useMemo(() =>
+    initialEdges.map(edge => ({
+      ...edge,
+      hidden: edge.data?.isRichTextEdge ? !includeRichText : edge.hidden,
+    })), [initialEdges, includeRichText]);
 
-  // Initial layout
   useEffect(() => {
-    handleLayout(initialNodes, initialEdges);
-  }, [handleLayout, initialNodes, initialEdges]);
-
-  // Handle isolation layout updates
-  useEffect(() => {
-    handleLayout(updatedNodes, initialEdges);
-  }, [handleLayout, isolation, updatedNodes, initialEdges]);
+    handleLayout(updatedNodes, updatedEdges);
+  }, [handleLayout, isolation, updatedNodes, updatedEdges, includeRichText]);
 
   // Handle node changes and trigger layout when dimensions change
   const handleNodesChange = useCallback((changes: NodeChange[]) => {
@@ -75,7 +72,7 @@ export const Canvas: React.FC<CanvasProps> = ({
     } else {
       setNodes(nodes => applyNodeChanges(changes, nodes));
     }
-  }, [getNodes, getEdges, handleLayout]);
+  }, [getNodes, setNodes, getEdges, handleLayout]);
 
   return (
     <div className="flex h-full w-full">
@@ -86,8 +83,8 @@ export const Canvas: React.FC<CanvasProps> = ({
       <div className="flex-1 w-full h-full pb-14">
         <Toolbar />
         <ReactFlow
-          defaultNodes={initialNodes}
-          edges={initialEdges}
+          defaultNodes={updatedNodes}
+          edges={updatedEdges}
           nodeTypes={nodeTypes}
           onNodeClick={(_, node) => handleNodeSelect(node)}
           onNodesChange={handleNodesChange}
