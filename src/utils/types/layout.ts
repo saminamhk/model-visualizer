@@ -71,5 +71,5 @@ export type BaseCustomNode<T extends Record<string, unknown> = {}> =
     { label: string; id: string } & T
   >
   & {
-    type: string;
+    type: "contentType" | "snippet" | "taxonomy";
   };

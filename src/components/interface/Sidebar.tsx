@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
-import { useCanvas } from "../../contexts/CanvasContext";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useReactFlow } from "@xyflow/react";
 import { SidebarSection } from "./SidebarSection";
 import IconChevronDoubleRight from "../icons/IconChevronDoubleRight";
@@ -18,7 +17,6 @@ type SidebarProps = {
 };
 
 export const Sidebar: React.FC<SidebarProps> = ({ nodes, onMenuSelect }) => {
-  const { toggleNode } = useCanvas();
   const { fitView } = useReactFlow();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
@@ -26,21 +24,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ nodes, onMenuSelect }) => {
   const sideBarSectionRef = useRef<HTMLDivElement>(null);
 
   // Group nodes by type
-  const groupedNodes = nodes.reduce((acc, node) => {
-    if (!node.hidden) { // Only include visible nodes
-      const item: SidebarItem = {
-        id: node.id,
-        name: node.data.label,
-        type: node.type as SidebarItem["type"],
-      };
+  const groupedNodes = useMemo(() =>
+    nodes.reduce((acc, node) => {
+      if (!node.hidden) { // Only include visible nodes
+        const item: SidebarItem = {
+          id: node.id,
+          name: node.data.label,
+          type: node.type,
+        };
 
-      if (!acc[node.type]) {
-        acc[node.type] = [];
+        if (!acc[node.type]) {
+          acc[node.type] = [];
+        }
+        acc[node.type].push(item);
       }
-      acc[node.type].push(item);
-    }
-    return acc;
-  }, {} as Record<string, SidebarItem[]>);
+      return acc;
+    }, {} as Record<string, SidebarItem[]>), [nodes]);
 
   // Filter nodes based on search term
   const filterItems = (items: ReadonlyArray<SidebarItem>) =>
@@ -50,8 +49,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ nodes, onMenuSelect }) => {
     onMenuSelect(typeId);
     const node = nodes.find(n => n.id === typeId);
     if (node) {
-      toggleNode(typeId, true);
-      setTimeout(() => fitView({ duration: 800, nodes: [node] }), 50);
+      fitView({ duration: 800, nodes: [node] });
     }
   };
 

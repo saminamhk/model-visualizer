@@ -1,7 +1,7 @@
 import React from "react";
 import { useReactFlow } from "@xyflow/react";
 import { useCanvas } from "../../contexts/CanvasContext";
-import { nodeBaseStyle } from "../../utils/layout";
+import { delayTwoAnimationFrames, nodeBaseStyle } from "../../utils/layout";
 import { useAppContext } from "../../contexts/AppContext";
 import { ActionButton } from "../controls/ActionButton";
 import IconSchemeConnected from "../icons/IconSchemeConnected";
@@ -26,14 +26,14 @@ export const TaxonomyNode: React.FC<TaxonomyNodeData> = ({ data, selected }) => 
   const handleIsolateRelated = (e: React.MouseEvent) => {
     e.stopPropagation();
     isolateRelated(data.id);
-    setTimeout(() => fitView({ duration: 800 }), 50);
+    delayTwoAnimationFrames(() => fitView({ duration: 800 }));
   };
 
   const handleIsolateSingle = (e: React.MouseEvent) => {
     e.stopPropagation();
     isolateSingle(data.id);
     toggleNode(data.id, true);
-    setTimeout(() => fitView({ duration: 800 }), 50);
+    requestAnimationFrame(() => fitView({ duration: 800 }));
   };
 
   const containerStyle: React.CSSProperties = {

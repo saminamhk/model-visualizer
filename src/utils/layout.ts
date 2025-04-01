@@ -98,3 +98,6 @@ export const isNodeRelated = (nodeId: string, targetId: string, edges: ReadonlyA
       (edge.source === nodeId && edge.target === targetId)
       || (edge.target === nodeId && edge.source === targetId)
     );
+
+export const delayTwoAnimationFrames = (fn: () => unknown) =>
+  requestAnimationFrame(() => requestAnimationFrame(() => fn()));

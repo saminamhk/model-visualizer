@@ -4,7 +4,7 @@ import IconMagnifier from "../icons/IconMagnifier";
 import { ActionButton } from "../controls/ActionButton";
 import { useCanvas } from "../../contexts/CanvasContext";
 import { useReactFlow } from "@xyflow/react";
-
+import { delayTwoAnimationFrames } from "../../utils/layout";
 type SidebarSectionProps = {
   title: string;
   items: ReadonlyArray<{ id: string; name: string }>;
@@ -24,14 +24,14 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
   const handleIsolateRelated = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     isolateRelated(id);
-    setTimeout(() => fitView({ duration: 800 }), 50);
+    delayTwoAnimationFrames(() => fitView({ duration: 800 }));
   };
 
   const handleIsolateSingle = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     isolateSingle(id);
     toggleNode(id, true);
-    setTimeout(() => fitView({ duration: 800 }), 50);
+    requestAnimationFrame(() => fitView({ duration: 800 }));
   };
 
   return (

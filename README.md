@@ -117,7 +117,7 @@ The loaded entities are memoized for the app's lifecycle, only triggering a re-r
 1. Clone the repository
 2. Install dependencies:
    ```bash
-   npm i
+   npm ci
    ```
 3. Create a `.env` file in the root directory with:
    ```

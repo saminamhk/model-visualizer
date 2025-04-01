@@ -21,7 +21,7 @@ export const ImportExportModal: React.FC<{ onClose: () => void }> = ({ onClose }
 
   const handleClose = () => {
     setIsVisible(false);
-    setTimeout(onClose, 200);
+    onClose();
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

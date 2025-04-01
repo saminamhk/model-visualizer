@@ -1,7 +1,7 @@
 import React from "react";
 import { useReactFlow } from "@xyflow/react";
 import { renderCollapsedHandles, TargetHandle } from "../controls/Handles";
-import { nodeBaseStyle } from "../../utils/layout";
+import { delayTwoAnimationFrames, nodeBaseStyle } from "../../utils/layout";
 import { ActionButton } from "../controls/ActionButton";
 import { ElementRow } from "./ElementRow";
 import { useCanvas } from "../../contexts/CanvasContext";
@@ -33,14 +33,14 @@ export const ContentTypeNode: React.FC<ContentTypeNodeData> = ({
   const handleIsolateRelated = (e: React.MouseEvent) => {
     e.stopPropagation();
     isolateRelated(data.id);
-    setTimeout(() => fitView({ duration: 800 }), 50);
+    delayTwoAnimationFrames(() => fitView({ duration: 800 }));
   };
 
   const handleIsolateSingle = (e: React.MouseEvent) => {
     e.stopPropagation();
     isolateSingle(data.id);
     toggleNode(data.id, true);
-    setTimeout(() => fitView({ duration: 800 }), 50);
+    requestAnimationFrame(() => fitView({ duration: 800 }));
   };
 
   const containerStyle: React.CSSProperties = {

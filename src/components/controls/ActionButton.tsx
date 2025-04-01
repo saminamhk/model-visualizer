@@ -39,15 +39,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({ onClick, title, icon
         >
           {title}
           <div // tooltip arrow
-            className="absolute left-1/2 -translate-x-1/2 -bottom-1"
-            style={{
-              width: 0,
-              height: 0,
-              borderLeft: "4px solid transparent",
-              borderRight: "4px solid transparent",
-              borderTop: "4px solid #1f2937", // matches bg-gray-800
-            }}
-          />
+           className="absolute left-1/2 -translate-x-1/2 -bottom-1 w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-4 border-t-gray-800" />
         </div>,
         document.body,
       )}

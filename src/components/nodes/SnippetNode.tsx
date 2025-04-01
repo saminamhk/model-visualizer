@@ -3,7 +3,7 @@ import { NodeProps, useReactFlow } from "@xyflow/react";
 import { ActionButton } from "../controls/ActionButton";
 import { SourceHandle } from "../controls/Handles";
 import { useCanvas } from "../../contexts/CanvasContext";
-import { nodeBaseStyle } from "../../utils/layout";
+import { delayTwoAnimationFrames, nodeBaseStyle } from "../../utils/layout";
 import IconSchemeConnected from "../icons/IconSchemeConnected";
 import { ElementRow } from "./ElementRow";
 import IconMagnifier from "../icons/IconMagnifier";
@@ -30,14 +30,14 @@ export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
   const handleIsolateRelated = (e: React.MouseEvent) => {
     e.stopPropagation();
     isolateRelated(data.id);
-    setTimeout(() => fitView({ duration: 800 }), 50);
+    delayTwoAnimationFrames(() => fitView({ duration: 800 }));
   };
 
   const handleIsolateSingle = (e: React.MouseEvent) => {
     e.stopPropagation();
     isolateSingle(data.id);
     toggleNode(data.id, true);
-    setTimeout(() => fitView({ duration: 800 }), 50);
+    requestAnimationFrame(() => fitView({ duration: 800 }));
   };
 
   const containerStyle: React.CSSProperties = {
