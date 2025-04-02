@@ -7,6 +7,7 @@ import "@kontent-ai/stylekit/styles/styles.css";
 import { ReactFlowProvider } from "@xyflow/react";
 import { CanvasProvider } from "./contexts/CanvasContext";
 import { ViewProvider } from "./contexts/ViewContext";
+import { ContentModelProvider } from "./contexts/ContentModelContext";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
@@ -14,7 +15,9 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <ReactFlowProvider>
         <CanvasProvider>
           <ViewProvider>
-            <App />
+            <ContentModelProvider>
+              <App />
+            </ContentModelProvider>
           </ViewProvider>
         </CanvasProvider>
       </ReactFlowProvider>

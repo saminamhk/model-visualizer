@@ -5,7 +5,7 @@ import { View } from "./components/views/View";
 import { useView } from "./contexts/ViewContext";
 import { Loader } from "./components/utils/Loader";
 import { ErrorDisplay } from "./components/utils/ErrorDisplay";
-import { ContentModelProvider, useContentModel } from "./contexts/ContentModelContext";
+import { useContentModel } from "./contexts/ContentModelContext";
 
 const ViewContainer: React.FC = () => {
   const { currentView } = useView();
@@ -44,9 +44,7 @@ const ViewContainer: React.FC = () => {
 const App: React.FC = () => {
   return (
     <div className="content-model-viewer h-screen bg-white" style={{ boxShadow: "inset 50px 0 10px -50px #bfbfbf" }}>
-      <ContentModelProvider>
-        <ViewContainer />
-      </ContentModelProvider>
+      <ViewContainer />
     </div>
   );
 };

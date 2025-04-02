@@ -3,16 +3,14 @@ import { SnippetViewRenderer } from "./renderers/SnippetViewRenderer";
 import { TaxonomyViewRenderer } from "./renderers/TaxonomyViewRenderer";
 import { ViewRenderer } from "./View";
 
-export type ViewType = "default" | "snippet" | "taxonomy";
+export type ViewType = keyof typeof views;
 
 export type ViewInfo = {
-  id: ViewType;
+  id: string;
   label: string;
   description: string;
   renderer: ViewRenderer;
 };
-
-export type ViewMap = Record<ViewType, ViewInfo>;
 
 export const views = {
   default: {
@@ -33,4 +31,4 @@ export const views = {
     description: "Shows how taxonomies are used across content types",
     renderer: TaxonomyViewRenderer,
   },
-} as const satisfies ViewMap;
+} as const satisfies Record<string, ViewInfo>;

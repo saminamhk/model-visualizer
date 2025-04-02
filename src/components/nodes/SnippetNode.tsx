@@ -1,20 +1,19 @@
 import React from "react";
 import { NodeProps, useReactFlow } from "@xyflow/react";
 import { ActionButton } from "../controls/ActionButton";
-import { SourceHandle } from "../controls/Handles";
+import { SourceHandle } from "../controls/SourceHandle";
 import { useCanvas } from "../../contexts/CanvasContext";
-import { delayTwoAnimationFrames, nodeBaseStyle } from "../../utils/layout";
+import { delayTwoAnimationFrames, getNodeStyle } from "../../utils/layout";
 import IconSchemeConnected from "../icons/IconSchemeConnected";
 import { ElementRow } from "./ElementRow";
 import IconMagnifier from "../icons/IconMagnifier";
 import { useAppContext } from "../../contexts/AppContext";
-import { AnnotatedElement, ContentGroup } from "../../utils/types/mapi";
+import { AnnotatedElement } from "../../utils/types/mapi";
 import { BaseCustomNode } from "../../utils/types/layout";
 
 type SnippetNodeData = BaseCustomNode<{
   isExpanded?: boolean;
   elements: ReadonlyArray<AnnotatedElement>;
-  contentGroups: ReadonlyArray<ContentGroup>;
 }>;
 
 export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
@@ -40,16 +39,12 @@ export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
     requestAnimationFrame(() => fitView({ duration: 800 }));
   };
 
-  const containerStyle: React.CSSProperties = {
-    ...nodeBaseStyle,
-    background: selected ? "#f3f3fe" : "white",
-    minWidth: 250,
-  };
+  const nodeStyle: React.CSSProperties = getNodeStyle(selected);
 
   const filteredElements = data.elements.filter(el => el.type !== "guidelines" && el.type !== "snippet");
 
   return (
-    <div onClick={() => toggleNode(data.id)} style={containerStyle}>
+    <div onClick={() => toggleNode(data.id)} style={nodeStyle}>
       <div className="flex text-gray-400 justify-between items-center">
         <div className="text-xs px-2">Snippet</div>
         <a
@@ -84,7 +79,6 @@ export const SnippetNode: React.FC<NodeProps<SnippetNodeData>> = ({
                   key={el.id}
                   element={{ ...el, fromSnippet: false, name: el.name ?? "" }}
                   isLast={i === filteredElements.length - 1}
-                  contentGroups={data.contentGroups}
                 />
               ))}
             <SourceHandle id="source" />

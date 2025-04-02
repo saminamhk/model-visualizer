@@ -1,8 +1,9 @@
 import { ViewRenderer } from "../View";
-import { Node, Edge } from "@xyflow/react";
+import { Edge } from "@xyflow/react";
 import { ViewProps } from "../View";
+import { BaseCustomNode } from "../../../utils/types/layout";
 
-const createSnippetNodes = ({ snippets }: ViewProps): Node[] =>
+const createSnippetNodes = ({ snippets }: ViewProps): BaseCustomNode[] =>
   snippets.map((snippet, index) => ({
     id: snippet.id,
     type: "snippet",
@@ -14,7 +15,7 @@ const createSnippetNodes = ({ snippets }: ViewProps): Node[] =>
     },
   }));
 
-const createTypeNodes = ({ contentTypes }: ViewProps): Node[] =>
+const createTypeNodes = ({ contentTypes }: ViewProps): BaseCustomNode[] =>
   contentTypes.map((type, index) => ({
     id: type.id,
     type: "contentType",
@@ -28,30 +29,25 @@ const createTypeNodes = ({ contentTypes }: ViewProps): Node[] =>
     },
   }));
 
-const createNodes = (props: ViewProps): Node[] => [...createSnippetNodes(props), ...createTypeNodes(props)];
+const createNodes = (props: ViewProps): BaseCustomNode[] => [...createSnippetNodes(props), ...createTypeNodes(props)];
 
-const createEdges = ({ contentTypes, snippets }: ViewProps): Edge[] => {
-  const edges: Edge[] = [];
+const createEdges = ({ contentTypes, snippets }: ViewProps): Edge[] =>
+  contentTypes.flatMap(type =>
+    type.elements.flatMap(element => {
+      if (element.type !== "snippet" || !element.snippet?.id) return [];
 
-  contentTypes.forEach(type => {
-    type.elements.forEach(element => {
-      if (element.type === "snippet" && element.snippet?.id) {
-        const snippet = snippets.find(s => s.id === element.snippet?.id);
-        if (snippet) {
-          edges.push({
-            id: `${snippet.id}-${type.id}-${element.id}`,
-            source: snippet.id,
-            target: type.id,
-            sourceHandle: "source",
-            targetHandle: `target-${element.id}`,
-          });
-        }
-      }
-    });
-  });
+      const snippet = snippets.find(s => s.id === element.snippet?.id);
+      if (!snippet) return [];
 
-  return edges;
-};
+      return [{
+        id: `${snippet.id}-${type.id}-${element.id}`,
+        source: snippet.id,
+        target: type.id,
+        sourceHandle: "source",
+        targetHandle: `target-${element.id}`,
+      }];
+    })
+  );
 
 export const SnippetViewRenderer: ViewRenderer = {
   createNodes,

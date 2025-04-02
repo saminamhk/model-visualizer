@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { getContentTypes, getContentTypeSnippets, mergeTypesWithSnippets, getTaxonomies } from "../utils/mapi";
 import { useAppContext } from "./AppContext";
 import { AppError, createAppError, isKontentError, isAppError } from "../utils/errors";
 import { ResolvedType, ContentType, Snippet, Taxonomy } from "../utils/types/mapi";
+import { makeMapiRequest, mergeTypesWithSnippets } from "../utils/mapi";
 
 type ContentModelData = {
   contentTypes: ContentType[];
@@ -53,9 +53,9 @@ export const ContentModelProvider: React.FC<{ children: ReactNode }> = ({ childr
         setError(null);
 
         const [typesResult, snippetsResult, taxonomiesResult] = await Promise.all([
-          getContentTypes(customApp.context.environmentId),
-          getContentTypeSnippets(customApp.context.environmentId),
-          getTaxonomies(customApp.context.environmentId),
+          makeMapiRequest<ContentType[]>(customApp.context.environmentId, "listContentTypes"),
+          makeMapiRequest<Snippet[]>(customApp.context.environmentId, "listContentTypeSnippets"),
+          makeMapiRequest<Taxonomy[]>(customApp.context.environmentId, "listTaxonomies"),
         ]);
 
         const error = typesResult.error || snippetsResult.error || taxonomiesResult.error;

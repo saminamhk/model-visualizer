@@ -1,12 +1,12 @@
-import React from "react";
-import { useReactFlow } from "@xyflow/react";
+import React, { useMemo } from "react";
+import { NodeProps, useReactFlow } from "@xyflow/react";
 import { useCanvas } from "../../contexts/CanvasContext";
-import { delayTwoAnimationFrames, nodeBaseStyle } from "../../utils/layout";
+import { delayTwoAnimationFrames, getNodeStyle } from "../../utils/layout";
 import { useAppContext } from "../../contexts/AppContext";
 import { ActionButton } from "../controls/ActionButton";
 import IconSchemeConnected from "../icons/IconSchemeConnected";
 import IconMagnifier from "../icons/IconMagnifier";
-import { SourceHandle } from "../controls/Handles";
+import { SourceHandle } from "../controls/SourceHandle";
 import { InfoBadge } from "../controls/InfoBadge";
 import IconWarning from "../icons/IconWarning";
 import { BaseCustomNode } from "../../utils/types/layout";
@@ -16,12 +16,12 @@ type TaxonomyNodeData = BaseCustomNode<{
   terms: ReadonlyArray<string>; // rendering only first level terms seems sufficient in this case
 }>;
 
-export const TaxonomyNode: React.FC<TaxonomyNodeData> = ({ data, selected }) => {
+export const TaxonomyNode: React.FC<NodeProps<TaxonomyNodeData>> = ({ data, selected }) => {
   const { expandedNodes, toggleNode, isolateRelated, isolateSingle } = useCanvas();
   const { fitView } = useReactFlow();
   const { customApp } = useAppContext();
 
-  const isExpanded = expandedNodes.has(data.id);
+  const isExpanded = useMemo(() => expandedNodes.has(data.id), [expandedNodes, data.id]);
 
   const handleIsolateRelated = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -36,14 +36,10 @@ export const TaxonomyNode: React.FC<TaxonomyNodeData> = ({ data, selected }) => 
     requestAnimationFrame(() => fitView({ duration: 800 }));
   };
 
-  const containerStyle: React.CSSProperties = {
-    ...nodeBaseStyle,
-    background: selected ? "#f3f3fe" : "white",
-    minWidth: 250,
-  };
+  const nodeStyle: React.CSSProperties = getNodeStyle(selected);
 
   return (
-    <div onClick={() => toggleNode(data.id)} style={containerStyle}>
+    <div onClick={() => toggleNode(data.id)} style={nodeStyle}>
       <div className="flex text-gray-400 justify-between items-center">
         <div className="text-xs px-2">Taxonomy</div>
         <a

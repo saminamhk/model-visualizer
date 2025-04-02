@@ -1,9 +1,10 @@
 import { ViewRenderer } from "../View";
-import { Node, Edge } from "@xyflow/react";
+import { Edge } from "@xyflow/react";
 import { ViewProps } from "../View";
 import { isRelationshipElement } from "../../../utils/layout";
+import { BaseCustomNode } from "../../../utils/types/layout";
 
-const createTaxonomyNodes = ({ taxonomies }: ViewProps): Node[] =>
+const createTaxonomyNodes = ({ taxonomies }: ViewProps): BaseCustomNode[] =>
   taxonomies.map((taxonomy, index) => ({
     id: taxonomy.id,
     type: "taxonomy",
@@ -15,7 +16,7 @@ const createTaxonomyNodes = ({ taxonomies }: ViewProps): Node[] =>
     },
   }));
 
-const createTypeNodes = ({ typesWithSnippets }: ViewProps): Node[] =>
+const createTypeNodes = ({ typesWithSnippets }: ViewProps): BaseCustomNode[] =>
   typesWithSnippets.map((type) => ({
     id: type.id,
     type: "contentType",
@@ -36,30 +37,25 @@ const createTypeNodes = ({ typesWithSnippets }: ViewProps): Node[] =>
     },
   }));
 
-const createNodes = (props: ViewProps): Node[] => [...createTaxonomyNodes(props), ...createTypeNodes(props)];
+const createNodes = (props: ViewProps): BaseCustomNode[] => [...createTaxonomyNodes(props), ...createTypeNodes(props)];
 
-const createEdges = ({ typesWithSnippets, taxonomies }: ViewProps): Edge[] => {
-  const edges: Edge[] = [];
+const createEdges = ({ typesWithSnippets, taxonomies }: ViewProps): Edge[] =>
+  typesWithSnippets.flatMap(type =>
+    type.elements.flatMap(element => {
+      if (element.type !== "taxonomy" || !element.taxonomy_group?.id) return [];
 
-  typesWithSnippets.forEach(type => {
-    type.elements.forEach(element => {
-      if (element.type === "taxonomy" && element.taxonomy_group?.id) {
-        const taxonomy = taxonomies.find(s => s.id === element.taxonomy_group?.id);
-        if (taxonomy) {
-          edges.push({
-            id: `${taxonomy.id}-${type.id}-${element.id}`,
-            source: taxonomy.id,
-            target: type.id,
-            sourceHandle: `source-${taxonomy.id}`,
-            targetHandle: `target-${element.id}`,
-          });
-        }
-      }
-    });
-  });
+      const taxonomy = taxonomies.find(s => s.id === element.taxonomy_group?.id);
+      if (!taxonomy) return [];
 
-  return edges;
-};
+      return [{
+        id: `${taxonomy.id}-${type.id}-${element.id}`,
+        source: taxonomy.id,
+        target: type.id,
+        sourceHandle: `source-${taxonomy.id}`,
+        targetHandle: `target-${element.id}`,
+      }];
+    })
+  );
 
 export const TaxonomyViewRenderer: ViewRenderer = {
   createNodes,

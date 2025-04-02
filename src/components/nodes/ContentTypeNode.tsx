@@ -1,7 +1,8 @@
-import React from "react";
-import { useReactFlow } from "@xyflow/react";
-import { renderCollapsedHandles, TargetHandle } from "../controls/Handles";
-import { delayTwoAnimationFrames, nodeBaseStyle } from "../../utils/layout";
+import React, { useMemo } from "react";
+import { NodeProps, useReactFlow } from "@xyflow/react";
+import { SourceHandle } from "../controls/SourceHandle";
+import { TargetHandle } from "../controls/TargetHandle";
+import { delayTwoAnimationFrames, getNodeStyle } from "../../utils/layout";
 import { ActionButton } from "../controls/ActionButton";
 import { ElementRow } from "./ElementRow";
 import { useCanvas } from "../../contexts/CanvasContext";
@@ -9,7 +10,7 @@ import IconSchemeConnected from "../icons/IconSchemeConnected";
 import IconMagnifier from "../icons/IconMagnifier";
 import { useContentModel } from "../../contexts/ContentModelContext";
 import { useAppContext } from "../../contexts/AppContext";
-import { AnnotatedElement, ContentGroup } from "../../utils/types/mapi";
+import { AnnotatedElement, ContentGroup, Element } from "../../utils/types/mapi";
 import { BaseCustomNode } from "../../utils/types/layout";
 
 type ContentTypeNodeData = BaseCustomNode<{
@@ -19,7 +20,7 @@ type ContentTypeNodeData = BaseCustomNode<{
   contentGroups: ReadonlyArray<ContentGroup>;
 }>;
 
-export const ContentTypeNode: React.FC<ContentTypeNodeData> = ({
+export const ContentTypeNode: React.FC<NodeProps<ContentTypeNodeData>> = ({
   data,
   selected,
 }) => {
@@ -28,7 +29,7 @@ export const ContentTypeNode: React.FC<ContentTypeNodeData> = ({
   const { snippets } = useContentModel();
   const { customApp } = useAppContext();
 
-  const isExpanded = expandedNodes.has(data.id);
+  const isExpanded = useMemo(() => expandedNodes.has(data.id), [expandedNodes, data.id]);
 
   const handleIsolateRelated = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -43,16 +44,12 @@ export const ContentTypeNode: React.FC<ContentTypeNodeData> = ({
     requestAnimationFrame(() => fitView({ duration: 800 }));
   };
 
-  const containerStyle: React.CSSProperties = {
-    ...nodeBaseStyle,
-    background: selected ? "#f3f3fe" : "white",
-    minWidth: 250,
-  };
+  const nodeStyle: React.CSSProperties = getNodeStyle(selected);
 
   const filteredElements = data.elements.filter(el => el.type !== "guidelines");
 
   return (
-    <div onClick={() => toggleNode(data.id)} style={containerStyle}>
+    <div onClick={() => toggleNode(data.id)} style={nodeStyle}>
       <div className="flex text-gray-400 justify-between items-center">
         <div className="text-xs px-2">Type</div>
         <a
@@ -95,7 +92,7 @@ export const ContentTypeNode: React.FC<ContentTypeNodeData> = ({
                     : el}
                   isLast={i === filteredElements.length - 1}
                   selfReferences={data.selfReferences?.includes(el.id ?? "")}
-                  contentGroups={data.contentGroups}
+                  contentGroup={data.contentGroups.find(cg => cg.id === el.content_group?.id)}
                 />
               ))}
           </div>
@@ -107,4 +104,18 @@ export const ContentTypeNode: React.FC<ContentTypeNodeData> = ({
         )}
     </div>
   );
+};
+
+const renderCollapsedHandles = (element: Element) => {
+  switch (element.type) {
+    case "taxonomy":
+    case "snippet":
+      return <TargetHandle key={element.id} id={`target-${element.id}`} />;
+    case "modular_content":
+    case "subpages":
+    case "rich_text":
+      return <SourceHandle key={element.id} id={`source-${element.id}`} />;
+    default:
+      return null;
+  }
 };

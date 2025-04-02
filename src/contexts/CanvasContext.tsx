@@ -4,7 +4,7 @@ import { NodeIsolation } from "../utils/types/layout";
 type CanvasContextType = {
   expandedNodes: Set<string>;
   toggleNode: (nodeId: string, forceState?: boolean) => void;
-  isolation: NodeIsolation;
+  isolation: NodeIsolation | null;
   isolateRelated: (nodeId: string) => void;
   isolateSingle: (nodeId: string) => void;
   resetIsolation: () => void;
@@ -16,7 +16,7 @@ const CanvasContext = createContext<CanvasContextType | undefined>(undefined);
 
 export const CanvasProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
-  const [isolation, setIsolation] = useState<NodeIsolation>(null);
+  const [isolation, setIsolation] = useState<NodeIsolation | null>(null);
   const [includeRichText, setIncludeRichText] = useState(true);
 
   const toggleNode = useCallback((nodeId: string, forceState?: boolean) => {

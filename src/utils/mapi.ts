@@ -6,7 +6,6 @@ import {
   ApiResponse,
   ContentType,
   Snippet,
-  Taxonomy,
   ResolvedType,
   AnnotatedElement,
 } from "./types/mapi";
@@ -31,7 +30,7 @@ export const elementTypeMap: ReadonlyMap<ElementType, string> = new Map(
   Object.entries(elementTypeLabels) as [ElementType, string][],
 );
 
-const makeMapiRequest = async <T>(
+export const makeMapiRequest = async <T>(
   environmentId: string,
   action: Action,
 ): Promise<ApiResponse<T>> => {
@@ -63,24 +62,6 @@ const makeMapiRequest = async <T>(
       ),
     };
   }
-};
-
-export const getContentTypes = async (
-  environmentId: string,
-): Promise<ApiResponse<ContentType[]>> => {
-  return makeMapiRequest(environmentId, "listContentTypes");
-};
-
-export const getContentTypeSnippets = async (
-  environmentId: string,
-): Promise<ApiResponse<Snippet[]>> => {
-  return makeMapiRequest(environmentId, "listContentTypeSnippets");
-};
-
-export const getTaxonomies = async (
-  environmentId: string,
-): Promise<ApiResponse<Taxonomy[]>> => {
-  return makeMapiRequest(environmentId, "listTaxonomies");
 };
 
 export const mergeTypesWithSnippets = (

@@ -63,7 +63,7 @@ export type LayoutConfig = {
 export type NodeIsolation = {
   nodeId: string;
   mode: "related" | "single";
-} | null;
+};
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type BaseCustomNode<T extends Record<string, unknown> = {}> =

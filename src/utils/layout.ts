@@ -6,7 +6,7 @@ import { SnippetNode } from "../components/nodes/SnippetNode";
 import { TaxonomyNode } from "../components/nodes/TaxonomyNode";
 import { layoutConfig } from "./config";
 
-export const nodeBaseStyle: React.CSSProperties = {
+const nodeBaseStyle: React.CSSProperties = {
   paddingTop: 5,
   paddingBottom: 5,
   border: "1px solid #ddd",
@@ -16,10 +16,16 @@ export const nodeBaseStyle: React.CSSProperties = {
   boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
 };
 
+export const getNodeStyle = (selected: boolean): React.CSSProperties => ({
+  ...nodeBaseStyle,
+  background: selected ? "#f3f3fe" : "white",
+  minWidth: 250,
+});
+
 export const nodeTypes = {
-  contentType: ContentTypeNode as unknown as NodeTypes["contentType"],
-  snippet: SnippetNode as unknown as NodeTypes["snippet"],
-  taxonomy: TaxonomyNode as unknown as NodeTypes["taxonomy"],
+  contentType: ContentTypeNode,
+  snippet: SnippetNode,
+  taxonomy: TaxonomyNode,
 } as const satisfies NodeTypes;
 
 export const getLayoutedElements = (nodes: ReadonlyArray<Node>, edges: ReadonlyArray<Edge>) => {

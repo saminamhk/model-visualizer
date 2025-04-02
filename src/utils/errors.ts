@@ -23,3 +23,7 @@ export const isKontentError = (
   error: unknown,
 ): error is SharedModels.ContentManagementBaseKontentError =>
   error instanceof SharedModels.ContentManagementBaseKontentError;
+
+export const isCustomAppError = (error: unknown): error is CustomAppError => {
+  return typeof error === "object" && error !== null && "description" in error && "code" in error;
+};

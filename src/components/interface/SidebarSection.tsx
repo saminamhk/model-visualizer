@@ -17,7 +17,6 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
   onItemSelect,
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
-  const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
   const { isolateRelated, isolateSingle, toggleNode } = useCanvas();
   const { fitView } = useReactFlow();
 
@@ -58,19 +57,11 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
             <li
               key={id}
               onClick={() => onItemSelect(id)}
-              onMouseEnter={() => setHoveredItemId(id)}
-              onMouseLeave={() => setHoveredItemId(null)}
-              className="cursor-pointer px-4 py-3 text-sm text-gray-600 hover:bg-[#b3b3ff39] hover:text-black transition-colors flex items-center"
+              className="group cursor-pointer px-4 py-3 text-sm text-gray-600 hover:bg-[#b3b3ff39] hover:text-black transition-colors flex items-center"
             >
               {name}
               <span className="flex-1"></span>
-              <div
-                className="flex gap-1"
-                style={{
-                  opacity: hoveredItemId === id ? 1 : 0,
-                  transition: "opacity 50ms ease-in-out",
-                }}
-              >
+              <div className="flex gap-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-50">
                 <ActionButton
                   onClick={(e) => handleIsolateRelated(e, id)}
                   title="Show related nodes"

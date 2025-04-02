@@ -1,7 +1,8 @@
 import { useMemo } from "react";
-import { Node, Edge } from "@xyflow/react";
+import { Edge } from "@xyflow/react";
 import { ContentType, ResolvedType, Snippet, Taxonomy } from "../../utils/types/mapi";
 import { WorkSpace } from "../interface/Workspace";
+import { BaseCustomNode } from "../../utils/types/layout";
 
 export type ViewProps = {
   contentTypes: ReadonlyArray<ContentType>;
@@ -11,7 +12,7 @@ export type ViewProps = {
 };
 
 export type ViewRenderer = {
-  createNodes: (props: ViewProps) => Node[];
+  createNodes: (props: ViewProps) => BaseCustomNode[];
   createEdges: (props: ViewProps) => Edge[];
 };
 

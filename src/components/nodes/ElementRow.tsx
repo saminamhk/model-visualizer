@@ -1,5 +1,6 @@
 import React from "react";
-import { SourceHandle, TargetHandle } from "../controls/Handles";
+import { SourceHandle } from "../controls/SourceHandle";
+import { TargetHandle } from "../controls/TargetHandle";
 import { AnnotatedElement, ContentGroup } from "../../utils/types/mapi";
 import { elementTypeMap } from "../../utils/mapi";
 import { isRelationshipElement, isRequirableElement } from "../../utils/layout";
@@ -24,7 +25,7 @@ type ElementRowProps = {
   element: NamedElement;
   isLast: boolean;
   selfReferences?: boolean;
-  contentGroups: ReadonlyArray<ContentGroup>;
+  contentGroup?: ContentGroup;
 };
 
 const linkedItemConditionMap: ReadonlyMap<"at_least" | "at_most" | "exactly", string> = new Map([
@@ -39,12 +40,9 @@ const getRandomColor = (seed: string) =>
     seed: seed,
   });
 
-export const ElementRow: React.FC<ElementRowProps> = ({ element, isLast, selfReferences, contentGroups }) => (
+export const ElementRow: React.FC<ElementRowProps> = ({ element, isLast, selfReferences, contentGroup }) => (
   <div
-    className="flex items-center justify-between py-1 px-2 relative"
-    style={{
-      borderBottom: !isLast ? "1px solid #ddd" : "none",
-    }}
+    className={`flex items-center justify-between py-1 px-2 relative ${!isLast ? "border-b border-gray-200" : ""}`}
   >
     {element.type === "snippet" && ( // element height is 24px, handle is offset by 12px to align vertically
       <div className="absolute left-0 top-[-12px]">
@@ -56,12 +54,12 @@ export const ElementRow: React.FC<ElementRowProps> = ({ element, isLast, selfRef
         <TargetHandle id={`target-${element.id}`} />
       </div>
     )}
-    {element.content_group && (
+    {contentGroup && (
       <InfoBadge
-        title={`Content group: ${contentGroups.find(cg => cg.id === element.content_group?.id)?.name}`}
+        title={`Content group: ${contentGroup.name}`}
         icon="⚫︎"
         // using name instead of id as a seed ensures consistent colors across different content types with groups of the same name
-        iconStyle={{ color: getRandomColor(contentGroups.find(cg => cg.id === element.content_group?.id)?.name ?? "") }}
+        iconStyle={{ color: getRandomColor(contentGroup.name) }}
       />
     )}
     <div className="font-bold text-xs">{element.name}</div>

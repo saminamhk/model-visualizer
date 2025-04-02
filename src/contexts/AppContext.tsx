@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 import { getCustomAppContext, CustomAppContext } from "@kontent-ai/custom-app-sdk";
 import { Loader } from "../components/utils/Loader";
 import { ErrorDisplay } from "../components/utils/ErrorDisplay";
-import { CustomAppError } from "../utils/errors";
+import { CustomAppError, isCustomAppError } from "../utils/errors";
 
 type ValidCustomAppContext = Extract<CustomAppContext, { isError: false }>;
 
@@ -25,7 +25,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       try {
         const result = await getCustomAppContext();
         if (result.isError) {
-          throw result as CustomAppError;
+          throw result;
         } else {
           setState({
             loading: false,
@@ -45,7 +45,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           setState({
             loading: false,
             context: null,
-            error: { description: "Failed to initialize app context", code: "UNKNOWN_ERROR" },
+            error: { description: `Failed to initialize app context: ${error}`, code: "UNKNOWN_ERROR" },
           });
         }
       }
@@ -82,8 +82,4 @@ export const useAppContext = () => {
     throw new Error("useAppContext must be used within an AppProvider");
   }
   return context;
-};
-
-const isCustomAppError = (error: unknown): error is CustomAppError => {
-  return typeof error === "object" && error !== null && "description" in error && "code" in error;
 };

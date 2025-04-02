@@ -18,7 +18,7 @@ import { useCanvas } from "../../contexts/CanvasContext";
 import { BaseCustomNode } from "../../utils/types/layout";
 
 type WorkspaceProps = {
-  initialNodes: ReadonlyArray<Node>;
+  initialNodes: ReadonlyArray<BaseCustomNode>;
   initialEdges: ReadonlyArray<Edge>;
 };
 
@@ -30,16 +30,16 @@ export const WorkSpace: React.FC<WorkspaceProps> = ({
   const { setNodes, getNodes, getEdges } = useReactFlow();
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
-  const handleNodeSelect = useCallback((node: Node) => {
+  const handleNodeSelect = useCallback((node: BaseCustomNode) => {
     setSelectedNodeId(node.id);
   }, []);
 
-  const handleLayout = useCallback((nodes: Node[], edges: Edge[]) => {
+  const handleLayout = useCallback((nodes: ReadonlyArray<Node>, edges: ReadonlyArray<Edge>) => {
     const layoutedNodes = getLayoutedElements(nodes, edges).nodes;
     setNodes(layoutedNodes);
   }, [setNodes]);
 
-  const updatedNodes: Node[] = useMemo(() =>
+  const updatedNodes: BaseCustomNode[] = useMemo(() =>
     initialNodes.map(node => ({
       ...node,
       selected: node.id === selectedNodeId,
@@ -76,11 +76,11 @@ export const WorkSpace: React.FC<WorkspaceProps> = ({
   return (
     <div className="flex h-full w-full">
       <Sidebar
-        nodes={updatedNodes.filter(node => !node.hidden) as BaseCustomNode[]}
+        nodes={updatedNodes.filter(node => !node.hidden)}
         onMenuSelect={setSelectedNodeId}
       />
       <div className="flex-1 w-full h-full pb-14">
-        <Toolbar />
+        <Toolbar currentNodes={updatedNodes} />
         <ReactFlow
           defaultNodes={updatedNodes}
           edges={updatedEdges}

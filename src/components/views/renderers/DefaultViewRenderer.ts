@@ -1,10 +1,11 @@
 import { ViewRenderer } from "../View";
-import { Node, Edge } from "@xyflow/react";
+import { Edge } from "@xyflow/react";
 import { ViewProps } from "../View";
 import { isRelationshipElement } from "../../../utils/layout";
 import { layoutConfig } from "../../../utils/config";
+import { BaseCustomNode } from "../../../utils/types/layout";
 
-const createNodes = ({ typesWithSnippets }: ViewProps): Node[] =>
+const createNodes = ({ typesWithSnippets }: ViewProps): BaseCustomNode[] =>
   typesWithSnippets.map((type) => ({
     id: type.id,
     type: "contentType",
@@ -25,38 +26,26 @@ const createNodes = ({ typesWithSnippets }: ViewProps): Node[] =>
     },
   }));
 
-const createEdges = ({ typesWithSnippets }: ViewProps): Edge[] => {
-  const edgeSet = new Set<string>();
-  const edges: Edge[] = [];
+const createEdges = ({ typesWithSnippets }: ViewProps): Edge[] =>
+  typesWithSnippets.flatMap((type) =>
+    type.elements.flatMap((element) => {
+      if (!isRelationshipElement(element)) return [];
 
-  typesWithSnippets.forEach((type) => {
-    type.elements.forEach((element) => {
-      if (isRelationshipElement(element)) {
-        element.allowed_content_types?.forEach((allowed) => {
-          // skip self-references as they're handled in the node
-          if (type.id === allowed.id) return;
-          const edgeKey = `${type.id}-${element.id}-${allowed.id}`;
-          if (!edgeSet.has(edgeKey)) {
-            edgeSet.add(edgeKey);
-            edges.push({
-              id: edgeKey,
-              source: type.id,
-              target: allowed.id ?? "",
-              sourceHandle: `source-${element.id}`,
-              targetHandle: "target",
-              type: layoutConfig.edgeType,
-              data: {
-                isRichTextEdge: element.type === "rich_text",
-              },
-            });
-          }
-        });
-      }
-    });
-  });
-
-  return edges;
-};
+      return (element.allowed_content_types ?? [])
+        .filter(allowed => type.id !== allowed.id) // skip self-references
+        .map(allowed => ({
+          id: `${type.id}-${element.id}-${allowed.id}`,
+          source: type.id,
+          target: allowed.id ?? "",
+          sourceHandle: `source-${element.id}`,
+          targetHandle: "target",
+          type: layoutConfig.edgeType,
+          data: {
+            isRichTextEdge: element.type === "rich_text",
+          },
+        }));
+    })
+  );
 
 export const DefaultViewRenderer: ViewRenderer = {
   createNodes,
