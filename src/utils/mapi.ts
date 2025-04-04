@@ -1,4 +1,4 @@
-import { AppError, createAppError } from "../utils/errors";
+import { createAppError } from "../utils/errors";
 import {
   ElementTypeLabels,
   ElementType,
@@ -44,16 +44,34 @@ export const makeMapiRequest = async <T>(
       }),
     });
 
-    const responseData = await response.json();
+    const responseText = await response.text();
 
-    if (!response.ok) {
+    try {
+      const responseData = JSON.parse(responseText);
+
+      if (!response.ok) {
+        return {
+          error: createAppError(
+            responseData.message || "Unknown API error",
+            responseData.errorCode || response.status,
+            responseData,
+          ),
+        };
+      }
+
+      return { data: responseData };
+    } catch (parseError) {
+      console.error("Failed to parse response:", responseText);
       return {
-        error: responseData as AppError,
+        error: createAppError(
+          "Invalid server response format",
+          "PARSE_ERROR",
+          { parseError, responseText },
+        ),
       };
     }
-
-    return { data: responseData };
   } catch (error) {
+    console.error("Network error:", error);
     return {
       error: createAppError(
         error instanceof Error ? error.message : "An unknown error occurred",
