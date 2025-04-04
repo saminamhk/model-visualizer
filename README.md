@@ -37,6 +37,11 @@ Clicking on the below button will guide you through the deployment process and a
 
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/kontent-ai/model-visualizer#NODE_VERSION=20&AWS_LAMBDA_JS_RUNTIME=nodejs20.x)
 
+> [!IMPORTANT]  
+> Setting/changing an environment variable does not take effect until next site deploy.
+>
+> Make sure you manually trigger re-deploy once you set the `MAPI_KEY` variable.
+
 ## Configuration
 
 ### Embedding the custom app
