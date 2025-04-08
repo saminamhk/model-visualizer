@@ -57,7 +57,7 @@ The visualization layout can be customized by modifying the `layoutConfig` objec
 |--------|---------|-----------------|-------------|
 | edgeType | `default` | `default`, `straight`, `smoothstep`, `step` | Shape of the edge connecting nodes. `default` is a bezier curve. |
 | alignment | `DL` | `UL`, `UR`, `DL`, `DR` | Node alignment within ranks. `UL` = up-left, `UR` = up-right, `DL` = down-left, `DR` = down-right |
-| rankDirection | `TB` | `TB`, `LR` | Direction of the graph layout. `TB` = top to bottom, `RL` = left to right |
+| rankDirection | `TB` | `TB`, `LR` | Direction of the graph layout. `TB` = top to bottom, `LR` = left to right |
 | ranker | `network-simplex` | `network-simplex`, `tight-tree`, `longest-path` | Algorithm used for ranking nodes. Network-simplex generally gives the best results |
 | acyclicer | `none` | `greedy`, `none` | Method to handle cyclic relationships. `greedy` attempts to minimize edge crossings and may result in a more compact graph. |
 | nodeSeparation | 60 | number (pixels) | Horizontal spacing between nodes at the same rank |
